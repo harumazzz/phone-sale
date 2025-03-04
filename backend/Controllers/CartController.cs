@@ -1,4 +1,6 @@
 ﻿using backend.Data;
+using backend.DTO.Request;
+using backend.DTO.Response;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,24 +14,54 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<IEnumerable<Cart>>> GetCart(int customerId)
+        public async Task<ActionResult<IEnumerable<CartResponse>>> GetCart(int customerId)
         {
-            return await _context.Carts.Where(c => c.CustomerId == customerId).Include(c => c.Product).ToListAsync();
+            var cartItems = await _context.Carts
+                .Where(c => c.CustomerId == customerId)
+                .Include(c => c.Product)
+                .Select(c => new CartResponse
+                {
+                    CartId = c.CartId,
+                    CustomerId = c.CustomerId,
+                    ProductId = c.ProductId,
+                    Quantity = c.Quantity
+                })
+                .ToListAsync();
+
+            return Ok(cartItems);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Cart>> AddToCart(Cart cart)
+        public async Task<ActionResult<CartResponse>> AddToCart(CartRequest request)
         {
-            _context.Carts.Add(cart);
+            var product = await _context.Products.FindAsync(request.ProductId);
+            if (product == null) return NotFound("Product not found");
+
+            var cartItem = new Cart
+            {
+                CustomerId = request.CustomerId,
+                ProductId = request.ProductId,
+                Quantity = request.Quantity,
+            };
+            _context.Carts.Add(cartItem);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCart), new { customerId = cart.CustomerId }, cart);
+
+            var response = new CartResponse
+            {
+                CartId = cartItem.CartId,
+                CustomerId = cartItem.CustomerId,
+                ProductId = cartItem.ProductId,
+                Quantity = cartItem.Quantity
+            };
+            return CreatedAtAction(nameof(GetCart), new { customerId = cartItem.CustomerId }, response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCartItem(int id, Cart cart)
+        public async Task<IActionResult> UpdateCartItem(int id, CartRequest request)
         {
-            if (id != cart.CartId) return BadRequest();
-            _context.Entry(cart).State = EntityState.Modified;
+            var cartItem = await _context.Carts.FindAsync(id);
+            if (cartItem == null) return NotFound();
+            cartItem.Quantity = request.Quantity;
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -39,8 +71,10 @@ namespace backend.Controllers
         {
             var cartItem = await _context.Carts.FindAsync(id);
             if (cartItem == null) return NotFound();
+
             _context.Carts.Remove(cartItem);
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }

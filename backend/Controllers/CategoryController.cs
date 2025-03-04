@@ -1,4 +1,7 @@
-﻿using backend.Data;
+﻿using Azure.Core;
+using backend.Data;
+using backend.DTO.Request;
+using backend.DTO.Response;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,38 +15,54 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategories()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.Select((e) => new CategoryResponse {
+                Id = e.CategoryId,
+                Name = e.Name,
+            }).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-            return category;
+            return new CategoryResponse { 
+                Id = category.CategoryId,
+                Name = category.Name,
+            };
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory(Category category)
+        public async Task<ActionResult<CategoryResponse>> CreateCategory(CategoryRequest request)
         {
+            var category = new Category
+            {
+                Name = request.Name
+            };
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCategories), new { id = category.CategoryId }, category);
+            var response = new CategoryResponse
+            {
+                Id = category.CategoryId,
+                Name = category.Name
+            };
+            return CreatedAtAction(nameof(GetCategories), new { id = category.CategoryId }, response);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, Category category)
+        public async Task<IActionResult> UpdateCategory(int id, CategoryRequest request)
         {
-            if (id != category.CategoryId)
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-            _context.Entry(category).State = EntityState.Modified;
+            category.Name = request.Name;
             await _context.SaveChangesAsync();
             return NoContent();
         }
@@ -52,10 +71,7 @@ namespace backend.Controllers
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             return NoContent();
