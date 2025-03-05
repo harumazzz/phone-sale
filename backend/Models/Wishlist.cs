@@ -16,13 +16,13 @@ namespace backend.Models
         public int CustomerId { get; set; }
 
         [JsonIgnore]
-        public required Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
 
         [Required, ForeignKey("Product")]
         [Column("product_id")]
         public int ProductId { get; set; }
 
         [JsonIgnore]
-        public required Product Product { get; set; }
+        public Product? Product { get; set; }
     }
 }

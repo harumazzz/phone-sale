@@ -13,13 +13,22 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpPost("register")]
-        public async Task<ActionResult<string?>> Register(Customer customer)
+        public async Task<ActionResult<string?>> Register(RegisterRequest request)
         {
-            var existingCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == customer.Email);
+            var existingCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == request.Email);
             if (existingCustomer != null)
             {
                 return BadRequest("Email is already in use.");
             }
+            var customer = new Customer
+            {
+                Address = request.Address,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Password = request.Password,
+                PhoneNumber = request.PhoneNumber,
+            };
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
             return Ok();

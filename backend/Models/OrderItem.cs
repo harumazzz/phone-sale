@@ -21,13 +21,13 @@ namespace backend.Models
         [Required, ForeignKey("Product")]
         [Column("product_id")]
         public required int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         [Required, ForeignKey("Order")]
         [Column("order_id")]
         public required int OrderId { get; set; }
 
         [JsonIgnore]
-        public required Order Order { get; set; }
+        public Order? Order { get; set; }
     }
 }

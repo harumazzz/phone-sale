@@ -26,6 +26,6 @@ namespace backend.Models
         [Column("customer_id")]
         public int CustomerId { get; set; }
         [JsonIgnore]
-        public required Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

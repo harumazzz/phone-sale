@@ -13,7 +13,7 @@ namespace backend.Models
 
         [Required]
         [Column("shipment_date")]
-        public DateTime ShipmentDate { get; set; } = DateTime.Now;
+        public DateTime ShipmentDate { get; set; }
 
         [Required, MaxLength(255)]
         [Column("address")]
@@ -38,6 +38,6 @@ namespace backend.Models
         public required int CustomerId { get; set; }
 
         [JsonIgnore]
-        public required Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

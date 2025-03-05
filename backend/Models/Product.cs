@@ -32,6 +32,6 @@ namespace backend.Models
 
         [JsonIgnore]
 
-        public required Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

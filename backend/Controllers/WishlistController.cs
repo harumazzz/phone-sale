@@ -1,4 +1,6 @@
 ﻿using backend.Data;
+using backend.DTO.Request;
+using backend.DTO.Response;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,31 +14,42 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<IEnumerable<Wishlist>>> GetWishlist(int customerId)
+        public async Task<ActionResult<IEnumerable<WishlistResponse>>> GetWishlist(int customerId)
         {
-            return await _context.Wishlists.Where(w => w.CustomerId == customerId).ToListAsync();
+            var wishlists = await _context.Wishlists.Where(w => w.CustomerId == customerId).ToListAsync();
+            return Ok(wishlists.Select(w => new WishlistResponse
+            {
+                CustomerId = w.CustomerId,
+                ProductId = w.ProductId,
+                WishlistId = w.WishlistId,
+            }));
         }
 
         [HttpPost]
-        public async Task<ActionResult<Wishlist>> AddToWishlist(Wishlist wishlist)
+        public async Task<ActionResult<WishlistResponse>> AddToWishlist(WishlistRequest wishlistDto)
         {
+            var wishlist = new Wishlist
+            {
+                CustomerId = wishlistDto.CustomerId,
+                ProductId = wishlistDto.ProductId,
+            };
             _context.Wishlists.Add(wishlist);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetWishlist), new { customerId = wishlist.CustomerId }, wishlist);
+            return CreatedAtAction(nameof(GetWishlist), new { customerId = wishlist.CustomerId }, new WishlistResponse
+            {
+                CustomerId = wishlist.CustomerId,
+                ProductId = wishlist.ProductId,
+                WishlistId = wishlist.WishlistId,
+            });
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateWishlist(int id, Wishlist updatedWishlist)
+        public async Task<IActionResult> UpdateWishlist(int id, WishlistRequest wishlistDto)
         {
-            if (id != updatedWishlist.WishlistId)
-                return BadRequest("Wishlist ID mismatch");
-
-            var existingWishlist = await _context.Wishlists.FindAsync(id);
-            if (existingWishlist == null) return NotFound();
-            existingWishlist.CustomerId = updatedWishlist.CustomerId;
-            existingWishlist.ProductId = updatedWishlist.ProductId;
-
-            _context.Entry(existingWishlist).State = EntityState.Modified;
+            var wishlist = await _context.Wishlists.FindAsync(id);
+            if (wishlist == null) return NotFound();
+            wishlist.CustomerId = wishlistDto.CustomerId;
+            wishlist.ProductId = wishlistDto.ProductId;
             await _context.SaveChangesAsync();
             return NoContent();
         }

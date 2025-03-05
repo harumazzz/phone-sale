@@ -12,13 +12,13 @@ namespace backend.Models
         public int OrderId { get; set; }
 
         [JsonIgnore]
-        public required Order Order { get; set; }
+        public Order? Order { get; set; }
 
         [Required, ForeignKey("Payment")]
         [Column("payment_id")]
         public int PaymentId { get; set; }
 
         [JsonIgnore]
-        public required Payment Payment { get; set; }
+        public Payment? Payment { get; set; }
     }
 }

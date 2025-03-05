@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using backend.Data;
+﻿using backend.Data;
 using backend.DTO.Request;
 using backend.DTO.Response;
 using backend.Models;
