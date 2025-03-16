@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 class OrderItemRequest extends Equatable {
-  final int? quantity;
-  final int? price;
-  final int? productId;
-  final int? orderId;
-
-  const OrderItemRequest({this.quantity, this.price, this.productId, this.orderId});
+  const OrderItemRequest({
+    this.quantity,
+    this.price,
+    this.productId,
+    this.orderId,
+  });
 
   factory OrderItemRequest.fromJson(Map<String, dynamic> json) {
     return OrderItemRequest(
@@ -16,9 +16,18 @@ class OrderItemRequest extends Equatable {
       orderId: json['orderId'],
     );
   }
+  final int? quantity;
+  final int? price;
+  final int? productId;
+  final int? orderId;
 
   Map<String, dynamic> toJson() {
-    return {'quantity': quantity, 'price': price, 'productId': productId, 'orderId': orderId};
+    return {
+      'quantity': quantity,
+      'price': price,
+      'productId': productId,
+      'orderId': orderId,
+    };
   }
 
   @override

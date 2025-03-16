@@ -1,10 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 final class PaymentRequest extends Equatable {
-  final String? paymentMethod;
-  final int? amount;
-  final int? customerId;
-
   const PaymentRequest({this.paymentMethod, this.amount, this.customerId});
 
   factory PaymentRequest.fromJson(Map<String, dynamic> json) {
@@ -14,9 +10,16 @@ final class PaymentRequest extends Equatable {
       customerId: json['customerId'] as int?,
     );
   }
+  final String? paymentMethod;
+  final int? amount;
+  final int? customerId;
 
   Map<String, dynamic> toJson() {
-    return {'paymentMethod': paymentMethod, 'amount': amount, 'customerId': customerId};
+    return {
+      'paymentMethod': paymentMethod,
+      'amount': amount,
+      'customerId': customerId,
+    };
   }
 
   @override

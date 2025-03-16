@@ -1,15 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class ShipmentResponse extends Equatable {
-  final int? shipmentId;
-  final DateTime? shipmentDate;
-  final String? address;
-  final String? city;
-  final String? state;
-  final String? country;
-  final String? zipCode;
-  final int? customerId;
-
   const ShipmentResponse({
     this.shipmentId,
     this.shipmentDate,
@@ -24,7 +15,10 @@ class ShipmentResponse extends Equatable {
   factory ShipmentResponse.fromJson(Map<String, dynamic> json) {
     return ShipmentResponse(
       shipmentId: json['shipmentId'] as int?,
-      shipmentDate: json['shipmentDate'] != null ? DateTime.parse(json['shipmentDate']) : null,
+      shipmentDate:
+          json['shipmentDate'] != null
+              ? DateTime.parse(json['shipmentDate'])
+              : null,
       address: json['address'] as String?,
       city: json['city'] as String?,
       state: json['state'] as String?,
@@ -33,6 +27,14 @@ class ShipmentResponse extends Equatable {
       customerId: json['customerId'] as int?,
     );
   }
+  final int? shipmentId;
+  final DateTime? shipmentDate;
+  final String? address;
+  final String? city;
+  final String? state;
+  final String? country;
+  final String? zipCode;
+  final int? customerId;
 
   Map<String, dynamic> toJson() {
     return {
@@ -48,5 +50,14 @@ class ShipmentResponse extends Equatable {
   }
 
   @override
-  List<Object?> get props => [shipmentId, shipmentDate, address, city, state, country, zipCode, customerId];
+  List<Object?> get props => [
+    shipmentId,
+    shipmentDate,
+    address,
+    city,
+    state,
+    country,
+    zipCode,
+    customerId,
+  ];
 }

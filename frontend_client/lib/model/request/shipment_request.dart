@@ -1,14 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class ShipmentRequest extends Equatable {
-  final DateTime? shipmentDate;
-  final String? address;
-  final String? city;
-  final String? state;
-  final String? country;
-  final String? zipCode;
-  final int? customerId;
-
   const ShipmentRequest({
     this.shipmentDate,
     this.address,
@@ -21,7 +13,10 @@ class ShipmentRequest extends Equatable {
 
   factory ShipmentRequest.fromJson(Map<String, dynamic> json) {
     return ShipmentRequest(
-      shipmentDate: json['shipmentDate'] != null ? DateTime.parse(json['shipmentDate']) : null,
+      shipmentDate:
+          json['shipmentDate'] != null
+              ? DateTime.parse(json['shipmentDate'])
+              : null,
       address: json['address'] as String?,
       city: json['city'] as String?,
       state: json['state'] as String?,
@@ -30,6 +25,13 @@ class ShipmentRequest extends Equatable {
       customerId: json['customerId'] as int?,
     );
   }
+  final DateTime? shipmentDate;
+  final String? address;
+  final String? city;
+  final String? state;
+  final String? country;
+  final String? zipCode;
+  final int? customerId;
 
   Map<String, dynamic> toJson() {
     return {
@@ -44,5 +46,13 @@ class ShipmentRequest extends Equatable {
   }
 
   @override
-  List<Object?> get props => [shipmentDate, address, city, state, country, zipCode, customerId];
+  List<Object?> get props => [
+    shipmentDate,
+    address,
+    city,
+    state,
+    country,
+    zipCode,
+    customerId,
+  ];
 }

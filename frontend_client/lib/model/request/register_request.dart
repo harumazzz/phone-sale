@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 class RegisterRequest extends Equatable {
-  final String? firstName;
-  final String? lastName;
-  final String? email;
-  final String? password;
-  final String? address;
-  final String? phoneNumber;
-
-  const RegisterRequest({this.firstName, this.lastName, this.email, this.password, this.address, this.phoneNumber});
+  const RegisterRequest({
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.password,
+    this.address,
+    this.phoneNumber,
+  });
 
   factory RegisterRequest.fromJson(Map<String, dynamic> json) {
     return RegisterRequest(
@@ -20,6 +20,12 @@ class RegisterRequest extends Equatable {
       phoneNumber: json['phoneNumber'],
     );
   }
+  final String? firstName;
+  final String? lastName;
+  final String? email;
+  final String? password;
+  final String? address;
+  final String? phoneNumber;
 
   Map<String, dynamic> toJson() {
     return {
@@ -33,5 +39,12 @@ class RegisterRequest extends Equatable {
   }
 
   @override
-  List<Object?> get props => [firstName, lastName, email, password, address, phoneNumber];
+  List<Object?> get props => [
+    firstName,
+    lastName,
+    email,
+    password,
+    address,
+    phoneNumber,
+  ];
 }

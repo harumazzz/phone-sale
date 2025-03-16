@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Application extends StatelessWidget {
@@ -7,13 +8,24 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(title)),
-      body: Center(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(title),
+      ),
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[const Text('You have pushed the button this many times:')],
+          children: <Widget>[
+            Text('You have pushed the button this many times:'),
+          ],
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(StringProperty('title', title));
   }
 }

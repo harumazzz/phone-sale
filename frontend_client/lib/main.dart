@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_client/application.dart';
-import 'package:frontend_client/service/service_locator.dart';
+import 'application.dart';
+import 'service/service_locator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
       home: const Application(title: 'Flutter Demo Home Page'),
     );
   }

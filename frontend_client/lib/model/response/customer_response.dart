@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 class CustomerResponse extends Equatable {
-  final int? customerId;
-  final String? firstName;
-  final String? lastName;
-  final String? email;
-  final String? address;
-  final String? phoneNumber;
-
-  const CustomerResponse({this.customerId, this.firstName, this.lastName, this.email, this.address, this.phoneNumber});
+  const CustomerResponse({
+    this.customerId,
+    this.firstName,
+    this.lastName,
+    this.email,
+    this.address,
+    this.phoneNumber,
+  });
 
   factory CustomerResponse.fromJson(Map<String, dynamic> json) {
     return CustomerResponse(
@@ -20,6 +20,12 @@ class CustomerResponse extends Equatable {
       phoneNumber: json['phoneNumber'],
     );
   }
+  final int? customerId;
+  final String? firstName;
+  final String? lastName;
+  final String? email;
+  final String? address;
+  final String? phoneNumber;
 
   Map<String, dynamic> toJson() {
     return {
@@ -33,5 +39,12 @@ class CustomerResponse extends Equatable {
   }
 
   @override
-  List<Object?> get props => [customerId, firstName, lastName, email, address, phoneNumber];
+  List<Object?> get props => [
+    customerId,
+    firstName,
+    lastName,
+    email,
+    address,
+    phoneNumber,
+  ];
 }

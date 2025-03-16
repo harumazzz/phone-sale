@@ -1,13 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 class CategoryRequest extends Equatable {
-  final String? name;
-
   const CategoryRequest({this.name});
 
   factory CategoryRequest.fromJson(Map<String, dynamic> json) {
     return CategoryRequest(name: json['name']);
   }
+  final String? name;
 
   Map<String, dynamic> toJson() {
     return {'name': name};
