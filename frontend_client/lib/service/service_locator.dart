@@ -29,7 +29,7 @@ class ServiceLocator {
   }
 
   static void registerService() {
-    register<Dio>(Dio(BaseOptions(baseUrl: 'http://localhost:5000/api')));
+    register<Dio>(Dio(BaseOptions(baseUrl: 'https://localhost:7283/api')));
     register<AuthRepository>(const AuthRepository(AuthApi()));
     register<CategoryRepository>(const CategoryRepository(CategoryApi()));
     register<CustomerRepository>(const CustomerRepository(CustomerApi()));

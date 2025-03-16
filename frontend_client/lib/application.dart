@@ -1,31 +1,46 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'bloc/category_bloc/category_bloc.dart';
+import 'bloc/product_bloc/product_bloc.dart';
+import 'repository/category_repository.dart';
+import 'repository/product_repository.dart';
+import 'screen/home_screen/home_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'service/service_locator.dart';
+
 class Application extends StatelessWidget {
-  const Application({super.key, required this.title});
-  final String title;
+  const Application({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('You have pushed the button this many times:'),
-          ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CategoryBloc>(
+          create: (context) {
+            final bloc = CategoryBloc(
+              categoryRepository: ServiceLocator.get<CategoryRepository>(),
+            );
+            bloc.add(const LoadCategoryEvent());
+            return bloc;
+          },
         ),
+        BlocProvider<ProductBloc>(
+          create: (context) {
+            return ProductBloc(
+              productRepository: ServiceLocator.get<ProductRepository>(),
+            );
+          },
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: const HomeScreen(),
       ),
     );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(StringProperty('title', title));
   }
 }
