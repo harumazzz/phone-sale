@@ -13,7 +13,7 @@ class CategoryGrid extends StatelessWidget {
     return SliverGrid(
       delegate: SliverChildBuilderDelegate(builder, childCount: size),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 100,
+        maxCrossAxisExtent: 120,
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
       ),

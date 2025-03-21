@@ -10,27 +10,36 @@ class CategoryButton extends StatelessWidget {
   });
 
   final String title;
-
   final void Function() onTap;
-
   final Widget icon;
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: title,
-      child: GestureDetector(
-        onTap: onTap,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           spacing: 4.0,
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.blueAccent,
-              child: icon,
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              ),
+              child: Center(child: icon),
             ),
-            Text(title, style: const TextStyle(fontSize: 14)),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),

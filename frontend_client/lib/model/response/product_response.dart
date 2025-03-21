@@ -15,7 +15,7 @@ class ProductResponse extends Equatable {
       productId: json['productId'] as int?,
       model: json['model'] as String?,
       description: json['description'] as String?,
-      price: json['price'] as int?,
+      price: json['price'] as double?,
       stock: json['stock'] as int?,
       categoryId: json['categoryId'] as int?,
     );
@@ -23,7 +23,7 @@ class ProductResponse extends Equatable {
   final int? productId;
   final String? model;
   final String? description;
-  final int? price;
+  final double? price;
   final int? stock;
   final int? categoryId;
 
