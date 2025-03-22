@@ -30,6 +30,23 @@ namespace backend.Controllers
             return Ok(responseList);
         }
 
+        [HttpGet("/api/products/category/{id}")]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsByCategoryId(int id)
+        {
+            var products = await _context.Products.Where(e => e.CategoryId == id).Include(p => p.Category).ToListAsync();
+            var responseList = products.Select(p => new ProductResponse
+            {
+                ProductId = p.ProductId,
+                Model = p.Model,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock,
+                CategoryId = p.CategoryId
+            }).ToList();
+
+            return Ok(responseList);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductResponse>> GetProduct(int id)
         {

@@ -7,7 +7,7 @@ namespace backend.DTO.Response
         [Required]
         public required int CartId { get; set; }
         [Required]
-        public required int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
         [Required]
         public required int ProductId { get; set; }
         [Required]

@@ -20,7 +20,7 @@ class CustomerResponse extends Equatable {
       phoneNumber: json['phoneNumber'],
     );
   }
-  final int? customerId;
+  final String? customerId;
   final String? firstName;
   final String? lastName;
   final String? email;

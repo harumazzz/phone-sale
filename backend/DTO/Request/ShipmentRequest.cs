@@ -17,6 +17,6 @@ namespace backend.DTO.Request
         [Required]
         public required string ZipCode { get; set; }
         [Required]
-        public required int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
     }
 }

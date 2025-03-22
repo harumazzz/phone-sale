@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onRegister(RegisterEvent event, Emitter<AuthState> emit) async {
     try {
       emit(const AuthLoading());
-      final data = await authRepository.register(request: event.data);
+      await authRepository.register(request: event.data);
       emit(const AuthRegister());
     } catch (e) {
       emit(AuthRegisterFailed(message: e.toString()));

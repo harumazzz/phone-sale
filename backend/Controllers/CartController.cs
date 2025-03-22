@@ -14,7 +14,7 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<IEnumerable<CartResponse>>> GetCart(int customerId)
+        public async Task<ActionResult<IEnumerable<CartResponse>>> GetCart(string customerId)
         {
             var cartItems = await _context.Carts
                 .Where(c => c.CustomerId == customerId)

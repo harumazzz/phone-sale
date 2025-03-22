@@ -56,6 +56,7 @@ namespace backend.Controllers
         {
             var customer = new Customer
             {
+                CustomerId = $"{_context.Customers.Count() + 1}",
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,

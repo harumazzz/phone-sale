@@ -25,7 +25,7 @@ class PaymentResponse extends Equatable {
   final DateTime? paymentDate;
   final String? paymentMethod;
   final int? amount;
-  final int? customerId;
+  final String? customerId;
 
   Map<String, dynamic> toJson() {
     return {

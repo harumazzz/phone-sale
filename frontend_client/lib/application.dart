@@ -16,9 +16,9 @@ import 'repository/payment_repository.dart';
 import 'repository/product_repository.dart';
 import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
-import 'screen/home_screen/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'screen/log_in/login_screen.dart';
 import 'service/service_locator.dart';
 
 class Application extends StatelessWidget {
@@ -95,7 +95,7 @@ class Application extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: const HomeScreen(),
+        home: const LoginScreen(),
       ),
     );
   }

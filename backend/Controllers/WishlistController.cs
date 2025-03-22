@@ -14,7 +14,7 @@ namespace backend.Controllers
         private readonly PhoneShopContext _context = context;
 
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<IEnumerable<WishlistResponse>>> GetWishlist(int customerId)
+        public async Task<ActionResult<IEnumerable<WishlistResponse>>> GetWishlist(string customerId)
         {
             var wishlists = await _context.Wishlists.Where(w => w.CustomerId == customerId).ToListAsync();
             return Ok(wishlists.Select(w => new WishlistResponse

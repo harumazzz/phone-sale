@@ -4,11 +4,11 @@ class WishlistRequest extends Equatable {
   const WishlistRequest({this.customerId, this.productId});
   factory WishlistRequest.fromJson(Map<String, dynamic> json) {
     return WishlistRequest(
-      customerId: json['customerId'] as int?,
+      customerId: json['customerId'],
       productId: json['productId'] as int?,
     );
   }
-  final int? customerId;
+  final String? customerId;
   final int? productId;
 
   Map<String, dynamic> toJson() {

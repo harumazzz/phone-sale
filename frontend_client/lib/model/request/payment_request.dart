@@ -7,12 +7,12 @@ final class PaymentRequest extends Equatable {
     return PaymentRequest(
       paymentMethod: json['paymentMethod'] as String?,
       amount: json['amount'] as int?,
-      customerId: json['customerId'] as int?,
+      customerId: json['customerId'],
     );
   }
   final String? paymentMethod;
   final int? amount;
-  final int? customerId;
+  final String? customerId;
 
   Map<String, dynamic> toJson() {
     return {

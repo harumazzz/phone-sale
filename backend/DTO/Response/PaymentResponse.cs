@@ -13,6 +13,6 @@ namespace backend.DTO.Response
         [Required]
         public required decimal Amount { get; set; }
         [Required]
-        public required int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
     }
 }

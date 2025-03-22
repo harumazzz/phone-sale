@@ -19,7 +19,7 @@ namespace backend.Models
         public required decimal TotalPrice { get; set; }
 
         [Required, ForeignKey("Customer"), Column("customer_id")]
-        public required int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
 
         [JsonIgnore]
         public Customer? Customer { get; set; }

@@ -10,6 +10,7 @@ import '../../widget/category_grid/category_grid.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../category/category_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -33,7 +34,18 @@ class HomeScreen extends StatelessWidget {
             builder: (context, index) {
               return CategoryButton(
                 title: state[index].name!,
-                onTap: () {},
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return CategoryScreen(
+                          id: state[index].id!,
+                          name: state[index].name!,
+                        );
+                      },
+                    ),
+                  );
+                },
                 icon: const Icon(Symbols.abc),
               );
             },

@@ -19,7 +19,7 @@ class OrderResponse extends Equatable {
   final int? orderId;
   final DateTime? orderDate;
   final int? totalPrice;
-  final int? customerId;
+  final String? customerId;
 
   Map<String, dynamic> toJson() {
     return {

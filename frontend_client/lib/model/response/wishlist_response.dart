@@ -5,12 +5,12 @@ class WishlistResponse extends Equatable {
   factory WishlistResponse.fromJson(Map<String, dynamic> json) {
     return WishlistResponse(
       wishlistId: json['wishlistId'] as int?,
-      customerId: json['customerId'] as int?,
+      customerId: json['customerId'],
       productId: json['productId'] as int?,
     );
   }
   final int? wishlistId;
-  final int? customerId;
+  final String? customerId;
   final int? productId;
 
   Map<String, dynamic> toJson() {

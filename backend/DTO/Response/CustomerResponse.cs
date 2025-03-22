@@ -5,7 +5,7 @@ namespace backend.DTO.Response
     public class CustomerResponse
     {
         [Required]
-        public required int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
         [Required]
         public required string FirstName { get; set; } = string.Empty;
         [Required]

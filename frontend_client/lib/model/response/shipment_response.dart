@@ -24,7 +24,7 @@ class ShipmentResponse extends Equatable {
       state: json['state'] as String?,
       country: json['country'] as String?,
       zipCode: json['zipCode'] as String?,
-      customerId: json['customerId'] as int?,
+      customerId: json['customerId'],
     );
   }
   final int? shipmentId;
@@ -34,7 +34,7 @@ class ShipmentResponse extends Equatable {
   final String? state;
   final String? country;
   final String? zipCode;
-  final int? customerId;
+  final String? customerId;
 
   Map<String, dynamic> toJson() {
     return {

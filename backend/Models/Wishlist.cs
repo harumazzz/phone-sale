@@ -13,7 +13,7 @@ namespace backend.Models
 
         [Required, ForeignKey("Customer")]
         [Column("customer_id")]
-        public int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
 
         [JsonIgnore]
         public Customer? Customer { get; set; }

@@ -10,7 +10,7 @@ class OrderRequest extends Equatable {
     );
   }
   final int? totalPrice;
-  final int? customerId;
+  final String? customerId;
 
   Map<String, dynamic> toJson() {
     return {'totalPrice': totalPrice, 'customerId': customerId};

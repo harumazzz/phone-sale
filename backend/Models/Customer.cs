@@ -8,7 +8,7 @@ namespace backend.Models
     {
         [Key]
         [Column("customer_id")]
-        public int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
 
         [Required, MaxLength(100)]
         [Column("first_name")]
