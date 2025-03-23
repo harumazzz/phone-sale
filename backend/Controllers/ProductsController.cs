@@ -47,6 +47,25 @@ namespace backend.Controllers
             return Ok(responseList);
         }
 
+        [HttpGet("/api/products/search")]
+        public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProductsByName([FromQuery] string searchQuery)
+        {
+            var query = _context.Products.Include(p => p.Category);
+            var products = await query.Where(p => EF.Functions.Like(p.Model, $"%{searchQuery}%")).ToListAsync();
+            var responseList = products.Select(p => new ProductResponse
+            {
+                ProductId = p.ProductId,
+                Model = p.Model,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock,
+                CategoryId = p.CategoryId
+            }).ToList();
+
+            return Ok(responseList);
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductResponse>> GetProduct(int id)
         {

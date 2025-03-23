@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../bloc/category_bloc/category_bloc.dart';
 import '../../bloc/product_bloc/product_bloc.dart';
+import '../../service/convert_helper.dart';
 import '../../service/ui_helper.dart';
 import '../../widget/category_button/category_button.dart';
 import '../../widget/category_grid/category_grid.dart';
@@ -11,9 +11,38 @@ import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
 import '../category/category_screen.dart';
+import '../product_detail/product_detail_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductBloc>().add(const ProductFetch());
+      context.read<CategoryBloc>().add(const LoadCategoryEvent());
+    });
+  }
+
+  Future<void> _onPressed({
+    required BuildContext context,
+    required CategoryLoaded state,
+    required int index,
+  }) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return CategoryScreen(id: state[index].id!, name: state[index].name!);
+        },
+      ),
+    );
+  }
 
   Widget _categoryGrid() {
     return BlocConsumer<CategoryBloc, CategoryState>(
@@ -35,18 +64,13 @@ class HomeScreen extends StatelessWidget {
               return CategoryButton(
                 title: state[index].name!,
                 onTap: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return CategoryScreen(
-                          id: state[index].id!,
-                          name: state[index].name!,
-                        );
-                      },
-                    ),
+                  return await _onPressed(
+                    context: context,
+                    state: state,
+                    index: index,
                   );
                 },
-                icon: const Icon(Symbols.abc),
+                icon: ConvertHelper.exchangeSymbols(state[index].name!),
               );
             },
             size: state.size,
@@ -54,6 +78,16 @@ class HomeScreen extends StatelessWidget {
         }
         return const SliverToBoxAdapter(child: SizedBox.shrink());
       },
+    );
+  }
+
+  Future<void> _onMove(ProductLoaded state, int index) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return ProductDetailScreen(product: state[index]);
+        },
+      ),
     );
   }
 
@@ -74,7 +108,10 @@ class HomeScreen extends StatelessWidget {
         if (state is ProductLoaded) {
           return ProductList(
             builder: (context, index) {
-              return ProductCard(product: state[index]);
+              return ProductCard(
+                product: state[index],
+                onPressed: () async => await _onMove(state, index),
+              );
             },
             size: state.size,
           );
@@ -86,34 +123,12 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          const CustomAppbar(title: Text('Shop bán hàng')),
-          _categoryGrid(),
-          _productWrap(),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: const <Widget>[
-          NavigationDestination(
-            icon: Icon(Symbols.home),
-            selectedIcon: Icon(Symbols.home_filled),
-            label: 'Trang chủ',
-          ),
-          NavigationDestination(
-            icon: Icon(Symbols.search),
-            selectedIcon: Icon(Symbols.search_activity),
-            label: 'Tìm kiếm',
-          ),
-          NavigationDestination(
-            icon: Icon(Symbols.settings),
-            selectedIcon: Icon(Symbols.settings_sharp),
-            label: 'Cài đặt',
-          ),
-        ],
-        onDestinationSelected: (value) {},
-      ),
+    return CustomScrollView(
+      slivers: [
+        const CustomAppbar(title: Text('Shop bán hàng')),
+        _categoryGrid(),
+        _productWrap(),
+      ],
     );
   }
 }

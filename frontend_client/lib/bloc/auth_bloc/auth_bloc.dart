@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../../model/request/login_request.dart';
 import '../../model/request/register_request.dart';
+import '../../model/response/customer_response.dart';
 import '../../repository/auth_repository.dart';
 
 part 'auth_event.dart';
@@ -21,7 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
       final data = await authRepository.login(request: event.data);
-      emit(const AuthLogin());
+      emit(AuthLogin(data: data));
     } catch (e) {
       emit(AuthLoginFailed(message: e.toString()));
     }

@@ -19,10 +19,16 @@ final class AuthRegister extends AuthState {
 }
 
 final class AuthLogin extends AuthState {
-  const AuthLogin();
+  const AuthLogin({required this.data});
+
+  final CustomerResponse data;
+
+  String get name => data.name;
+
+  String get email => data.email!;
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [data];
 }
 
 final class AuthLoading extends AuthState {

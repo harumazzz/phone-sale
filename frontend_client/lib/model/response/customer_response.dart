@@ -27,6 +27,8 @@ class CustomerResponse extends Equatable {
   final String? address;
   final String? phoneNumber;
 
+  String get name => '$firstName $lastName';
+
   Map<String, dynamic> toJson() {
     return {
       'customerId': customerId,

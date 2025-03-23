@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 
 import '../model/request/login_request.dart';
 import '../model/request/register_request.dart';
+import '../model/response/customer_response.dart';
 import '../service/service_locator.dart';
 
 class AuthApi extends Equatable {
@@ -25,13 +26,13 @@ class AuthApi extends Equatable {
     }
   }
 
-  Future<void> login({required LoginRequest request}) async {
+  Future<CustomerResponse> login({required LoginRequest request}) async {
     final response = await ServiceLocator.get<Dio>().post(
       '$endpoint/login',
       data: request.toJson(),
     );
     if (response.statusCode == 200) {
-      return;
+      return CustomerResponse.fromJson(response.data);
     } else {
       throw Exception(response.data);
     }

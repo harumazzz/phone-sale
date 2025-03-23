@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../api/auth_api.dart';
 import '../model/request/login_request.dart';
 import '../model/request/register_request.dart';
+import '../model/response/customer_response.dart';
 
 class AuthRepository extends Equatable {
   const AuthRepository(this._api);
@@ -13,7 +14,7 @@ class AuthRepository extends Equatable {
     return await _api.register(request: request);
   }
 
-  Future<void> login({required LoginRequest request}) async {
+  Future<CustomerResponse> login({required LoginRequest request}) async {
     return await _api.login(request: request);
   }
 

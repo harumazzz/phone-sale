@@ -5,7 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../model/request/login_request.dart';
 import '../../service/ui_helper.dart';
-import '../home_screen/home_screen.dart';
+import '../root_screen.dart';
 import '../sign_up/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (context) {
-            return const HomeScreen();
+            return const RootScreen();
           },
         ),
         (Route<dynamic> route) => false,
@@ -74,9 +74,75 @@ class _LoginScreenState extends State<LoginScreen> {
     if (state is AuthLogin) {
       await toHome();
     }
-    if (state is AuthRegisterFailed) {
+    if (state is AuthLoginFailed) {
       await showDialog(title: 'Đăng nhập thất bại', content: state.message);
     }
+  }
+
+  Widget _emailTextField() {
+    return TextFormField(
+      controller: _emailController,
+      decoration: const InputDecoration(
+        labelText: 'Email',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Symbols.email),
+      ),
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vui lòng nhập email';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _passwordTextField() {
+    return TextFormField(
+      controller: _passwordController,
+      obscureText: true,
+      decoration: const InputDecoration(
+        labelText: 'Mật khẩu',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Symbols.lock),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vui lòng nhập mật khẩu';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _loginButton() {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: _onListener,
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const CircularProgressIndicator();
+        }
+        return ElevatedButton(
+          onPressed: _onLogIn,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          child: const Text('Đăng nhập'),
+        );
+      },
+    );
+  }
+
+  Widget _signupButton(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignupScreen()),
+        );
+      },
+      child: const Text('Đăng ký tài khoản'),
+    );
   }
 
   @override
@@ -90,78 +156,24 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16.0,
               children: <Widget>[
                 Icon(
                   Symbols.shopping_cart,
                   size: 80,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(height: 20),
                 Text(
                   'Đăng Nhập',
                   style: Theme.of(context).textTheme.displayLarge,
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 40),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Symbols.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập email';
-                    }
-                    return null;
-                  },
-                ),
+                const SizedBox(height: 24),
+                _emailTextField(),
+                _passwordTextField(),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Mật khẩu',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Symbols.lock),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                BlocConsumer<AuthBloc, AuthState>(
-                  listener: _onListener,
-                  builder: (context, state) {
-                    if (state is AuthLoading) {
-                      return const CircularProgressIndicator();
-                    }
-                    return ElevatedButton(
-                      onPressed: _onLogIn,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Đăng nhập'),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignupScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text('Đăng ký tài khoản'),
-                ),
+                _loginButton(),
+                _signupButton(context),
               ],
             ),
           ),

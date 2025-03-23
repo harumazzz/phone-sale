@@ -36,6 +36,22 @@ class ProductApi extends Equatable {
     }
   }
 
+  Future<List<ProductResponse>> getProductsByName({
+    required String name,
+  }) async {
+    final response = await ServiceLocator.get<Dio>().get(
+      '$endpoint/search',
+      queryParameters: {'searchQuery': name},
+    );
+    if (response.statusCode == 200) {
+      return (response.data as List<dynamic>)
+          .map((e) => ProductResponse.fromJson(e))
+          .toList();
+    } else {
+      throw Exception(response.data);
+    }
+  }
+
   Future<ProductResponse> getProduct({required int id}) async {
     final response = await ServiceLocator.get<Dio>().get('$endpoint/$id');
     if (response.statusCode == 200) {

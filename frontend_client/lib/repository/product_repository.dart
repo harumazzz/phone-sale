@@ -13,6 +13,12 @@ class ProductRepository extends Equatable {
     return await _api.getProducts();
   }
 
+  Future<List<ProductResponse>> getProductsByName({
+    required String name,
+  }) async {
+    return await _api.getProductsByName(name: name);
+  }
+
   Future<List<ProductResponse>> getProductsByCategoryId({
     required int id,
   }) async {

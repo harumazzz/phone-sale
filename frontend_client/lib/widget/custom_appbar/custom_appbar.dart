@@ -9,6 +9,6 @@ class CustomAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(title: title, actions: actions);
+    return SliverAppBar(title: title, actions: actions, floating: true);
   }
 }

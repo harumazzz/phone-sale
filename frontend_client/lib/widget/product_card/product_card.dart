@@ -1,25 +1,39 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../model/response/product_response.dart';
+import '../../service/convert_helper.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.onPressed,
+  });
 
   final ProductResponse product;
 
+  final void Function() onPressed;
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.all(8),
-      child: _buildProductCardContent(context),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12.0),
+      onTap: onPressed,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        margin: const EdgeInsets.all(8.0),
+        child: _buildProductCardContent(context),
+      ),
     );
   }
 
   Widget _buildProductCardContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [_buildProductImage(), _buildProductDetails(context)],
     );
   }
@@ -42,12 +56,10 @@ class ProductCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildModelText(context),
-          const SizedBox(height: 8),
-          _buildPriceAndStock(context),
-        ],
+        spacing: 8.0,
+        children: [_buildModelText(context), _buildPriceAndStock(context)],
       ),
     );
   }
@@ -64,9 +76,10 @@ class ProductCard extends StatelessWidget {
   Widget _buildPriceAndStock(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Giá: ${product.price != null ? product.price.toString() : 'Không có giá'} VNĐ',
+          'Giá: ${product.price != null ? ConvertHelper.inVND(product.price!) : 'Không có giá'} VNĐ',
           style: Theme.of(context).textTheme.bodyMedium,
           overflow: TextOverflow.ellipsis,
         ),
@@ -83,5 +96,8 @@ class ProductCard extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<ProductResponse>('product', product));
+    properties.add(
+      ObjectFlagProperty<void Function()>.has('onPressed', onPressed),
+    );
   }
 }

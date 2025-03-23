@@ -6,6 +6,7 @@ import 'bloc/category_bloc/category_bloc.dart';
 import 'bloc/order_bloc/order_bloc.dart';
 import 'bloc/payment_bloc/payment_bloc.dart';
 import 'bloc/product_bloc/product_bloc.dart';
+import 'bloc/product_search_bloc/product_search_bloc.dart';
 import 'bloc/shipment_bloc/shipment_bloc.dart';
 import 'bloc/wishlist_bloc/wishlist_bloc.dart';
 import 'repository/auth_repository.dart';
@@ -19,6 +20,7 @@ import 'repository/wishlist_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'screen/log_in/login_screen.dart';
+import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
 class Application extends StatelessWidget {
@@ -30,20 +32,16 @@ class Application extends StatelessWidget {
       providers: [
         BlocProvider<CategoryBloc>(
           create: (context) {
-            final bloc = CategoryBloc(
+            return CategoryBloc(
               categoryRepository: ServiceLocator.get<CategoryRepository>(),
             );
-            bloc.add(const LoadCategoryEvent());
-            return bloc;
           },
         ),
         BlocProvider<ProductBloc>(
           create: (context) {
-            final bloc = ProductBloc(
+            return ProductBloc(
               productRepository: ServiceLocator.get<ProductRepository>(),
             );
-            bloc.add(const ProductFetch());
-            return bloc;
           },
         ),
         BlocProvider<AuthBloc>(
@@ -57,6 +55,13 @@ class Application extends StatelessWidget {
           create: (context) {
             return CartBloc(
               cartRepository: ServiceLocator.get<CartRepository>(),
+            );
+          },
+        ),
+        BlocProvider<ProductSearchBloc>(
+          create: (context) {
+            return ProductSearchBloc(
+              productRepository: ServiceLocator.get<ProductRepository>(),
             );
           },
         ),
@@ -89,13 +94,32 @@ class Application extends StatelessWidget {
           },
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: const LoginScreen(),
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Flutter Demo',
+            navigatorObservers: [
+              CustomNavigatorObserver(
+                onPop: () {
+                  context.read<ProductBloc>().add(const ProductFetch());
+                },
+              ),
+            ],
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders:
+                    Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
+                      TargetPlatform.values,
+                      value: (_) => const FadeForwardsPageTransitionsBuilder(),
+                    ),
+              ),
+              progressIndicatorTheme: const ProgressIndicatorThemeData(),
+            ),
+            home: const LoginScreen(),
+          );
+        },
       ),
     );
   }

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/product_bloc/product_bloc.dart';
+import '../../model/response/product_response.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../product_detail/product_detail_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key, required this.id, required this.name});
@@ -30,6 +32,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ProductBloc>().add(ProductSearchByCategory(id: widget.id));
     });
+  }
+
+  Future<void> _onMove(ProductResponse product) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return ProductDetailScreen(product: product);
+        },
+      ),
+    );
   }
 
   @override
@@ -62,7 +74,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 CustomAppbar(title: Text(widget.name)),
                 ProductList(
                   builder: (context, index) {
-                    return ProductCard(product: products[index]);
+                    return ProductCard(
+                      product: products[index],
+                      onPressed: () async {
+                        return await _onMove(products[index]);
+                      },
+                    );
                   },
                   size: products.length,
                 ),
