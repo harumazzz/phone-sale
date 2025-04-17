@@ -33,12 +33,14 @@ class CategoryButton extends StatelessWidget {
               ),
               child: Center(child: icon),
             ),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.labelLarge,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            Flexible(
+              child: Text(
+                title,
+                style: Theme.of(context).textTheme.labelLarge,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),

@@ -15,7 +15,7 @@ dependencies:
   meta: ^1.16.0
   dio: ^5.8.0+1
   get_it: ^8.0.3
-  go_router: ^14.8.1
+  go_router: ^15.0.0
   flutter_web_plugins:
       sdk: flutter
   url_launcher: ^6.3.1
@@ -26,5 +26,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  dart_format: ^1.4.0
 flutter:
   uses-material-design: true
+  assets:
+    - lib/screen/search/
+

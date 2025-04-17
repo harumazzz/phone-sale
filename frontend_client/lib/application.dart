@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/auth_bloc/auth_bloc.dart';
 import 'bloc/cart_bloc/cart_bloc.dart';
 import 'bloc/category_bloc/category_bloc.dart';
+import 'bloc/category_search_bloc/category_search_bloc.dart';
 import 'bloc/order_bloc/order_bloc.dart';
 import 'bloc/payment_bloc/payment_bloc.dart';
 import 'bloc/product_bloc/product_bloc.dart';
@@ -17,9 +19,7 @@ import 'repository/payment_repository.dart';
 import 'repository/product_repository.dart';
 import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'screen/log_in/login_screen.dart';
+import 'screen/root_screen.dart';
 import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
@@ -93,6 +93,13 @@ class Application extends StatelessWidget {
             );
           },
         ),
+        BlocProvider<CategorySearchBloc>(
+          create: (context) {
+            return CategorySearchBloc(
+              productRepository: ServiceLocator.get<ProductRepository>(),
+            );
+          },
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -117,7 +124,6 @@ class Application extends StatelessWidget {
               ),
               progressIndicatorTheme: const ProgressIndicatorThemeData(),
             ),
-            home: const LoginScreen(),
           );
         },
       ),

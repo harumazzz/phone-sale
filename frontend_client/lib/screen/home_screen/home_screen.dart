@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 import '../../bloc/category_bloc/category_bloc.dart';
 import '../../bloc/product_bloc/product_bloc.dart';
@@ -10,6 +11,7 @@ import '../../widget/category_grid/category_grid.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../cart/cart_screen.dart';
 import '../category/category_screen.dart';
 import '../product_detail/product_detail_screen.dart';
 
@@ -121,11 +123,30 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _cartButton() {
+    return IconButton(
+      tooltip: 'Giỏ hàng',
+      onPressed: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return const CartScreen();
+            },
+          ),
+        );
+      },
+      icon: const Icon(Symbols.shopping_cart),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        const CustomAppbar(title: Text('Shop bán hàng')),
+        CustomAppbar(
+          title: const Text('Shop bán hàng'),
+          actions: [_cartButton()],
+        ),
         _categoryGrid(),
         _productWrap(),
       ],

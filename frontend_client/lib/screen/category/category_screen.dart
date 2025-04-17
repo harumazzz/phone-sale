@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../bloc/product_bloc/product_bloc.dart';
+import '../../bloc/category_search_bloc/category_search_bloc.dart';
 import '../../model/response/product_response.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
@@ -30,7 +30,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProductBloc>().add(ProductSearchByCategory(id: widget.id));
+      context.read<CategorySearchBloc>().add(
+        CategorySearchByIdEvent(id: widget.id),
+      );
     });
   }
 
@@ -47,9 +49,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<ProductBloc, ProductState>(
+      body: BlocConsumer<CategorySearchBloc, CategorySearchState>(
         listener: (context, state) async {
-          if (state is ProductLoadError) {
+          if (state is CategorySearchError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Lỗi: ${state.message}'),
@@ -60,9 +62,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
           }
         },
         builder: (context, state) {
-          if (state is ProductLoading) {
+          if (state is CategorySearchLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ProductLoaded) {
+          } else if (state is CategorySearchLoaded) {
             final products = state.products;
             if (products.isEmpty) {
               return const Center(

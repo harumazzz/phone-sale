@@ -23,7 +23,7 @@ class ProductSearchBloc extends Bloc<ProductSearchEvent, ProductSearchState> {
       final results = await productRepository.getProductsByName(
         name: event.query,
       );
-      emit(ProductSearchLoaded(products: results));
+      emit(ProductSearchLoaded(products: results, query: event.query));
     } catch (e) {
       ProductSearchError(message: e.toString());
     }

@@ -2,9 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+import '../../bloc/auth_bloc/auth_bloc.dart';
+import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/product_bloc/product_bloc.dart';
 import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
+import '../../service/ui_helper.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
 
@@ -15,15 +19,41 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _buildAppBar(context),
-          _buildProductImage(),
-          _buildProductDetails(context),
-          _buildBuyNowButton(context),
-          _buildRecommended(context),
-          _buildRecommendedItems(context),
-        ],
+      body: BlocListener<CartBloc, CartState>(
+        listener: (context, state) async {
+          if (state is CartAdded) {
+            Future<void> onAdd() async {
+              await UIHelper.showSimpleDialog(
+                context: context,
+                title: 'Thành công',
+                content: 'Đã thêm sản phẩm ${product.model} vào giỏ hàng',
+              );
+            }
+
+            await onAdd();
+          }
+          if (state is CartError) {
+            Future<void> onError() async {
+              await UIHelper.showSimpleDialog(
+                context: context,
+                title: 'Thất bại',
+                content: state.message,
+              );
+            }
+
+            await onError();
+          }
+        },
+        child: CustomScrollView(
+          slivers: [
+            _buildAppBar(context),
+            _buildProductImage(),
+            _buildProductDetails(context),
+            _buildBuyNowButton(context),
+            _buildRecommended(context),
+            _buildRecommendedItems(context),
+          ],
+        ),
       ),
     );
   }
@@ -226,22 +256,60 @@ class ProductDetailScreen extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton.icon(
-          onPressed: () {
-            // Handle buy action
-          },
-          icon: const Icon(Symbols.shopping_cart),
-          label: const Text('Mua ngay'),
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                // Handle buy action
+              },
+              icon: const Icon(Symbols.shopping_cart),
+              label: const Text('Mua ngay'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 30.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                elevation: 3,
+              ),
             ),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            foregroundColor: Colors.white,
-            elevation: 3,
-          ),
+            ElevatedButton.icon(
+              onPressed: () {
+                context.read<CartBloc>().add(
+                  CartAddEvent(
+                    customerId: () {
+                      return (BlocProvider.of<AuthBloc>(context).state
+                              as AuthLogin)
+                          .data
+                          .customerId!;
+                    }(),
+                    productId: product.productId!,
+                    quantity: 1,
+                  ),
+                );
+              },
+              icon: const Icon(Symbols.shopping_cart),
+              label: const Text('Thêm vào giỏ hàng'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 30.0,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                elevation: 3,
+              ),
+            ),
+          ],
         ),
       ),
     );

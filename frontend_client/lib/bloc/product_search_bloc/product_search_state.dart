@@ -17,8 +17,9 @@ class ProductSearchLoading extends ProductSearchState {
 }
 
 class ProductSearchLoaded extends ProductSearchState {
-  const ProductSearchLoaded({required this.products});
+  const ProductSearchLoaded({required this.products, required this.query});
   final List<ProductResponse> products;
+  final String query;
 
   ProductResponse operator [](int index) {
     assert(index <= products.length);
@@ -28,7 +29,7 @@ class ProductSearchLoaded extends ProductSearchState {
   int get size => products.length;
 
   @override
-  List<Object> get props => [products];
+  List<Object> get props => [products, query];
 }
 
 class ProductSearchError extends ProductSearchState {
