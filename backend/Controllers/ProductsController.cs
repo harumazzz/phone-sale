@@ -9,7 +9,7 @@ namespace backend.Controllers
 {
     [Route("api/products")]
     [ApiController]
-    public class ProductController(PhoneShopContext _context) : ControllerBase
+    public class ProductController(PhoneShopContext context) : ControllerBase
     {
 
         private readonly PhoneShopContext _context = context;
