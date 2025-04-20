@@ -33,5 +33,9 @@ namespace backend.Models
         [JsonIgnore]
 
         public Category? Category { get; set; }
+
+        [Required, MaxLength(255)]
+        [Column("product_link")]
+        public required string ProductLink { get; set; }
     }
 }

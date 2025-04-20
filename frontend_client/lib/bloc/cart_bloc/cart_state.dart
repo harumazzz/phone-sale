@@ -19,10 +19,15 @@ final class CartLoading extends CartState {
 final class CartLoaded extends CartState {
   const CartLoaded({required this.carts});
 
-  final List<CartResponse> carts;
+  final List<CartItemData> carts;
 
-  @override
-  List<Object?> get props => [carts];
+  bool get isEmpty => carts.isEmpty;
+
+  bool get isNotEmpty => carts.isNotEmpty;
+
+  CartItemData operator [](int index) => carts[index];
+
+  int get size => carts.length;
 }
 
 final class CartError extends CartState {

@@ -8,10 +8,12 @@ import '../service/service_locator.dart';
 class CartApi extends Equatable {
   const CartApi();
 
-  static const endpoint = '/cart';
+  static const endpoint = '/carts';
 
   Future<List<CartResponse>> getAllCart({required String customerId}) async {
-    final response = await ServiceLocator.get<Dio>().get(endpoint);
+    final response = await ServiceLocator.get<Dio>().get(
+      '$endpoint/$customerId',
+    );
     if (response.statusCode == 200) {
       return (response.data as List<dynamic>)
           .map((e) => CartResponse.fromJson(e))
@@ -26,7 +28,7 @@ class CartApi extends Equatable {
       endpoint,
       data: request.toJson(),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw Exception(response.data);
     }
   }
@@ -39,7 +41,7 @@ class CartApi extends Equatable {
       '$endpoint/$cartId',
       data: request.toJson(),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }
@@ -48,7 +50,7 @@ class CartApi extends Equatable {
     final response = await ServiceLocator.get<Dio>().delete(
       '$endpoint/$cartId',
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }

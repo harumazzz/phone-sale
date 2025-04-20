@@ -7,6 +7,9 @@ namespace backend.DTO.Request
         [Required, MaxLength(100)]
         public required string Model { get; set; }
 
+        [Required, MaxLength(255)]
+        public required string ProductLink { get; set; }
+
         [MaxLength(255)]
         public string? Description { get; set; }
 

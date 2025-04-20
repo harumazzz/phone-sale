@@ -2,15 +2,18 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../../model/cart_item_data.dart';
 import '../../model/request/cart_request.dart';
-import '../../model/response/cart_response.dart';
+import '../../model/response/product_response.dart';
 import '../../repository/cart_repository.dart';
+import '../../repository/product_repository.dart';
 
 part 'cart_event.dart';
 part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc({required this.cartRepository}) : super(const CartInitial()) {
+  CartBloc({required this.cartRepository, required this.productRepository})
+    : super(const CartInitial()) {
     on<CartLoadEvent>(_onLoad);
     on<CartAddEvent>(_onAdd);
     on<CartEditEvent>(_onEdit);
@@ -19,13 +22,24 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   final CartRepository cartRepository;
 
+  final ProductRepository productRepository;
+
   Future<void> _onLoad(CartLoadEvent event, Emitter<CartState> emit) async {
     emit(const CartLoading());
     try {
       final result = await cartRepository.getAllCart(
         customerId: event.customerId,
       );
-      emit(CartLoaded(carts: result));
+      final products = <ProductResponse>[];
+      for (final cart in result) {
+        final product = await productRepository.getProduct(id: cart.productId);
+        products.add(product);
+      }
+      final carts = <CartItemData>[];
+      for (var i = 0; i < result.length; i++) {
+        carts.add(CartItemData(product: products[i], cartInfo: result[i]));
+      }
+      emit(CartLoaded(carts: carts));
     } catch (e) {
       emit(CartError(message: e.toString()));
     }

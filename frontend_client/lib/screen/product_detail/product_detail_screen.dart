@@ -132,13 +132,18 @@ class ProductDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Container(
           height: 350,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16.0),
-            color: Colors.grey,
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16.0)),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: const Center(child: Icon(Symbols.image)),
+            child: () {
+              product.productLink != null
+                  ? Image.network(product.productLink!, fit: BoxFit.contain)
+                  : const Icon(
+                    Symbols.broken_image,
+                    size: 50,
+                    color: Colors.grey,
+                  );
+            }(),
           ),
         ),
       ),

@@ -18,6 +18,7 @@ class Assets {
   static const String cartBlocCartBloc = 'lib/bloc/cart_bloc/cart_bloc.dart';
   static const String cartBlocCartEvent = 'lib/bloc/cart_bloc/cart_event.dart';
   static const String cartBlocCartState = 'lib/bloc/cart_bloc/cart_state.dart';
+  static const String cartCartItemCard = 'lib/screen/cart/cart_item_card.dart';
   static const String cartCartScreen = 'lib/screen/cart/cart_screen.dart';
   static const String categoryBlocCategoryBloc =
       'lib/bloc/category_bloc/category_bloc.dart';
@@ -50,6 +51,7 @@ class Assets {
   static const String libApplication = 'lib/application.dart';
   static const String libMain = 'lib/main.dart';
   static const String logInLoginScreen = 'lib/screen/log_in/login_screen.dart';
+  static const String modelCartItemData = 'lib/model/cart_item_data.dart';
   static const String orderBlocOrderBloc =
       'lib/bloc/order_bloc/order_bloc.dart';
   static const String orderBlocOrderEvent =

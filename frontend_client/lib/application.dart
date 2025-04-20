@@ -19,7 +19,7 @@ import 'repository/payment_repository.dart';
 import 'repository/product_repository.dart';
 import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
-import 'screen/root_screen.dart';
+import 'screen/log_in/login_screen.dart';
 import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
@@ -55,6 +55,7 @@ class Application extends StatelessWidget {
           create: (context) {
             return CartBloc(
               cartRepository: ServiceLocator.get<CartRepository>(),
+              productRepository: ServiceLocator.get<ProductRepository>(),
             );
           },
         ),
@@ -124,6 +125,7 @@ class Application extends StatelessWidget {
               ),
               progressIndicatorTheme: const ProgressIndicatorThemeData(),
             ),
+            home: const LoginScreen(),
           );
         },
       ),

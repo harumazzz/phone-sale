@@ -8,6 +8,7 @@ class ProductResponse extends Equatable {
     this.price,
     this.stock,
     this.categoryId,
+    this.productLink,
   });
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
@@ -18,6 +19,7 @@ class ProductResponse extends Equatable {
       price: json['price'] as double?,
       stock: json['stock'] as int?,
       categoryId: json['categoryId'] as int?,
+      productLink: json['productLink'] as String?,
     );
   }
   final int? productId;
@@ -26,6 +28,7 @@ class ProductResponse extends Equatable {
   final double? price;
   final int? stock;
   final int? categoryId;
+  final String? productLink;
 
   Map<String, dynamic> toJson() {
     return {
@@ -35,6 +38,7 @@ class ProductResponse extends Equatable {
       'price': price,
       'stock': stock,
       'categoryId': categoryId,
+      'productLink': productLink,
     };
   }
 
@@ -46,5 +50,6 @@ class ProductResponse extends Equatable {
     price,
     stock,
     categoryId,
+    productLink,
   ];
 }

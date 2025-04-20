@@ -9,8 +9,9 @@ namespace backend.Controllers
 {
     [Route("api/products")]
     [ApiController]
-    public class ProductController(PhoneShopContext context) : ControllerBase
+    public class ProductController(PhoneShopContext _context) : ControllerBase
     {
+
         private readonly PhoneShopContext _context = context;
 
         [HttpGet]
@@ -24,7 +25,8 @@ namespace backend.Controllers
                 Description = p.Description,
                 Price = p.Price,
                 Stock = p.Stock,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                ProductLink = p.ProductLink,
             }).ToList();
 
             return Ok(responseList);
@@ -41,7 +43,8 @@ namespace backend.Controllers
                 Description = p.Description,
                 Price = p.Price,
                 Stock = p.Stock,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                ProductLink = p.ProductLink,
             }).ToList();
 
             return Ok(responseList);
@@ -59,7 +62,8 @@ namespace backend.Controllers
                 Description = p.Description,
                 Price = p.Price,
                 Stock = p.Stock,
-                CategoryId = p.CategoryId
+                CategoryId = p.CategoryId,
+                ProductLink = p.ProductLink,
             }).ToList();
 
             return Ok(responseList);
@@ -79,7 +83,8 @@ namespace backend.Controllers
                 Description = product.Description,
                 Price = product.Price,
                 Stock = product.Stock,
-                CategoryId = product.CategoryId
+                CategoryId = product.CategoryId,
+                ProductLink = product.ProductLink,
             };
 
             return Ok(response);
@@ -94,7 +99,8 @@ namespace backend.Controllers
                 Description = productDto.Description,
                 Price = productDto.Price,
                 Stock = productDto.Stock,
-                CategoryId = productDto.CategoryId
+                CategoryId = productDto.CategoryId,
+                ProductLink = productDto.ProductLink,
             };
 
             _context.Products.Add(product);
@@ -107,7 +113,8 @@ namespace backend.Controllers
                 Description = product.Description,
                 Price = product.Price,
                 Stock = product.Stock,
-                CategoryId = product.CategoryId
+                CategoryId = product.CategoryId,
+                ProductLink = product.ProductLink,
             };
 
             return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, response);

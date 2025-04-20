@@ -7,6 +7,7 @@ class ProductRequest extends Equatable {
     this.price,
     this.stock,
     this.categoryId,
+    this.productLink,
   });
 
   factory ProductRequest.fromJson(Map<String, dynamic> json) {
@@ -16,6 +17,7 @@ class ProductRequest extends Equatable {
       price: json['price'] as double?,
       stock: json['stock'] as int?,
       categoryId: json['categoryId'] as int?,
+      productLink: json['productLink'] as String?,
     );
   }
   final String? model;
@@ -23,6 +25,7 @@ class ProductRequest extends Equatable {
   final double? price;
   final int? stock;
   final int? categoryId;
+  final String? productLink;
 
   Map<String, dynamic> toJson() {
     return {
@@ -31,9 +34,17 @@ class ProductRequest extends Equatable {
       'price': price,
       'stock': stock,
       'categoryId': categoryId,
+      'productLink': productLink,
     };
   }
 
   @override
-  List<Object?> get props => [model, description, price, stock, categoryId];
+  List<Object?> get props => [
+    model,
+    description,
+    price,
+    stock,
+    categoryId,
+    productLink,
+  ];
 }

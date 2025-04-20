@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
+
 import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
 
@@ -46,9 +48,11 @@ class ProductCard extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         color: Colors.grey[200],
       ),
-      child: const Center(
-        child: Icon(Icons.image, size: 50, color: Colors.grey),
-      ),
+      child: () {
+        product.productLink != null
+            ? Image.network(product.productLink!, fit: BoxFit.cover)
+            : const Icon(Symbols.broken_image, size: 50, color: Colors.grey);
+      }(),
     );
   }
 
