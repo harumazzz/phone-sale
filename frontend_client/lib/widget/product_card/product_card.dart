@@ -6,11 +6,7 @@ import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({
-    super.key,
-    required this.product,
-    required this.onPressed,
-  });
+  const ProductCard({super.key, required this.product, required this.onPressed});
 
   final ProductResponse product;
 
@@ -23,9 +19,7 @@ class ProductCard extends StatelessWidget {
       onTap: onPressed,
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         margin: const EdgeInsets.all(8.0),
         child: _buildProductCardContent(context),
       ),
@@ -49,7 +43,7 @@ class ProductCard extends StatelessWidget {
         color: Colors.grey[200],
       ),
       child: () {
-        product.productLink != null
+        return product.productLink != null
             ? Image.network(product.productLink!, fit: BoxFit.cover)
             : const Icon(Symbols.broken_image, size: 50, color: Colors.grey);
       }(),
@@ -100,8 +94,6 @@ class ProductCard extends StatelessWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty<ProductResponse>('product', product));
-    properties.add(
-      ObjectFlagProperty<void Function()>.has('onPressed', onPressed),
-    );
+    properties.add(ObjectFlagProperty<void Function()>.has('onPressed', onPressed));
   }
 }

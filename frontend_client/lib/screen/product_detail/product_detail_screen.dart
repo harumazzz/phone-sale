@@ -34,11 +34,7 @@ class ProductDetailScreen extends StatelessWidget {
           }
           if (state is CartError) {
             Future<void> onError() async {
-              await UIHelper.showSimpleDialog(
-                context: context,
-                title: 'Thất bại',
-                content: state.message,
-              );
+              await UIHelper.showSimpleDialog(context: context, title: 'Thất bại', content: state.message);
             }
 
             await onError();
@@ -74,9 +70,7 @@ class ProductDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Text(
           'Sản phẩm liên quan',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -88,11 +82,7 @@ class ProductDetailScreen extends StatelessWidget {
         if (state is ProductLoaded) {
           final filteredList =
               state.products
-                  .where(
-                    (e) =>
-                        e.categoryId == product.categoryId &&
-                        e.productId != product.productId,
-                  )
+                  .where((e) => e.categoryId == product.categoryId && e.productId != product.productId)
                   .toList();
           return ProductList(
             builder: (context, index) {
@@ -136,13 +126,9 @@ class ProductDetailScreen extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: () {
-              product.productLink != null
+              return product.productLink != null
                   ? Image.network(product.productLink!, fit: BoxFit.contain)
-                  : const Icon(
-                    Symbols.broken_image,
-                    size: 50,
-                    color: Colors.grey,
-                  );
+                  : const Icon(Symbols.broken_image, size: 50, color: Colors.grey);
             }(),
           ),
         ),
@@ -156,20 +142,14 @@ class ProductDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 12.0,
               children: [
-                _buildProductRow(
-                  context,
-                  Symbols.device_hub,
-                  product.model ?? 'Model không có',
-                ),
+                _buildProductRow(context, Symbols.device_hub, product.model ?? 'Model không có'),
                 _buildProductDescription(context),
                 _buildPriceRow(context),
                 _buildStockRow(context),
@@ -189,9 +169,7 @@ class ProductDetailScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
           ),
@@ -205,16 +183,8 @@ class ProductDetailScreen extends StatelessWidget {
       spacing: 8.0,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Mô tả sản phẩm',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        Text(
-          product.description ?? 'Mô tả không có',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        Text('Mô tả sản phẩm', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(product.description ?? 'Mô tả không có', style: Theme.of(context).textTheme.bodyMedium),
       ],
     );
   }
@@ -223,16 +193,10 @@ class ProductDetailScreen extends StatelessWidget {
     return Row(
       spacing: 8.0,
       children: [
-        Icon(
-          Symbols.attach_money,
-          size: 24,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(Symbols.attach_money, size: 24, color: Theme.of(context).colorScheme.primary),
         Text(
           'Thành tiền: ${ConvertHelper.inVND(product.price!)} VNĐ',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
         ),
       ],
     );
@@ -242,16 +206,10 @@ class ProductDetailScreen extends StatelessWidget {
     return Row(
       spacing: 8.0,
       children: [
-        Icon(
-          Symbols.store,
-          size: 28,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        Icon(Symbols.store, size: 28, color: Theme.of(context).colorScheme.primary),
         Text(
           'Số lượng: ${product.stock ?? 0}',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
         ),
       ],
     );
@@ -272,13 +230,8 @@ class ProductDetailScreen extends StatelessWidget {
               icon: const Icon(Symbols.shopping_cart),
               label: const Text('Mua ngay'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 30.0,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 elevation: 3,
@@ -289,10 +242,7 @@ class ProductDetailScreen extends StatelessWidget {
                 context.read<CartBloc>().add(
                   CartAddEvent(
                     customerId: () {
-                      return (BlocProvider.of<AuthBloc>(context).state
-                              as AuthLogin)
-                          .data
-                          .customerId!;
+                      return (BlocProvider.of<AuthBloc>(context).state as AuthLogin).data.customerId!;
                     }(),
                     productId: product.productId!,
                     quantity: 1,
@@ -302,13 +252,8 @@ class ProductDetailScreen extends StatelessWidget {
               icon: const Icon(Symbols.shopping_cart),
               label: const Text('Thêm vào giỏ hàng'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 30.0,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 elevation: 3,

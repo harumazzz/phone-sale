@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_admin/bloc/customer/customer_bloc.dart';
+import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/repository/category_repository.dart';
+import 'package:frontend_admin/repository/customer_repository.dart';
+import 'package:frontend_admin/repository/order_repository.dart';
 import 'package:frontend_admin/repository/product_repository.dart';
 import 'package:frontend_admin/service/service_locator.dart';
 import 'package:sidebarx/sidebarx.dart';
@@ -41,17 +45,15 @@ class _MainAppState extends State<MainApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<CategoryBloc>(
-          create:
-              (context) => CategoryBloc(
-                categoryRepository: ServiceLocator.get<CategoryRepository>(),
-              ),
+          create: (context) => CategoryBloc(categoryRepository: ServiceLocator.get<CategoryRepository>()),
         ),
         BlocProvider<ProductBloc>(
-          create:
-              (context) => ProductBloc(
-                productRepository: ServiceLocator.get<ProductRepository>(),
-              ),
+          create: (context) => ProductBloc(productRepository: ServiceLocator.get<ProductRepository>()),
         ),
+        BlocProvider<CustomerBloc>(
+          create: (context) => CustomerBloc(customerRepository: ServiceLocator.get<CustomerRepository>()),
+        ),
+        BlocProvider<OrderBloc>(create: (context) => OrderBloc(orderRepository: ServiceLocator.get<OrderRepository>())),
       ],
       child: MaterialApp(
         title: 'Admin',
@@ -61,11 +63,7 @@ class _MainAppState extends State<MainApp> {
           canvasColor: ColorConstant.canvasColor,
           scaffoldBackgroundColor: ColorConstant.scaffoldBackgroundColor,
           textTheme: const TextTheme(
-            headlineSmall: TextStyle(
-              color: Colors.white,
-              fontSize: 46,
-              fontWeight: FontWeight.w800,
-            ),
+            headlineSmall: TextStyle(color: Colors.white, fontSize: 46, fontWeight: FontWeight.w800),
           ),
         ),
         home: Builder(
@@ -90,9 +88,7 @@ class _MainAppState extends State<MainApp> {
               body: Row(
                 children: [
                   if (!isSmallScreen) CustomSidebar(controller: _controller),
-                  Expanded(
-                    child: Center(child: CustomScreen(controller: _controller)),
-                  ),
+                  Expanded(child: Center(child: CustomScreen(controller: _controller))),
                 ],
               ),
             );

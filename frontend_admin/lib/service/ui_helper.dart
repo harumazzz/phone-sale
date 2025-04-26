@@ -1,3 +1,5 @@
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/stacked_options.dart';
 import 'package:flutter/material.dart';
 
 class UIHelper {
@@ -10,19 +12,11 @@ class UIHelper {
   }) async {
     await showDialog(
       context: context,
-      builder:
-          (context) => buildDialog(
-            title: title,
-            content: content,
-            actions: buildSimpleAction(context: context),
-          ),
+      builder: (context) => buildDialog(title: title, content: content, actions: buildSimpleAction(context: context)),
     );
   }
 
-  static Future<void> showCustomDialog({
-    required BuildContext context,
-    required Widget child,
-  }) async {
+  static Future<void> showCustomDialog({required BuildContext context, required Widget child}) async {
     await showDialog(
       context: context,
       builder:
@@ -49,11 +43,7 @@ class UIHelper {
     ];
   }
 
-  static Widget buildDialog({
-    required Widget title,
-    required Widget content,
-    required List<Widget> actions,
-  }) {
+  static Widget buildDialog({required Widget title, required Widget content, required List<Widget> actions}) {
     return AlertDialog(title: title, content: content, actions: actions);
   }
 
@@ -69,21 +59,41 @@ class UIHelper {
     );
   }
 
-  static Future<void> showErrorDialog({
-    required BuildContext context,
-    required String message,
-  }) async {
-    return await showSimpleDialog(
-      context: context,
-      title: 'Lỗi xảy ra',
-      content: message,
-    );
+  static Future<void> showErrorDialog({required BuildContext context, required String message}) async {
+    return await showSimpleDialog(context: context, title: 'Lỗi xảy ra', content: message);
   }
 
-  static Future<void> showFlutterDialog({
-    required BuildContext context,
-    required Widget child,
-  }) async {
+  static Future<void> showFlutterDialog({required BuildContext context, required Widget child}) async {
     return await showDialog(context: context, builder: (context) => child);
+  }
+
+  static Future<void> showSuccessSnackbar({required BuildContext context, required String message}) async {
+    return ElegantNotification.success(
+      width: 360,
+      isDismissable: false,
+      stackedOptions: StackedOptions(key: 'top', type: StackedType.same, itemOffset: const Offset(-5, -5)),
+      title: Text('Thành công', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black)),
+      description: Text(message, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.black)),
+    ).show(context);
+  }
+
+  static Future<void> showErrorSnackbar({required BuildContext context, required String message}) async {
+    return ElegantNotification.error(
+      width: 360,
+      isDismissable: false,
+      stackedOptions: StackedOptions(key: 'top', type: StackedType.same, itemOffset: const Offset(-5, -5)),
+      title: Text('Thất bại', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black)),
+      description: Text(message, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.black)),
+    ).show(context);
+  }
+
+  static Future<void> showInfoSnackbar({required BuildContext context, required String message}) async {
+    return ElegantNotification.info(
+      width: 360,
+      isDismissable: false,
+      stackedOptions: StackedOptions(key: 'top', type: StackedType.same, itemOffset: const Offset(-5, -5)),
+      title: Text('Thông báo', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black)),
+      description: Text(message, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.black)),
+    ).show(context);
   }
 }

@@ -13,9 +13,7 @@ class CategoryApi extends Equatable {
   Future<List<CategoryResponse>> getCategories() async {
     final response = await ServiceLocator.get<Dio>().get(endpoint);
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>)
-          .map((e) => CategoryResponse.fromJson(e))
-          .toList();
+      return (response.data as List<dynamic>).map((e) => CategoryResponse.fromJson(e)).toList();
     } else {
       throw Exception(response.data);
     }
@@ -31,31 +29,22 @@ class CategoryApi extends Equatable {
   }
 
   Future<void> addCategory({required CategoryRequest request}) async {
-    final response = await ServiceLocator.get<Dio>().post(
-      endpoint,
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+    final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
+    if (response.statusCode != 201) {
       throw Exception(response.data);
     }
   }
 
-  Future<void> editCategory({
-    required int id,
-    required CategoryRequest request,
-  }) async {
-    final response = await ServiceLocator.get<Dio>().put(
-      '$endpoint/$id',
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+  Future<void> editCategory({required int id, required CategoryRequest request}) async {
+    final response = await ServiceLocator.get<Dio>().put('$endpoint/$id', data: request.toJson());
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }
 
   Future<void> deleteCategory({required int id}) async {
     final response = await ServiceLocator.get<Dio>().delete('$endpoint/$id');
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }

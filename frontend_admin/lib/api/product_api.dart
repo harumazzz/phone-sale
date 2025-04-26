@@ -13,40 +13,25 @@ class ProductApi extends Equatable {
   Future<List<ProductResponse>> getProducts() async {
     final response = await ServiceLocator.get<Dio>().get(endpoint);
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>)
-          .map((e) => ProductResponse.fromJson(e))
-          .toList();
+      return (response.data as List<dynamic>).map((e) => ProductResponse.fromJson(e)).toList();
     } else {
       throw Exception(response.data);
     }
   }
 
-  Future<List<ProductResponse>> getProductsByCategoryId({
-    required int id,
-  }) async {
-    final response = await ServiceLocator.get<Dio>().get(
-      '$endpoint/category/$id',
-    );
+  Future<List<ProductResponse>> getProductsByCategoryId({required int id}) async {
+    final response = await ServiceLocator.get<Dio>().get('$endpoint/category/$id');
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>)
-          .map((e) => ProductResponse.fromJson(e))
-          .toList();
+      return (response.data as List<dynamic>).map((e) => ProductResponse.fromJson(e)).toList();
     } else {
       throw Exception(response.data);
     }
   }
 
-  Future<List<ProductResponse>> getProductsByName({
-    required String name,
-  }) async {
-    final response = await ServiceLocator.get<Dio>().get(
-      '$endpoint/search',
-      queryParameters: {'searchQuery': name},
-    );
+  Future<List<ProductResponse>> getProductsByName({required String name}) async {
+    final response = await ServiceLocator.get<Dio>().get('$endpoint/search', queryParameters: {'searchQuery': name});
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>)
-          .map((e) => ProductResponse.fromJson(e))
-          .toList();
+      return (response.data as List<dynamic>).map((e) => ProductResponse.fromJson(e)).toList();
     } else {
       throw Exception(response.data);
     }
@@ -62,31 +47,22 @@ class ProductApi extends Equatable {
   }
 
   Future<void> addProduct({required ProductRequest request}) async {
-    final response = await ServiceLocator.get<Dio>().post(
-      endpoint,
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+    final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
+    if (response.statusCode != 201) {
       throw Exception(response.data);
     }
   }
 
-  Future<void> editProduct({
-    required int id,
-    required ProductRequest request,
-  }) async {
-    final response = await ServiceLocator.get<Dio>().put(
-      '$endpoint/$id',
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+  Future<void> editProduct({required int id, required ProductRequest request}) async {
+    final response = await ServiceLocator.get<Dio>().put('$endpoint/$id', data: request.toJson());
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }
 
   Future<void> deleteProduct({required int id}) async {
     final response = await ServiceLocator.get<Dio>().delete('$endpoint/$id');
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception(response.data);
     }
   }
