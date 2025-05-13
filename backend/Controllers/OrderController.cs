@@ -30,6 +30,24 @@ namespace backend.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("/api/orders/customer/{id}")]
+        public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrdersByCustomerId(string id)
+        {
+            var orders = await _context.Orders
+                .Where(e => e.CustomerId == id)
+                .Include(o => o.Customer)
+                .Select(o => new OrderResponse
+                {
+                    OrderId = o.OrderId,
+                    OrderDate = o.OrderDate,
+                    TotalPrice = o.TotalPrice,
+                    CustomerId = o.CustomerId,
+                })
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderResponse>> GetOrder(int id)
         {

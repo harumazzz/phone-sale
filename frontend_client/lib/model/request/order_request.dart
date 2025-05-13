@@ -4,12 +4,9 @@ class OrderRequest extends Equatable {
   const OrderRequest({this.totalPrice, this.customerId});
 
   factory OrderRequest.fromJson(Map<String, dynamic> json) {
-    return OrderRequest(
-      totalPrice: json['totalPrice'],
-      customerId: json['customerId'],
-    );
+    return OrderRequest(totalPrice: json['totalPrice'], customerId: json['customerId']);
   }
-  final int? totalPrice;
+  final double? totalPrice;
   final String? customerId;
 
   Map<String, dynamic> toJson() {

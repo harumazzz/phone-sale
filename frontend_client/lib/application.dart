@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'bloc/auth_bloc/auth_bloc.dart';
 import 'bloc/cart_bloc/cart_bloc.dart';
@@ -32,23 +33,17 @@ class Application extends StatelessWidget {
       providers: [
         BlocProvider<CategoryBloc>(
           create: (context) {
-            return CategoryBloc(
-              categoryRepository: ServiceLocator.get<CategoryRepository>(),
-            );
+            return CategoryBloc(categoryRepository: ServiceLocator.get<CategoryRepository>());
           },
         ),
         BlocProvider<ProductBloc>(
           create: (context) {
-            return ProductBloc(
-              productRepository: ServiceLocator.get<ProductRepository>(),
-            );
+            return ProductBloc(productRepository: ServiceLocator.get<ProductRepository>());
           },
         ),
         BlocProvider<AuthBloc>(
           create: (context) {
-            return AuthBloc(
-              authRepository: ServiceLocator.get<AuthRepository>(),
-            );
+            return AuthBloc(authRepository: ServiceLocator.get<AuthRepository>());
           },
         ),
         BlocProvider<CartBloc>(
@@ -61,44 +56,32 @@ class Application extends StatelessWidget {
         ),
         BlocProvider<ProductSearchBloc>(
           create: (context) {
-            return ProductSearchBloc(
-              productRepository: ServiceLocator.get<ProductRepository>(),
-            );
+            return ProductSearchBloc(productRepository: ServiceLocator.get<ProductRepository>());
           },
         ),
         BlocProvider<PaymentBloc>(
           create: (context) {
-            return PaymentBloc(
-              paymentRepository: ServiceLocator.get<PaymentRepository>(),
-            );
+            return PaymentBloc(paymentRepository: ServiceLocator.get<PaymentRepository>());
           },
         ),
         BlocProvider<OrderBloc>(
           create: (context) {
-            return OrderBloc(
-              orderRepository: ServiceLocator.get<OrderRepository>(),
-            );
+            return OrderBloc(orderRepository: ServiceLocator.get<OrderRepository>());
           },
         ),
         BlocProvider<ShipmentBloc>(
           create: (context) {
-            return ShipmentBloc(
-              shipmentRepository: ServiceLocator.get<ShipmentRepository>(),
-            );
+            return ShipmentBloc(shipmentRepository: ServiceLocator.get<ShipmentRepository>());
           },
         ),
         BlocProvider<WishlistBloc>(
           create: (context) {
-            return WishlistBloc(
-              wishlistRepository: ServiceLocator.get<WishlistRepository>(),
-            );
+            return WishlistBloc(wishlistRepository: ServiceLocator.get<WishlistRepository>());
           },
         ),
         BlocProvider<CategorySearchBloc>(
           create: (context) {
-            return CategorySearchBloc(
-              productRepository: ServiceLocator.get<ProductRepository>(),
-            );
+            return CategorySearchBloc(productRepository: ServiceLocator.get<ProductRepository>());
           },
         ),
       ],
@@ -114,14 +97,15 @@ class Application extends StatelessWidget {
                 },
               ),
             ],
+
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              textTheme: GoogleFonts.openSansTextTheme(Theme.of(context).textTheme).copyWith(),
               pageTransitionsTheme: PageTransitionsTheme(
-                builders:
-                    Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
-                      TargetPlatform.values,
-                      value: (_) => const FadeForwardsPageTransitionsBuilder(),
-                    ),
+                builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
+                  TargetPlatform.values,
+                  value: (_) => const FadeForwardsPageTransitionsBuilder(),
+                ),
               ),
               progressIndicatorTheme: const ProgressIndicatorThemeData(),
             ),

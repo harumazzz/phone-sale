@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../bloc/product_search_bloc/product_search_bloc.dart';
-import '../../model/response/product_response.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
-import '../product_detail/product_detail_screen.dart';
 import 'debounce.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -56,16 +52,6 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<void> _onMove(BuildContext context, ProductResponse product) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return ProductDetailScreen(product: product);
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,10 +75,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 ProductList(
                   builder: (context, index) {
                     return ProductCard(
+                      imageUrl: state.products[index].productLink!,
+                      title: state.products[index].model!,
+                      price: state.products[index].price!.toString(),
                       product: state.products[index],
-                      onPressed: () async {
-                        return await _onMove(context, state.products[index]);
-                      },
                     );
                   },
                   size: state.products.length,
@@ -102,9 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
           } else if (state is ProductSearchError) {
             return Center(child: Text('Lỗi: ${state.message}'));
           } else {
-            return const Center(
-              child: Text('Nhập từ khóa để tìm kiếm sản phẩm'),
-            );
+            return const Center(child: Text('Nhập từ khóa để tìm kiếm sản phẩm'));
           }
         },
       ),

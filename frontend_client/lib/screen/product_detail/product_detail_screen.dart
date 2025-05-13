@@ -54,16 +54,6 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _onMove(BuildContext context, ProductResponse product) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return ProductDetailScreen(product: product);
-        },
-      ),
-    );
-  }
-
   Widget _buildRecommended(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -87,10 +77,10 @@ class ProductDetailScreen extends StatelessWidget {
           return ProductList(
             builder: (context, index) {
               return ProductCard(
+                imageUrl: filteredList[index].productLink!,
+                title: filteredList[index].model!,
+                price: filteredList[index].price!.toString(),
                 product: filteredList[index],
-                onPressed: () async {
-                  return await _onMove(context, filteredList[index]);
-                },
               );
             },
             size: filteredList.length,

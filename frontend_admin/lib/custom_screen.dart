@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/screen/category/category_screen.dart';
 import 'package:frontend_admin/screen/customer/customer_screen.dart';
+import 'package:frontend_admin/screen/home/home_screen.dart';
 import 'package:frontend_admin/screen/order/order_screen.dart';
 import 'package:frontend_admin/screen/product/product_screen.dart';
+import 'package:frontend_admin/screen/statistics/statistics_screen.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 class CustomScreen extends StatelessWidget {
@@ -18,24 +20,9 @@ class CustomScreen extends StatelessWidget {
       builder: (context, child) {
         switch (controller.selectedIndex) {
           case 0:
-            return ListView.builder(
-              padding: const EdgeInsets.only(top: 10),
-              itemBuilder:
-                  (context, index) => Container(
-                    height: 100,
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(
-                      bottom: 10,
-                      right: 10,
-                      left: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Theme.of(context).canvasColor,
-                      boxShadow: const [BoxShadow()],
-                    ),
-                  ),
-            );
+            return HomeScreen();
+          case 1:
+            return const StatisticsScreen();
           case 2:
             return const ProductScreen();
           case 3:

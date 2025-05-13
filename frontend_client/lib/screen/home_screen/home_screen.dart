@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 import '../../bloc/category_bloc/category_bloc.dart';
 import '../../bloc/product_bloc/product_bloc.dart';
@@ -11,9 +10,7 @@ import '../../widget/category_grid/category_grid.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
-import '../cart/cart_screen.dart';
 import '../category/category_screen.dart';
-import '../product_detail/product_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,11 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _onPressed({
-    required BuildContext context,
-    required CategoryLoaded state,
-    required int index,
-  }) async {
+  Future<void> _onPressed({required BuildContext context, required CategoryLoaded state, required int index}) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
@@ -50,10 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocConsumer<CategoryBloc, CategoryState>(
       listener: (context, state) async {
         if (state is CategoryError) {
-          await UIHelper.showErrorDialog(
-            context: context,
-            message: state.message,
-          );
+          await UIHelper.showErrorDialog(context: context, message: state.message);
         }
       },
       builder: (context, state) {
@@ -66,11 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return CategoryButton(
                 title: state[index].name!,
                 onTap: () async {
-                  return await _onPressed(
-                    context: context,
-                    state: state,
-                    index: index,
-                  );
+                  return await _onPressed(context: context, state: state, index: index);
                 },
                 icon: ConvertHelper.exchangeSymbols(state[index].name!),
               );
@@ -83,24 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _onMove(ProductLoaded state, int index) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return ProductDetailScreen(product: state[index]);
-        },
-      ),
-    );
-  }
-
   Widget _productWrap() {
     return BlocConsumer<ProductBloc, ProductState>(
       listener: (context, state) async {
         if (state is ProductLoadError) {
-          await UIHelper.showErrorDialog(
-            context: context,
-            message: state.message,
-          );
+          await UIHelper.showErrorDialog(context: context, message: state.message);
         }
       },
       builder: (context, state) {
@@ -110,9 +83,12 @@ class _HomeScreenState extends State<HomeScreen> {
         if (state is ProductLoaded) {
           return ProductList(
             builder: (context, index) {
+              final product = state[index];
               return ProductCard(
-                product: state[index],
-                onPressed: () async => await _onMove(state, index),
+                imageUrl: product.productLink!,
+                title: product.model!,
+                price: product.price!.toString(),
+                product: product,
               );
             },
             size: state.size,
@@ -123,33 +99,43 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _cartButton() {
-    return IconButton(
-      tooltip: 'Giỏ hàng',
-      onPressed: () async {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return const CartScreen();
-            },
-          ),
-        );
-      },
-      icon: const Icon(Symbols.shopping_cart),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        CustomAppbar(
-          title: const Text('Shop bán hàng'),
-          actions: [_cartButton()],
-        ),
-        _categoryGrid(),
-        _productWrap(),
-      ],
+    return Scaffold(
+      backgroundColor: const Color(0xFFF6F6FB),
+      body: CustomScrollView(
+        slivers: [
+          const CustomAppbar(title: Text('Trang chủ')),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 8),
+                Text(
+                  'Khám phá sản phẩm nổi bật',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+              ]),
+            ),
+          ),
+          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20), sliver: _categoryGrid()),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 24),
+                Text(
+                  'Sản phẩm mới',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+              ]),
+            ),
+          ),
+          SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20), sliver: _productWrap()),
+        ],
+      ),
     );
   }
 }

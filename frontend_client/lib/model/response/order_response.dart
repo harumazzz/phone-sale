@@ -1,24 +1,18 @@
 import 'package:equatable/equatable.dart';
 
 class OrderResponse extends Equatable {
-  const OrderResponse({
-    this.orderId,
-    this.orderDate,
-    this.totalPrice,
-    this.customerId,
-  });
+  const OrderResponse({this.orderId, this.orderDate, this.totalPrice, this.customerId});
   factory OrderResponse.fromJson(Map<String, dynamic> json) {
     return OrderResponse(
       orderId: json['orderId'],
-      orderDate:
-          json['orderDate'] != null ? DateTime.parse(json['orderDate']) : null,
+      orderDate: json['orderDate'] != null ? DateTime.parse(json['orderDate']) : null,
       totalPrice: json['totalPrice'],
       customerId: json['customerId'],
     );
   }
   final int? orderId;
   final DateTime? orderDate;
-  final int? totalPrice;
+  final double? totalPrice;
   final String? customerId;
 
   Map<String, dynamic> toJson() {

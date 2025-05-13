@@ -11,3 +11,23 @@ sealed class OrderState extends Equatable {
 final class OrderInitial extends OrderState {
   const OrderInitial();
 }
+
+final class OrderLoading extends OrderState {
+  const OrderLoading();
+}
+
+final class OrderLoaded extends OrderState {
+  const OrderLoaded({required this.orders});
+  final List<OrderResponse> orders;
+
+  @override
+  List<Object?> get props => [orders];
+}
+
+final class OrderError extends OrderState {
+  const OrderError({required this.message});
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
+}

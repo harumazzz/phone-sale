@@ -60,7 +60,7 @@ class _OrderScreenState extends State<OrderScreen> {
     );
   }
 
-  Future<void> _showEditOrderDialog(BuildContext context, int id, int totalPrice, String customerId) async {
+  Future<void> _showEditOrderDialog(BuildContext context, int id, double totalPrice, String customerId) async {
     _totalPriceController.text = totalPrice.toString();
     _selectedCustomerId = customerId;
 
@@ -121,7 +121,7 @@ class _OrderScreenState extends State<OrderScreen> {
   }
 
   OrderRequest _buildOrderRequest() {
-    return OrderRequest(totalPrice: int.tryParse(_totalPriceController.text) ?? 0, customerId: _selectedCustomerId);
+    return OrderRequest(totalPrice: double.tryParse(_totalPriceController.text) ?? 0, customerId: _selectedCustomerId);
   }
 
   Widget _buildOrderForm(BuildContext context) {

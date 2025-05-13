@@ -45,6 +45,7 @@ dependencies:
   intl: ^0.20.2
   material_symbols_icons: ^4.2815.0
   elegant_notification: ^2.4.5
+  fl_chart: ^0.66.2
 
 dev_dependencies:
   flutter_test:

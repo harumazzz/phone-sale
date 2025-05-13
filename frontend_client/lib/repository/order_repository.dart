@@ -13,6 +13,10 @@ class OrderRepository extends Equatable {
     return await _api.getOrders();
   }
 
+  Future<List<OrderResponse>> getOrdersByCustomerId({required String customerId}) async {
+    return await _api.getOrdersByCustomerId(customerId: customerId);
+  }
+
   Future<OrderResponse> getOrder({required int id}) async {
     return await _api.getOrder(id: id);
   }
@@ -21,10 +25,7 @@ class OrderRepository extends Equatable {
     return await _api.addOrder(request: request);
   }
 
-  Future<void> editOrder({
-    required int id,
-    required OrderRequest request,
-  }) async {
+  Future<void> editOrder({required int id, required OrderRequest request}) async {
     return await _api.editOrder(id: id, request: request);
   }
 

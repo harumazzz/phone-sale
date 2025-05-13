@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/category_search_bloc/category_search_bloc.dart';
-import '../../model/response/product_response.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
-import '../product_detail/product_detail_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({super.key, required this.id, required this.name});
@@ -30,20 +28,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CategorySearchBloc>().add(
-        CategorySearchByIdEvent(id: widget.id),
-      );
+      context.read<CategorySearchBloc>().add(CategorySearchByIdEvent(id: widget.id));
     });
-  }
-
-  Future<void> _onMove(ProductResponse product) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return ProductDetailScreen(product: product);
-        },
-      ),
-    );
   }
 
   @override
@@ -67,9 +53,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           } else if (state is CategorySearchLoaded) {
             final products = state.products;
             if (products.isEmpty) {
-              return const Center(
-                child: Text('Không có sản phẩm trong danh mục này.'),
-              );
+              return const Center(child: Text('Không có sản phẩm trong danh mục này.'));
             }
             return CustomScrollView(
               slivers: <Widget>[
@@ -77,10 +61,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 ProductList(
                   builder: (context, index) {
                     return ProductCard(
+                      imageUrl: products[index].productLink!,
+                      title: products[index].model!,
+                      price: products[index].price!.toString(),
                       product: products[index],
-                      onPressed: () async {
-                        return await _onMove(products[index]);
-                      },
                     );
                   },
                   size: products.length,
