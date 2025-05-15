@@ -46,11 +46,32 @@ class _CustomerScreenState extends State<CustomerScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Thêm khách hàng', style: Theme.of(context).textTheme.titleMedium),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Symbols.person_add, color: Theme.of(context).colorScheme.secondary),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Thêm khách hàng',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             content: _buildCustomerForm(context),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-              TextButton(
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   if (_validateForm()) {
                     final request = _buildCustomerRequest();
@@ -59,6 +80,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     await UIHelper.showInfoSnackbar(context: context, message: 'Thêm khách hàng thành công!');
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 child: const Text('Thêm'),
               ),
             ],
@@ -114,17 +140,53 @@ class _CustomerScreenState extends State<CustomerScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Xác nhận xóa', style: Theme.of(context).textTheme.titleMedium),
-            content: const Text('Bạn có chắc chắn muốn xóa khách hàng này không?'),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Symbols.delete_forever, color: Colors.red),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Xác nhận xóa',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Bạn có chắc chắn muốn xóa khách hàng này không?'),
+                const SizedBox(height: 16),
+                const Text(
+                  'Xóa thông tin khách hàng sẽ xóa cả lịch sử mua hàng và thông tin thanh toán.',
+                  style: TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ],
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-              TextButton(
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   context.read<CustomerBloc>().add(DeleteCustomerEvent(id: int.parse(id)));
                   Navigator.pop(context);
                   await UIHelper.showSuccessSnackbar(context: context, message: 'Xóa khách hàng thành công!');
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 child: const Text('Xóa'),
               ),
             ],
@@ -220,7 +282,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<CustomerBloc, CustomerState>(
@@ -235,58 +300,97 @@ class _CustomerScreenState extends State<CustomerScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Quản lý khách hàng', style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(Symbols.person, color: theme.colorScheme.secondary, size: 28),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Quản lý khách hàng',
+                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Xem và quản lý thông tin khách hàng',
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
                   Expanded(
-                    child: DataTable2(
-                      columnSpacing: 12,
-                      horizontalMargin: 12,
-                      minWidth: 600,
-                      columns: const [
-                        DataColumn2(label: Text('ID')),
-                        DataColumn(label: Text('Họ và tên')),
-                        DataColumn(label: Text('Email')),
-                        DataColumn(label: Text('Địa chỉ')),
-                        DataColumn(label: Text('Số điện thoại')),
-                        DataColumn(label: Text('Thao tác')),
-                      ],
-                      rows: List<DataRow>.generate(state.customers.length, (index) {
-                        final customer = state.customers[index];
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(customer.customerId ?? '')),
-                            DataCell(Text('${customer.firstName ?? ''} ${customer.lastName ?? ''}')),
-                            DataCell(Text(customer.email ?? '')),
-                            DataCell(Text(customer.address ?? '')),
-                            DataCell(Text(customer.phoneNumber ?? '')),
-                            DataCell(
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Symbols.edit),
-                                    tooltip: 'Sửa',
-                                    onPressed:
-                                        () => _showEditCustomerDialog(
-                                          context,
-                                          customer.customerId ?? '',
-                                          customer.firstName ?? '',
-                                          customer.lastName ?? '',
-                                          customer.email ?? '',
-                                          customer.address ?? '',
-                                          customer.phoneNumber ?? '',
-                                        ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Symbols.delete, color: Colors.red),
-                                    tooltip: 'Xóa',
-                                    onPressed: () => _showDeleteConfirmationDialog(context, customer.customerId ?? ''),
-                                  ),
-                                ],
-                              ),
-                            ),
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: DataTable2(
+                          columnSpacing: 12,
+                          horizontalMargin: 12,
+                          minWidth: 600,
+                          headingRowColor: WidgetStateProperty.resolveWith<Color>((states) => Colors.grey.shade100),
+                          dataRowHeight: 60,
+                          columns: const [
+                            DataColumn2(label: Text('ID')),
+                            DataColumn(label: Text('Họ tên')),
+                            DataColumn(label: Text('Email')),
+                            DataColumn(label: Text('Địa chỉ')),
+                            DataColumn(label: Text('Số điện thoại')),
+                            DataColumn(label: Text('Thao tác')),
                           ],
-                        );
-                      }),
+                          rows: List<DataRow>.generate(state.customers.length, (index) {
+                            final customer = state.customers[index];
+                            final fullName = '${customer.firstName ?? ''} ${customer.lastName ?? ''}';
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(customer.customerId.toString())),
+                                DataCell(Text(fullName)),
+                                DataCell(Text(customer.email ?? '')),
+                                DataCell(Text(customer.address ?? '')),
+                                DataCell(Text(customer.phoneNumber ?? '')),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Symbols.edit, color: theme.colorScheme.primary),
+                                        tooltip: 'Sửa',
+                                        onPressed:
+                                            () => _showEditCustomerDialog(
+                                              context,
+                                              customer.customerId.toString(),
+                                              customer.firstName ?? '',
+                                              customer.lastName ?? '',
+                                              customer.email ?? '',
+                                              customer.address ?? '',
+                                              customer.phoneNumber ?? '',
+                                            ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Symbols.delete, color: Colors.red),
+                                        tooltip: 'Xóa',
+                                        onPressed:
+                                            () =>
+                                                _showDeleteConfirmationDialog(context, customer.customerId.toString()),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -297,9 +401,13 @@ class _CustomerScreenState extends State<CustomerScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async => await _showAddCustomerDialog(context),
+        onPressed: () => _showAddCustomerDialog(context),
         label: const Text('Thêm khách hàng'),
         icon: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.secondary,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

@@ -301,7 +301,10 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<ProductBloc, ProductState>(
@@ -316,59 +319,107 @@ class _ProductScreenState extends State<ProductScreen> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Quản lý sản phẩm', style: Theme.of(context).textTheme.headlineSmall),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(Symbols.shopping_bag, color: theme.colorScheme.primary, size: 28),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Quản lý sản phẩm',
+                            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Xem và quản lý tất cả sản phẩm trong cửa hàng',
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: DataTable2(
-                      columnSpacing: 12,
-                      horizontalMargin: 12,
-                      minWidth: 600,
-                      columns: const [
-                        DataColumn2(label: Text('Mã SP')),
-                        DataColumn(label: Text('Tên mẫu')),
-                        DataColumn(label: Text('Giá')),
-                        DataColumn(label: Text('Tồn kho')),
-                        DataColumn(label: Text('Mã DM')),
-                        DataColumn(label: Text('Thao tác')),
-                      ],
-                      rows: List<DataRow>.generate(state.products.length, (index) {
-                        final product = state.products[index];
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(product.productId.toString())),
-                            DataCell(Text(product.model ?? '')),
-                            DataCell(Text('${product.price ?? 0} VND')),
-                            DataCell(Text(product.stock.toString())),
-                            DataCell(Text(product.categoryId.toString())),
-                            DataCell(
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Symbols.edit),
-                                    tooltip: 'Sửa',
-                                    onPressed:
-                                        () => _showEditProductDialog(
-                                          context,
-                                          product.productId!,
-                                          product.model ?? '',
-                                          product.description ?? '',
-                                          product.price ?? 0,
-                                          product.stock ?? 0,
-                                          product.categoryId ?? 1,
-                                          product.productLink,
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, spreadRadius: 1),
+                          ],
+                        ),
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: DataTable2(
+                            columnSpacing: 12,
+                            horizontalMargin: 12,
+                            minWidth: 600,
+                            headingRowColor: WidgetStateProperty.resolveWith<Color>((states) => Colors.grey.shade100),
+                            dataRowHeight: 60,
+                            columns: const [
+                              DataColumn2(label: Text('Mã SP')),
+                              DataColumn(label: Text('Tên mẫu')),
+                              DataColumn(label: Text('Giá')),
+                              DataColumn(label: Text('Tồn kho')),
+                              DataColumn(label: Text('Mã DM')),
+                              DataColumn(label: Text('Thao tác')),
+                            ],
+                            rows: List<DataRow>.generate(state.products.length, (index) {
+                              final product = state.products[index];
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(product.productId.toString())),
+                                  DataCell(Text(product.model ?? '')),
+                                  DataCell(Text('${product.price ?? 0} VND')),
+                                  DataCell(Text(product.stock.toString())),
+                                  DataCell(Text(product.categoryId.toString())),
+                                  DataCell(
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Symbols.edit),
+                                          tooltip: 'Sửa',
+                                          onPressed:
+                                              () => _showEditProductDialog(
+                                                context,
+                                                product.productId!,
+                                                product.model ?? '',
+                                                product.description ?? '',
+                                                product.price ?? 0,
+                                                product.stock ?? 0,
+                                                product.categoryId ?? 1,
+                                                product.productLink,
+                                              ),
                                         ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Symbols.delete, color: Colors.red),
-                                    tooltip: 'Xóa',
-                                    onPressed: () => _showDeleteConfirmationDialog(context, product.productId!),
+                                        IconButton(
+                                          icon: const Icon(Symbols.delete, color: Colors.red),
+                                          tooltip: 'Xóa',
+                                          onPressed: () => _showDeleteConfirmationDialog(context, product.productId!),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
+                              );
+                            }),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -382,6 +433,10 @@ class _ProductScreenState extends State<ProductScreen> {
         onPressed: () async => await _showAddProductDialog(context),
         label: const Text('Thêm sản phẩm'),
         icon: const Icon(Icons.add),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }

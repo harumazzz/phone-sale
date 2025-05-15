@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (state is ProductLoaded) {
                   return Text(
                     '${state.products.length}',
-                    style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black),
                   );
                 }
                 return const SizedBox(height: 32, width: 32, child: CircularProgressIndicator(strokeWidth: 2));
@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     '${state.customers.length}',
                     style: Theme.of(
                       context,
-                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
                   );
                 }
                 return const CircularProgressIndicator();
@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     '${state.orders.length}',
                     style: Theme.of(
                       context,
-                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
                   );
                 }
                 return const CircularProgressIndicator();
@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     currencyFormat.format(totalRevenue),
                     style: Theme.of(
                       context,
-                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
                   );
                 }
                 return const CircularProgressIndicator();
@@ -166,27 +166,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, Widget value, IconData icon, Color color) {
+  Widget _buildStatCard(String title, Widget content, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, color: color, size: 24),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const Spacer(),
+              Icon(Symbols.trending_up, color: Colors.green[400], size: 20),
+              const SizedBox(width: 4),
+              Text(
+                '+${random.nextInt(20) + 5}%',
+                style: TextStyle(color: Colors.green[400], fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-          Text(title, style: GoogleFonts.inter(fontSize: 14, color: Colors.white70, fontWeight: FontWeight.w500)),
+          content,
           const SizedBox(height: 8),
-          value,
+          Text(title, style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w500, fontSize: 14)),
         ],
       ),
     );
@@ -197,9 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Expanded(
           flex: 2,
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -209,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Doanh thu theo tháng',
                     style: Theme.of(
                       context,
-                    ).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                    ).textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
@@ -283,9 +298,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -295,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Phân loại sản phẩm',
                     style: Theme.of(
                       context,
-                    ).textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                    ).textTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
@@ -354,9 +374,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentOrders() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

@@ -13,6 +13,7 @@ import 'package:sidebarx/sidebarx.dart';
 import 'bloc/category/category_bloc.dart';
 import 'bloc/product/product_bloc.dart';
 import 'constant/color_constant.dart';
+import 'constant/theme.dart';
 import 'custom_screen.dart';
 import 'custom_sidebar.dart';
 
@@ -57,42 +58,9 @@ class _MainAppState extends State<MainApp> {
         BlocProvider<OrderBloc>(create: (context) => OrderBloc(orderRepository: ServiceLocator.get<OrderRepository>())),
       ],
       child: MaterialApp(
-        title: 'Admin',
+        title: 'PhoneSale Admin',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: ColorConstant.primaryColor, brightness: Brightness.dark),
-          primaryColor: ColorConstant.primaryColor,
-          canvasColor: ColorConstant.canvasColor,
-          scaffoldBackgroundColor: ColorConstant.scaffoldBackgroundColor,
-          cardTheme: const CardTheme(
-            elevation: 2,
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-          ),
-          textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
-            headlineSmall: GoogleFonts.inter(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w800),
-            titleMedium: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
-            bodyMedium: GoogleFonts.inter(color: Colors.white),
-            bodySmall: GoogleFonts.inter(color: Colors.white70),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.grey.shade800,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-            contentPadding: const EdgeInsets.all(16),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: ColorConstant.primaryColor,
-              elevation: 0,
-              textStyle: const TextStyle(fontWeight: FontWeight.bold),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-        ),
+        theme: MaterialDesign.lightTheme,
         home: Builder(
           builder: (context) {
             final isSmallScreen = MediaQuery.of(context).size.width < 600;
@@ -101,14 +69,30 @@ class _MainAppState extends State<MainApp> {
               appBar:
                   isSmallScreen
                       ? AppBar(
-                        backgroundColor: ColorConstant.canvasColor,
-                        title: const Text('Admin'),
+                        elevation: 0,
+                        backgroundColor: Colors.white,
+                        title: Text(
+                          'PhoneSale',
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                            color: ColorConstant.primaryColor,
+                            fontSize: 22,
+                          ),
+                        ),
                         leading: IconButton(
                           onPressed: () {
                             _key.currentState?.openDrawer();
                           },
-                          icon: const Icon(Icons.menu),
+                          icon: Icon(Icons.menu, color: ColorConstant.primaryColor),
                         ),
+                        actions: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.notifications_outlined),
+                            color: Colors.grey[800],
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                       )
                       : null,
               drawer: CustomSidebar(controller: _controller),
