@@ -1,0 +1,45 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "frontend_admin",
+			"cwd": "frontend_admin",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "frontend_admin (profile mode)",
+			"cwd": "frontend_admin",
+			"request": "launch",
+			"type": "dart",
+			"flutterMode": "profile"
+		},
+		{
+			"name": "frontend_admin (release mode)",
+			"cwd": "frontend_admin",
+			"request": "launch",
+			"type": "dart",
+			"flutterMode": "release"
+		},
+		{
+			"name": "frontend_client",
+			"cwd": "frontend_client",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "frontend_client (profile mode)",
+			"cwd": "frontend_client",
+			"request": "launch",
+			"type": "dart",
+			"flutterMode": "profile"
+		},
+		{
+			"name": "frontend_client (release mode)",
+			"cwd": "frontend_client",
+			"request": "launch",
+			"type": "dart",
+			"flutterMode": "release"
+		}
+	]
+}

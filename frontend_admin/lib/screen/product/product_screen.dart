@@ -48,11 +48,32 @@ class _ProductScreenState extends State<ProductScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Thêm sản phẩm', style: Theme.of(context).textTheme.titleMedium),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Symbols.add_circle_outline, color: Theme.of(context).colorScheme.primary),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Thêm sản phẩm',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             content: _buildProductForm(context),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-              TextButton(
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   if (_validateForm()) {
                     final request = _buildProductRequest();
@@ -61,6 +82,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     await UIHelper.showInfoSnackbar(context: context, message: 'Thêm sản phẩm thành công!');
                   }
                 },
+                style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
                 child: const Text('Thêm'),
               ),
             ],
@@ -89,11 +111,32 @@ class _ProductScreenState extends State<ProductScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Sửa sản phẩm', style: Theme.of(context).textTheme.titleMedium),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Symbols.edit_square, color: Theme.of(context).colorScheme.primary),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Sửa sản phẩm',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
             content: _buildProductForm(context),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-              TextButton(
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   if (_validateForm()) {
                     final request = _buildProductRequest();
@@ -114,17 +157,52 @@ class _ProductScreenState extends State<ProductScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Xác nhận xóa', style: Theme.of(context).textTheme.titleMedium),
-            content: const Text('Bạn có chắc chắn muốn xóa sản phẩm này không?'),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Symbols.delete_forever, color: Colors.red),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Xác nhận xóa',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Bạn có chắc chắn muốn xóa sản phẩm này không?'),
+                const SizedBox(height: 16),
+                const Text(
+                  'Hành động này không thể hoàn tác và sẽ xóa vĩnh viễn dữ liệu.',
+                  style: TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ],
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-              TextButton(
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                child: const Text('Hủy'),
+              ),
+              ElevatedButton(
                 onPressed: () async {
                   context.read<ProductBloc>().add(DeleteProductEvent(id: id));
                   Navigator.pop(context);
                   await UIHelper.showSuccessSnackbar(context: context, message: 'Xóa sản phẩm thành công!');
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
                 child: const Text('Xóa'),
               ),
             ],

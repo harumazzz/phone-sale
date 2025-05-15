@@ -19,173 +19,359 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = BlocProvider.of<AuthBloc>(context).state;
-      if (authState is AuthLogin &&
-          authState.data.customerId != null &&
-          mounted) {
-        context.read<CartBloc>().add(
-          CartLoadEvent(customerId: authState.data.customerId!),
-        );
+      if (authState is AuthLogin && authState.data.customerId != null && mounted) {
+        context.read<CartBloc>().add(CartLoadEvent(customerId: authState.data.customerId!));
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final formatCurrency = NumberFormat.simpleCurrency(
-      locale: 'vi_VN',
-      decimalDigits: 0,
-    );
+    final theme = Theme.of(context);
+    final formatCurrency = NumberFormat.simpleCurrency(locale: 'vi_VN', decimalDigits: 0);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Giỏ hàng'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: BlocBuilder<CartBloc, CartState>(
-        builder: (context, state) {
-          if (state is CartLoading || state is CartInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is CartError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 48,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Lỗi tải giỏ hàng: ${state.message}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.red[700]),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Thử lại'),
-                      onPressed: _reloadData,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          if (state is CartLoaded) {
-            if (state.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.shopping_cart_outlined,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Giỏ hàng của bạn đang trống.',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Tiếp tục mua sắm'),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              final double totalPrice = state.carts.fold(
-                0.0,
-                (sum, item) => sum + (item.product.price ?? 0) * item.quantity,
-              );
-              return Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(top: 8, bottom: 8),
-                      itemCount: state.size,
-                      itemBuilder: (context, index) {
-                        final item = state[index];
-                        return CartItemCard(
-                          item: item,
-                          onIncrement: () {
-                            // context.read<CartBloc>().add(
-                            // );
-                          },
-                          onDecrement: () {
-                            // context.read<CartBloc>().add(
-                            //   CartItemDecrementEvent(productId: productId),
-                            // );
-                          },
-                          onRemove: () {
-                            // context.read<CartBloc>().add(
-                            //   CartItemRemoveEvent(productId: productId),
-                            // );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  const Divider(height: 1, thickness: 1),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            Expanded(
+              child: BlocBuilder<CartBloc, CartState>(
+                builder: (context, state) {
+                  if (state is CartLoading || state is CartInitial) {
+                    return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+                  }
+
+                  if (state is CartError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Tổng cộng:',
-                              style: Theme.of(context).textTheme.titleSmall,
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(color: Colors.red[50], shape: BoxShape.circle),
+                              child: Icon(Icons.error_outline, color: Colors.red[400], size: 60),
                             ),
+                            const SizedBox(height: 24),
                             Text(
-                              formatCurrency.format(totalPrice),
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+                              'Không thể tải giỏ hàng',
+                              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Lỗi: ${state.message}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                            const SizedBox(height: 32),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Thử lại'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                textStyle: const TextStyle(fontWeight: FontWeight.bold),
                               ),
+                              onPressed: _reloadData,
                             ),
                           ],
                         ),
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.payment),
-                          label: const Text('Thanh toán'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
+                      ),
+                    );
+                  }
+
+                  if (state is CartLoaded) {
+                    if (state.isEmpty) {
+                      return _buildEmptyCart(context);
+                    } else {
+                      final double totalPrice = state.carts.fold(
+                        0.0,
+                        (sum, item) => sum + (item.product.price ?? 0) * item.quantity,
+                      );
+
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.only(top: 16, bottom: 100),
+                              itemCount: state.size,
+                              itemBuilder: (context, index) {
+                                final item = state[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: CartItemCard(
+                                    item: item,
+                                    onIncrement: () {
+                                      if (item.quantity < 10) {
+                                        // Giới hạn số lượng tối đa
+                                        context.read<CartBloc>().add(
+                                          CartEditEvent(
+                                            cartId: item.cartInfo.cartId,
+                                            customerId: item.cartInfo.customerId,
+                                            productId: item.productId,
+                                            quantity: item.quantity + 1,
+                                          ),
+                                        );
+
+                                        // Reload after successful edit
+                                        context.read<CartBloc>().stream.listen((state) {
+                                          if (state is CartEdited) {
+                                            _reloadData();
+                                          }
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Số lượng tối đa cho mỗi sản phẩm là 10'),
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    onDecrement: () {
+                                      if (item.quantity > 1) {
+                                        context.read<CartBloc>().add(
+                                          CartEditEvent(
+                                            cartId: item.cartInfo.cartId,
+                                            customerId: item.cartInfo.customerId,
+                                            productId: item.productId,
+                                            quantity: item.quantity - 1,
+                                          ),
+                                        );
+
+                                        // Reload after successful edit
+                                        context.read<CartBloc>().stream.listen((state) {
+                                          if (state is CartEdited) {
+                                            _reloadData();
+                                          }
+                                        });
+                                      }
+                                    },
+                                    onRemove: () {
+                                      // Lưu lại item để có thể hoàn tác
+                                      final deletedItem = item;
+
+                                      // Xóa item
+                                      context.read<CartBloc>().add(CartDeleteEvent(cartId: item.cartInfo.cartId));
+
+                                      // Reload sau khi xóa thành công
+                                      context.read<CartBloc>().stream.listen((state) {
+                                        if (state is CartDeleted && context.mounted) {
+                                          _reloadData();
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Đã xóa ${deletedItem.product.model} khỏi giỏ hàng'),
+                                              behavior: SnackBarBehavior.floating,
+                                              action: SnackBarAction(
+                                                label: 'HOÀN TÁC',
+                                                onPressed: () {
+                                                  // Thêm lại sản phẩm vào giỏ hàng
+                                                  final authState = BlocProvider.of<AuthBloc>(context).state;
+                                                  if (authState is AuthLogin && authState.data.customerId != null) {
+                                                    context.read<CartBloc>().add(
+                                                      CartAddEvent(
+                                                        customerId: authState.data.customerId!,
+                                                        productId: deletedItem.productId,
+                                                        quantity: deletedItem.quantity,
+                                                      ),
+                                                    );
+
+                                                    // Reload sau khi thêm lại thành công
+                                                    context.read<CartBloc>().stream.listen((state) {
+                                                      if (state is CartAdded) {
+                                                        _reloadData();
+                                                      }
+                                                    });
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
                             ),
-                            textStyle: Theme.of(context).textTheme.labelLarge,
                           ),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Chức năng thanh toán chưa được thực hiện.',
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                          _buildCheckoutSection(context, totalPrice, formatCurrency),
+                        ],
+                      );
+                    }
+                  }
+
+                  return const Center(child: Text('Trạng thái không xác định.'));
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, 2), blurRadius: 6)],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+                style: IconButton.styleFrom(backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1)),
+              ),
+              const SizedBox(width: 16),
+              Text('Giỏ hàng của bạn', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              const Spacer(),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.delete_outline), tooltip: 'Xóa tất cả'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyCart(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.shopping_cart_outlined,
+              size: 80,
+              color: theme.colorScheme.primary.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text('Giỏ hàng trống', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'Bạn chưa thêm bất kỳ sản phẩm nào vào giỏ hàng',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+          ),
+          const SizedBox(height: 32),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(Icons.shopping_bag_outlined),
+            label: const Text('Tiếp tục mua sắm'),
+            style: FilledButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCheckoutSection(BuildContext context, double totalPrice, NumberFormat formatter) {
+    final theme = Theme.of(context);
+
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, -3), blurRadius: 10),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Tạm tính:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
+                Text(
+                  formatter.format(totalPrice),
+                  style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Phí vận chuyển:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
+                Text(
+                  'Miễn phí',
+                  style: theme.textTheme.bodyLarge?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(height: 1)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Tổng tiền:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  formatter.format(totalPrice),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
                   ),
-                ],
-              );
-            }
-          }
-          return const Center(child: Text('Trạng thái không xác định.'));
-        },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: () {
+                if (BlocProvider.of<AuthBloc>(context).state is AuthLogin) {
+                  // Lấy danh sách cart items từ CartLoaded state
+                  final cartState = context.read<CartBloc>().state;
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Vui lòng đăng nhập để tiến hành thanh toán'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                }
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                minimumSize: const Size(double.infinity, 56),
+                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              child: const Text('THANH TOÁN NGAY'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -193,15 +379,11 @@ class _CartScreenState extends State<CartScreen> {
   void _reloadData() {
     final authState = BlocProvider.of<AuthBloc>(context).state;
     if (authState is AuthLogin && authState.data.customerId != null) {
-      context.read<CartBloc>().add(
-        CartLoadEvent(customerId: authState.data.customerId!),
-      );
+      context.read<CartBloc>().add(CartLoadEvent(customerId: authState.data.customerId!));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Không thể tải lại: Người dùng chưa đăng nhập.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Không thể tải lại: Người dùng chưa đăng nhập.')));
     }
   }
 }

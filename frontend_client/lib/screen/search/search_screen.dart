@@ -54,43 +54,146 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            hintText: 'Tìm kiếm sản phẩm...',
-            border: InputBorder.none,
-            prefixIcon: Icon(Symbols.search),
-          ),
-        ),
-      ),
-      body: BlocBuilder<ProductSearchBloc, ProductSearchState>(
-        builder: (context, state) {
-          if (state is ProductSearchLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ProductSearchLoaded) {
-            return CustomScrollView(
-              slivers: [
-                ProductList(
-                  builder: (context, index) {
-                    return ProductCard(
-                      imageUrl: state.products[index].productLink!,
-                      title: state.products[index].model!,
-                      price: state.products[index].price!.toString(),
-                      product: state.products[index],
-                    );
-                  },
-                  size: state.products.length,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Search Header
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Tìm kiếm', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Tìm kiếm sản phẩm...',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: Colors.grey.shade200),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: theme.colorScheme.primary),
+                          ),
+                          prefixIcon: Icon(Symbols.search, color: theme.colorScheme.primary),
+                          suffixIcon:
+                              _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      context.read<ProductSearchBloc>().add(const ProductTypedEvent(query: ''));
+                                    },
+                                    icon: const Icon(Symbols.close),
+                                    color: Colors.grey[400],
+                                  )
+                                  : null,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-              ],
-            );
-          } else if (state is ProductSearchError) {
-            return Center(child: Text('Lỗi: ${state.message}'));
-          } else {
-            return const Center(child: Text('Nhập từ khóa để tìm kiếm sản phẩm'));
-          }
-        },
+              ),
+            ),
+
+            // Search Results
+            BlocBuilder<ProductSearchBloc, ProductSearchState>(
+              builder: (context, state) {
+                if (state is ProductSearchLoading) {
+                  return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()));
+                } else if (state is ProductSearchLoaded) {
+                  if (state.products.isEmpty) {
+                    return SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Symbols.search_off, size: 64, color: Colors.grey[400]),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Không tìm thấy sản phẩm nào',
+                              style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: ProductList(
+                      builder: (context, index) {
+                        return ProductCard(
+                          imageUrl: state.products[index].productLink!,
+                          title: state.products[index].model!,
+                          price: state.products[index].price!.toString(),
+                          product: state.products[index],
+                        );
+                      },
+                      size: state.products.length,
+                    ),
+                  );
+                } else if (state is ProductSearchError) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Symbols.error_outline, size: 64, color: Colors.red[300]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Lỗi: ${state.message}',
+                            style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Symbols.search, size: 64, color: Colors.grey[300]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Nhập từ khóa để tìm kiếm sản phẩm',
+                            style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

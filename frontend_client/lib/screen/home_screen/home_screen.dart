@@ -101,39 +101,92 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6FB),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
-          const CustomAppbar(title: Text('Trang chủ')),
+          CustomAppbar(
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.phone_android_rounded, color: theme.colorScheme.primary, size: 20),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'PhoneSale',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.notifications_none_rounded, color: theme.colorScheme.onSurface),
+              ),
+              IconButton(onPressed: () {}, icon: Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.onSurface)),
+            ],
+          ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Danh mục', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Xem tất cả',
+                        style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
-                Text(
-                  'Khám phá sản phẩm nổi bật',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
               ]),
             ),
           ),
+
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20), sliver: _categoryGrid()),
+
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                const SizedBox(height: 24),
-                Text(
-                  'Sản phẩm mới',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Sản phẩm mới', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Xem tất cả',
+                        style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
               ]),
             ),
           ),
+
           SliverPadding(padding: const EdgeInsets.symmetric(horizontal: 20), sliver: _productWrap()),
+
+          // Extra space at bottom for better scrolling experience
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );

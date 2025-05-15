@@ -4,6 +4,16 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp", builder =>
+    {
+        builder.AllowAnyOrigin() 
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
@@ -35,8 +45,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS middleware
+app.UseCors("AllowWebApp");
+
+app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
-app.UseRouting();
 
 app.Run();

@@ -5,32 +5,50 @@ class CategoryGrid extends StatelessWidget {
   const CategoryGrid({super.key, required this.size, required this.builder});
   final int size;
   final IndexedWidgetBuilder builder;
-
   @override
   Widget build(BuildContext context) {
-    return SliverGrid(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 20,
-        crossAxisSpacing: 20,
-        childAspectRatio: 2.2,
-      ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            decoration: BoxDecoration(
-              color: Colors.deepPurple.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(color: Colors.deepPurple.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 4)),
-              ],
-            ),
-            child: builder(context, index),
-          ),
+    final theme = Theme.of(context);
+
+    // Sử dụng SliverToBoxAdapter với SingleChildScrollView để có thể cuộn ngang
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 120, // Chiều cao cố định cho danh mục
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: size,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          itemBuilder:
+              (context, index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 100, // Chiều rộng cố định cho mỗi danh mục
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primary.withValues(alpha: 0.05),
+                          theme.colorScheme.primary.withValues(alpha: 0.1),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: builder(context, index),
+                  ),
+                ),
+              ),
         ),
-        childCount: size,
       ),
     );
   }

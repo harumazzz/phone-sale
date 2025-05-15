@@ -7,6 +7,7 @@ import 'package:frontend_admin/repository/customer_repository.dart';
 import 'package:frontend_admin/repository/order_repository.dart';
 import 'package:frontend_admin/repository/product_repository.dart';
 import 'package:frontend_admin/service/service_locator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sidebarx/sidebarx.dart';
 
 import 'bloc/category/category_bloc.dart';
@@ -58,12 +59,38 @@ class _MainAppState extends State<MainApp> {
       child: MaterialApp(
         title: 'Admin',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData.dark().copyWith(
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: ColorConstant.primaryColor, brightness: Brightness.dark),
           primaryColor: ColorConstant.primaryColor,
           canvasColor: ColorConstant.canvasColor,
           scaffoldBackgroundColor: ColorConstant.scaffoldBackgroundColor,
-          textTheme: const TextTheme(
-            headlineSmall: TextStyle(color: Colors.white, fontSize: 46, fontWeight: FontWeight.w800),
+          cardTheme: const CardTheme(
+            elevation: 2,
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+          ),
+          textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
+            headlineSmall: GoogleFonts.inter(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w800),
+            titleMedium: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
+            bodyMedium: GoogleFonts.inter(color: Colors.white),
+            bodySmall: GoogleFonts.inter(color: Colors.white70),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.grey.shade800,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            contentPadding: const EdgeInsets.all(16),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: ColorConstant.primaryColor,
+              elevation: 0,
+              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
           ),
         ),
         home: Builder(

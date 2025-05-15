@@ -97,17 +97,51 @@ class Application extends StatelessWidget {
                 },
               ),
             ],
-
             theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-              textTheme: GoogleFonts.openSansTextTheme(Theme.of(context).textTheme).copyWith(),
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF536DFE),
+                primary: const Color(0xFF536DFE),
+                secondary: const Color(0xFF03DAC6),
+              ),
+              scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+              cardTheme: CardTheme(
+                elevation: 2,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.white,
+              ),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                centerTitle: false,
+                iconTheme: IconThemeData(color: Color(0xFF536DFE)),
+                titleTextStyle: TextStyle(color: Colors.black87, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme).copyWith(
+                titleLarge: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                titleMedium: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black87),
+                bodyLarge: GoogleFonts.inter(fontSize: 16, color: Colors.black87),
+                bodyMedium: GoogleFonts.inter(fontSize: 14, color: Colors.black87),
+              ),
+              buttonTheme: ButtonThemeData(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                buttonColor: const Color(0xFF536DFE),
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF536DFE),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
               pageTransitionsTheme: PageTransitionsTheme(
                 builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
                   TargetPlatform.values,
                   value: (_) => const FadeForwardsPageTransitionsBuilder(),
                 ),
               ),
-              progressIndicatorTheme: const ProgressIndicatorThemeData(),
+              progressIndicatorTheme: const ProgressIndicatorThemeData(color: Color(0xFF536DFE)),
             ),
             home: const LoginScreen(),
           );

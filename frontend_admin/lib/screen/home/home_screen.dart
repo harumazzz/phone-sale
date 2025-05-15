@@ -4,6 +4,7 @@ import 'package:frontend_admin/bloc/customer/customer_bloc.dart';
 import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/bloc/product/product_bloc.dart';
 import 'package:frontend_admin/custom_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -33,22 +34,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Dashboard',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Chào mừng đến với trang quản trị',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: theme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.dashboard_rounded, color: theme.primaryColor, size: 28),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dashboard',
+                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 32, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 4),
+                    Text('Chào mừng đến với trang quản trị', style: theme.textTheme.titleMedium),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             _buildStatCards(),
@@ -73,12 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (state is ProductLoaded) {
                   return Text(
                     '${state.products.length}',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                    style: GoogleFonts.inter(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
                   );
                 }
-                return const CircularProgressIndicator();
+                return const SizedBox(height: 32, width: 32, child: CircularProgressIndicator(strokeWidth: 2));
               },
             ),
             Symbols.shopping_bag,
@@ -154,26 +167,27 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildStatCard(String title, Widget value, IconData icon, Color color) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[300])),
-                Icon(icon, color: color, size: 24),
-              ],
-            ),
-            const SizedBox(height: 16),
-            value,
-            const SizedBox(height: 8),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(height: 16),
+          Text(title, style: GoogleFonts.inter(fontSize: 14, color: Colors.white70, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 8),
+          value,
+        ],
       ),
     );
   }
