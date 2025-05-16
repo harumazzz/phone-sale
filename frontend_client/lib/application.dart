@@ -12,6 +12,7 @@ import 'bloc/product_bloc/product_bloc.dart';
 import 'bloc/product_search_bloc/product_search_bloc.dart';
 import 'bloc/shipment_bloc/shipment_bloc.dart';
 import 'bloc/wishlist_bloc/wishlist_bloc.dart';
+import 'interceptors/error_handling_service.dart';
 import 'repository/auth_repository.dart';
 import 'repository/cart_repository.dart';
 import 'repository/category_repository.dart';
@@ -25,11 +26,23 @@ import 'screen/main_navigation_screen.dart';
 import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
-class Application extends StatelessWidget {
+class Application extends StatefulWidget {
   const Application({super.key});
 
   @override
+  State<Application> createState() => _ApplicationState();
+}
+
+class _ApplicationState extends State<Application> {
+  final ErrorHandlingService _errorHandlingService = ErrorHandlingService();
+
+  @override
   Widget build(BuildContext context) {
+    // Set the current context for error handling
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _errorHandlingService.setContext(context);
+    });
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<CategoryBloc>(

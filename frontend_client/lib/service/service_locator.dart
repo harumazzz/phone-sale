@@ -11,6 +11,7 @@ import '../api/payment_api.dart';
 import '../api/product_api.dart';
 import '../api/shipment_api.dart';
 import '../api/wishlist_api.dart';
+import '../interceptors/dio_interceptor.dart';
 import '../repository/auth_repository.dart';
 import '../repository/cart_repository.dart';
 import '../repository/category_repository.dart';
@@ -33,7 +34,19 @@ class ServiceLocator {
   }
 
   static void registerService() {
-    register<Dio>(Dio(BaseOptions(baseUrl: 'https://localhost:7283/api')));
+    // Create Dio with base URL and interceptors
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: 'https://localhost:7283/api',
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
+
+    // Add global error interceptor
+    dio.interceptors.add(DioErrorInterceptor());
+
+    register<Dio>(dio);
     register<AuthRepository>(const AuthRepository(AuthApi()));
     register<CartRepository>(const CartRepository(CartApi()));
     register<CategoryRepository>(const CategoryRepository(CategoryApi()));

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 
+import '../model/api_response.dart';
 import '../model/request/customer_request.dart';
 import '../model/response/customer_response.dart';
 import '../service/service_locator.dart';
@@ -9,11 +10,24 @@ class CustomerApi extends Equatable {
   const CustomerApi();
 
   static const endpoint = '/customers';
-
   Future<List<CustomerResponse>> getCustomers() async {
     final response = await ServiceLocator.get<Dio>().get(endpoint);
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>).map((e) => CustomerResponse.fromJson(e)).toList();
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.listFromJson(response.data as Map<String, dynamic>, CustomerResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        return apiResponse.data ?? [];
+      } else {
+        // Legacy format (direct list)
+        final apiResponse = ApiResponse.fromDirectList(response.data as List<dynamic>, CustomerResponse.fromJson);
+
+        return apiResponse.data ?? [];
+      }
     } else {
       throw Exception(response.data);
     }
@@ -22,7 +36,23 @@ class CustomerApi extends Equatable {
   Future<CustomerResponse> getCustomer({required int id}) async {
     final response = await ServiceLocator.get<Dio>().get('$endpoint/$id');
     if (response.statusCode == 200) {
-      return CustomerResponse.fromJson(response.data);
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.fromJson(response.data as Map<String, dynamic>, CustomerResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        if (apiResponse.data == null) {
+          throw Exception("No customer data received");
+        }
+
+        return apiResponse.data!;
+      } else {
+        // Legacy format (direct object)
+        return CustomerResponse.fromJson(response.data);
+      }
     } else {
       throw Exception(response.data);
     }
