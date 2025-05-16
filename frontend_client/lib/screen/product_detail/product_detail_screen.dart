@@ -10,7 +10,7 @@ import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
-import '../cart/cart_screen.dart';
+import '../cart/cart_screen.dart' show CartScreen;
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({super.key, required this.product});

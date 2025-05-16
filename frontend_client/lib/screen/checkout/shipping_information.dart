@@ -269,7 +269,10 @@ class _ShippingInformationState extends State<ShippingInformation> {
 
     // Default to standard shipping option
     if (!widget.checkoutData.containsKey('deliveryOption')) {
-      widget.onUpdateData({'deliveryOption': 'standard'});
+      // Schedule the update for after the build is complete to avoid setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onUpdateData({'deliveryOption': 'standard'});
+      });
     }
 
     String selectedOption = widget.checkoutData['deliveryOption'] ?? 'standard';
@@ -293,9 +296,12 @@ class _ShippingInformationState extends State<ShippingInformation> {
               selectedOption == 'standard',
               (value) {
                 if (value != null && value) {
-                  widget.onUpdateData({'deliveryOption': 'standard'});
                   setState(() {
                     selectedOption = 'standard';
+                  });
+                  // Schedule the update for after the build is complete
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    widget.onUpdateData({'deliveryOption': 'standard'});
                   });
                 }
               },
@@ -310,9 +316,12 @@ class _ShippingInformationState extends State<ShippingInformation> {
               selectedOption == 'express',
               (value) {
                 if (value != null && value) {
-                  widget.onUpdateData({'deliveryOption': 'express'});
                   setState(() {
                     selectedOption = 'express';
+                  });
+                  // Schedule the update for after the build is complete
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    widget.onUpdateData({'deliveryOption': 'express'});
                   });
                 }
               },
