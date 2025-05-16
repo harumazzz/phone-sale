@@ -9,13 +9,21 @@ class CategoryApi extends Equatable {
   const CategoryApi();
 
   static const endpoint = '/categories';
-
   Future<List<CategoryResponse>> getCategories() async {
     final response = await ServiceLocator.get<Dio>().get(endpoint);
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>)
-          .map((e) => CategoryResponse.fromJson(e))
-          .toList();
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format
+        final apiResponse = response.data as Map<String, dynamic>;
+        if (apiResponse['success'] == true && apiResponse['data'] != null) {
+          return (apiResponse['data'] as List<dynamic>).map((e) => CategoryResponse.fromJson(e)).toList();
+        } else {
+          throw Exception(apiResponse['message'] ?? apiResponse['error'] ?? 'Failed to get categories');
+        }
+      } else {
+        // Legacy format (direct list)
+        return (response.data as List<dynamic>).map((e) => CategoryResponse.fromJson(e)).toList();
+      }
     } else {
       throw Exception(response.data);
     }
@@ -24,38 +32,55 @@ class CategoryApi extends Equatable {
   Future<CategoryResponse> getCategory({required int id}) async {
     final response = await ServiceLocator.get<Dio>().get('$endpoint/$id');
     if (response.statusCode == 200) {
-      return CategoryResponse.fromJson(response.data);
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format
+        final apiResponse = response.data as Map<String, dynamic>;
+        if (apiResponse['success'] == true && apiResponse['data'] != null) {
+          return CategoryResponse.fromJson(apiResponse['data']);
+        } else {
+          throw Exception(apiResponse['message'] ?? apiResponse['error'] ?? 'Category not found');
+        }
+      } else {
+        // Legacy format (direct object)
+        return CategoryResponse.fromJson(response.data);
+      }
     } else {
       throw Exception(response.data);
     }
   }
 
   Future<void> addCategory({required CategoryRequest request}) async {
-    final response = await ServiceLocator.get<Dio>().post(
-      endpoint,
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+    final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
+    if (response.statusCode == 200) {
+      final apiResponse = response.data as Map<String, dynamic>?;
+      if (apiResponse != null && apiResponse['success'] != true) {
+        throw Exception(apiResponse['message'] ?? apiResponse['error'] ?? 'Failed to add category');
+      }
+    } else {
       throw Exception(response.data);
     }
   }
 
-  Future<void> editCategory({
-    required int id,
-    required CategoryRequest request,
-  }) async {
-    final response = await ServiceLocator.get<Dio>().put(
-      '$endpoint/$id',
-      data: request.toJson(),
-    );
-    if (response.statusCode != 200) {
+  Future<void> editCategory({required int id, required CategoryRequest request}) async {
+    final response = await ServiceLocator.get<Dio>().put('$endpoint/$id', data: request.toJson());
+    if (response.statusCode == 200) {
+      final apiResponse = response.data as Map<String, dynamic>?;
+      if (apiResponse != null && apiResponse['success'] != true) {
+        throw Exception(apiResponse['message'] ?? apiResponse['error'] ?? 'Failed to update category');
+      }
+    } else {
       throw Exception(response.data);
     }
   }
 
   Future<void> deleteCategory({required int id}) async {
     final response = await ServiceLocator.get<Dio>().delete('$endpoint/$id');
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      final apiResponse = response.data as Map<String, dynamic>?;
+      if (apiResponse != null && apiResponse['success'] != true) {
+        throw Exception(apiResponse['message'] ?? apiResponse['error'] ?? 'Failed to delete category');
+      }
+    } else {
       throw Exception(response.data);
     }
   }

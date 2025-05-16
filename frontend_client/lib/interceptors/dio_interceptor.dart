@@ -9,20 +9,6 @@ class DioErrorInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    // Check if the response contains API response structure with success field
-    if (response.data is Map && response.data.containsKey('success')) {
-      if (response.data['success'] == false) {
-        // Handle API error response
-        final message = response.data['message'] ?? 'Unknown error occurred';
-        debugPrint('❌ API Error: $message');
-
-        if (context != null && _isContextMounted()) {
-          ScaffoldMessenger.of(context!).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.orange));
-        }
-      }
-    }
-
-    // Continue with the response
     handler.next(response);
   }
 
@@ -75,9 +61,18 @@ class DioErrorInterceptor extends Interceptor {
       return 'No response received';
     }
 
-    // Check if the response contains a message
-    if (response.data is Map && response.data.containsKey('message')) {
-      return response.data['message'].toString();
+    // Handle new API response format with success, message, and error fields
+    if (response.data is Map) {
+      if (response.data.containsKey('success') && response.data['success'] == false) {
+        // First check for error field, then fall back to message
+        if (response.data.containsKey('error') && response.data['error'] != null) {
+          return response.data['error'].toString();
+        } else if (response.data.containsKey('message')) {
+          return response.data['message'].toString();
+        }
+      } else if (response.data.containsKey('message')) {
+        return response.data['message'].toString();
+      }
     }
 
     // Default status code based messages

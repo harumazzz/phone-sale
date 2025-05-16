@@ -1,79 +1,184 @@
 ﻿using backend.Data;
 using backend.DTO.Request;
 using backend.DTO.Response;
+using backend.Exceptions;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
-{
-    [Route("api/categories")]
+{    [Route("api/categories")]
     [ApiController]
-    public class CategoryController(PhoneShopContext context) : ControllerBase
+    public class CategoryController(PhoneShopContext context) : ApiControllerBase
     {
-        private readonly PhoneShopContext _context = context;
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryResponse>>> GetCategories()
+        private readonly PhoneShopContext _context = context;        [HttpGet]
+        public async Task<ActionResult<ApiResponse<List<CategoryResponse>>>> GetCategories()
         {
-            return await _context.Categories.Select((e) => new CategoryResponse {
-                Id = e.CategoryId,
-                Name = e.Name,
-            }).ToListAsync();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryResponse>> GetCategory(int id)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+            try
             {
-                return NotFound();
+                var categories = await _context.Categories.Select((e) => new CategoryResponse {
+                    Id = e.CategoryId,
+                    Name = e.Name,
+                }).ToListAsync();
+                
+                return HandleSuccess(categories, "Categories retrieved successfully");
             }
-            return new CategoryResponse { 
-                Id = category.CategoryId,
-                Name = category.Name,
-            };
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<CategoryResponse>> CreateCategory(CategoryRequest request)
-        {
-            var category = new Category
+            catch (Exception ex)
             {
-                Name = request.Name
-            };
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-            var response = new CategoryResponse
-            {
-                Id = category.CategoryId,
-                Name = category.Name
-            };
-            return CreatedAtAction(nameof(GetCategories), new { id = category.CategoryId }, response);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, CategoryRequest request)
-        {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
+                throw new Exception("Error retrieving categories", ex);
             }
-            category.Name = request.Name;
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        }        [HttpGet("{id}")]
+        public async Task<ActionResult<ApiResponse<CategoryResponse>>> GetCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null) return NotFound();
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-            return NoContent();
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return HandleNotFound<CategoryResponse>("Category", id);
+                }
+                
+                var response = new CategoryResponse { 
+                    Id = category.CategoryId,
+                    Name = category.Name,
+                };
+                
+                return HandleSuccess(response, $"Category with ID {id} retrieved successfully");
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving category with ID {id}", ex);
+            }
+        }        [HttpPost]
+        public async Task<ActionResult<ApiResponse<CategoryResponse>>> CreateCategory(CategoryRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return HandleBadRequest<CategoryResponse>("Category name cannot be empty");
+                }
+                
+                // Check if category with same name already exists
+                var categoryExists = await _context.Categories.AnyAsync(c => c.Name == request.Name);
+                if (categoryExists)
+                {
+                    return HandleConflict<CategoryResponse>($"A category with name '{request.Name}' already exists");
+                }
+                
+                var category = new Category
+                {
+                    Name = request.Name
+                };
+                
+                _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                
+                var response = new CategoryResponse
+                {
+                    Id = category.CategoryId,
+                    Name = category.Name
+                };
+                
+                return HandleCreated(nameof(GetCategory), new { id = category.CategoryId }, response, "Category created successfully");
+            }
+            catch (BadRequestException)
+            {
+                throw;
+            }
+            catch (ConflictException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error creating category", ex);
+            }
+        }        [HttpPut("{id}")]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateCategory(int id, CategoryRequest request)
+        {
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return HandleNotFound<object>("Category", id);
+                }
+                
+                if (string.IsNullOrWhiteSpace(request.Name))
+                {
+                    return HandleBadRequest<object>("Category name cannot be empty");
+                }
+                
+                // Check if another category with same name already exists
+                var categoryExists = await _context.Categories
+                    .AnyAsync(c => c.Name == request.Name && c.CategoryId != id);
+                
+                if (categoryExists)
+                {
+                    return HandleConflict<object>($"Another category with name '{request.Name}' already exists");
+                }
+                
+                category.Name = request.Name;
+                await _context.SaveChangesAsync();
+                
+                return HandleSuccess($"Category with ID {id} updated successfully");
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (BadRequestException)
+            {
+                throw;
+            }
+            catch (ConflictException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating category with ID {id}", ex);
+            }
+        }        [HttpDelete("{id}")]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteCategory(int id)
+        {
+            try
+            {
+                var category = await _context.Categories.FindAsync(id);
+                if (category == null)
+                {
+                    return HandleNotFound<object>("Category", id);
+                }
+                
+                // Check if category is used in any products
+                var isUsedInProducts = await _context.Products.AnyAsync(p => p.CategoryId == id);
+                if (isUsedInProducts)
+                {
+                    return HandleConflict<object>($"Cannot delete category with ID {id} as it is used in one or more products");
+                }
+                
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+                
+                return HandleSuccess($"Category with ID {id} deleted successfully");
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (ConflictException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting category with ID {id}", ex);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using backend.Data;
 using Microsoft.Extensions.FileProviders;
+using backend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,9 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(uploadedImagesPath),
     RequestPath = "/UploadedImages"
 });
+
+// Register exception handling middleware
+app.UseExceptionHandlingMiddleware();
 
 if (app.Environment.IsDevelopment())
 {
