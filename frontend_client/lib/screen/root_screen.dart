@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -7,16 +8,29 @@ import 'settings/setting_screen.dart';
 import 'order/order_screen.dart';
 
 class RootScreen extends StatefulWidget {
-  const RootScreen({super.key});
+  const RootScreen({super.key, this.initialIndex = 0});
+  final int initialIndex;
 
   @override
   State<RootScreen> createState() => _RootScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty('initialIndex', initialIndex));
+  }
 }
 
 class _RootScreenState extends State<RootScreen> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
 
   static const _screens = <Widget>[HomeScreen(), SearchScreen(), OrderScreen(), SettingScreen()];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {

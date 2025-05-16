@@ -24,6 +24,14 @@ final class OrderLoaded extends OrderState {
   List<Object?> get props => [orders];
 }
 
+final class OrderAdded extends OrderState {
+  const OrderAdded({required this.orderId});
+  final int orderId;
+
+  @override
+  List<Object?> get props => [orderId];
+}
+
 final class OrderError extends OrderState {
   const OrderError({required this.message});
   final String message;

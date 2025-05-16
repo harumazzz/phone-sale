@@ -16,3 +16,12 @@ class LoadOrderEvent extends OrderEvent {
   @override
   List<Object?> get props => [customerId];
 }
+
+class AddOrderEvent extends OrderEvent {
+  const AddOrderEvent({required this.request});
+
+  final OrderRequest request;
+
+  @override
+  List<Object?> get props => [request];
+}

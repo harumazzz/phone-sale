@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../api/order_api.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
+import '../../bloc/order_bloc/order_bloc.dart';
+import '../../repository/order_repository.dart';
+import '../checkout/checkout_screen.dart';
 import 'cart_item_card.dart';
 
 class CartScreen extends StatefulWidget {
@@ -351,8 +355,22 @@ class _CartScreenState extends State<CartScreen> {
             FilledButton(
               onPressed: () {
                 if (BlocProvider.of<AuthBloc>(context).state is AuthLogin) {
-                  // Lấy danh sách cart items từ CartLoaded state
-                  final cartState = context.read<CartBloc>().state;
+                  // Navigate to checkout screen with access to both order and cart blocs
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => MultiBlocProvider(
+                            providers: [
+                              BlocProvider(
+                                create: (context) => OrderBloc(orderRepository: const OrderRepository(OrderApi())),
+                              ),
+                              BlocProvider.value(value: context.read<CartBloc>()),
+                            ],
+                            child: const CheckoutScreen(),
+                          ),
+                    ),
+                  );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
