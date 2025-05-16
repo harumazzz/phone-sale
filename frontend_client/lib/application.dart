@@ -21,6 +21,7 @@ import 'repository/product_repository.dart';
 import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
 import 'screen/log_in/login_screen.dart';
+import 'screen/main_navigation_screen.dart';
 import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
@@ -143,7 +144,15 @@ class Application extends StatelessWidget {
               ),
               progressIndicatorTheme: const ProgressIndicatorThemeData(color: Color(0xFF536DFE)),
             ),
-            home: const LoginScreen(),
+            home: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLogin) {
+                  return const MainNavigationScreen();
+                }
+                return const LoginScreen();
+              },
+            ),
+            routes: {'/login': (context) => const LoginScreen()},
           );
         },
       ),

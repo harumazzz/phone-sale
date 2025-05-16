@@ -17,9 +17,10 @@ class _OrderScreenState extends State<OrderScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<OrderBloc>().add(
-        LoadOrderEvent(customerId: (context.read<AuthBloc>().state as AuthLogin).data.customerId!),
-      );
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthLogin && authState.data.customerId != null) {
+        context.read<OrderBloc>().add(OrderFetchByCustomerIdEvent(customerId: authState.data.customerId!));
+      }
     });
   }
 

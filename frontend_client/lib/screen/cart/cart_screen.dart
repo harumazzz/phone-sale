@@ -221,7 +221,6 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
-
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       decoration: BoxDecoration(
@@ -240,7 +239,35 @@ class _CartScreenState extends State<CartScreen> {
               const SizedBox(width: 16),
               Text('Giỏ hàng của bạn', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
               const Spacer(),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.delete_outline), tooltip: 'Xóa tất cả'),
+              IconButton(
+                onPressed: () {
+                  // Show confirmation dialog before clearing the cart
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Xóa giỏ hàng'),
+                          content: const Text('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?'),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+                            FilledButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                final authState = context.read<AuthBloc>().state;
+                                if (authState is AuthLogin && authState.data.customerId != null) {
+                                  context.read<CartBloc>().add(CartClearEvent(customerId: authState.data.customerId!));
+                                }
+                              },
+                              style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                              child: const Text('Xóa tất cả'),
+                            ),
+                          ],
+                        ),
+                  );
+                },
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Xóa tất cả',
+              ),
             ],
           ),
         ],
@@ -352,7 +379,7 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            FilledButton(
+            FilledButton.icon(
               onPressed: () {
                 if (BlocProvider.of<AuthBloc>(context).state is AuthLogin) {
                   // Navigate to checkout screen with access to both order and cart blocs
@@ -380,13 +407,14 @@ class _CartScreenState extends State<CartScreen> {
                   );
                 }
               },
+              icon: const Icon(Icons.shopping_bag_outlined),
+              label: const Text('THANH TOÁN NGAY'),
               style: FilledButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 minimumSize: const Size(double.infinity, 56),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              child: const Text('THANH TOÁN NGAY'),
             ),
           ],
         ),

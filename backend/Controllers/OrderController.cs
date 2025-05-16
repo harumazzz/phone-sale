@@ -11,9 +11,7 @@ namespace backend.Controllers
     [ApiController]
     public class OrderController(PhoneShopContext context) : ControllerBase
     {
-        private readonly PhoneShopContext _context = context;
-
-        [HttpGet]
+        private readonly PhoneShopContext _context = context;        [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderResponse>>> GetOrders()
         {
             var orders = await _context.Orders
@@ -24,6 +22,7 @@ namespace backend.Controllers
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
                     CustomerId = o.CustomerId,
+                    Status = o.Status
                 })
                 .ToListAsync();
 
@@ -42,13 +41,12 @@ namespace backend.Controllers
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
                     CustomerId = o.CustomerId,
+                    Status = o.Status
                 })
                 .ToListAsync();
 
             return Ok(orders);
-        }
-
-        [HttpGet("{id}")]
+        }        [HttpGet("{id}")]
         public async Task<ActionResult<OrderResponse>> GetOrder(int id)
         {
             var order = await _context.Orders
@@ -63,6 +61,7 @@ namespace backend.Controllers
                 OrderDate = order.OrderDate,
                 TotalPrice = order.TotalPrice,
                 CustomerId = order.CustomerId,
+                Status = order.Status
             };
 
             return Ok(response);
@@ -79,10 +78,9 @@ namespace backend.Controllers
                 OrderDate = DateTime.Now,
                 TotalPrice = request.TotalPrice,
                 CustomerId = request.CustomerId,
-                Customer = customer
-            };
-
-            _context.Orders.Add(order);
+                Customer = customer,
+                Status = request.Status ?? OrderStatus.Pending
+            };            _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             var response = new OrderResponse
@@ -91,6 +89,7 @@ namespace backend.Controllers
                 OrderDate = order.OrderDate,
                 TotalPrice = order.TotalPrice,
                 CustomerId = order.CustomerId,
+                Status = order.Status
             };
             return CreatedAtAction(nameof(GetOrder), new { id = order.OrderId }, response);
         }
@@ -107,6 +106,12 @@ namespace backend.Controllers
             order.TotalPrice = request.TotalPrice;
             order.CustomerId = request.CustomerId;
             order.Customer = customer;
+            
+            // Update status if provided
+            if (request.Status.HasValue)
+            {
+                order.Status = request.Status.Value;
+            }
 
             await _context.SaveChangesAsync();
             return NoContent();

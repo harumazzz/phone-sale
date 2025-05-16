@@ -5,7 +5,7 @@ import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
 import '../../model/request/order_request.dart';
-import '../root_screen.dart';
+import '../order/order_success_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
@@ -30,11 +30,22 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
   bool _orderPlaced = false;
   String? _errorMessage;
   int? _orderId;
-
   @override
   Widget build(BuildContext context) {
     if (_orderPlaced && _orderId != null) {
-      return _buildOrderSuccess(context);
+      // Navigate to the success screen
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder:
+                (context) => BlocProvider.value(
+                  value: BlocProvider.of<OrderBloc>(context),
+                  child: OrderSuccessScreen(orderId: _orderId!),
+                ),
+          ),
+        );
+      });
+      return const Center(child: CircularProgressIndicator());
     } else if (_errorMessage != null) {
       return _buildOrderError(context);
     } else {
@@ -168,66 +179,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
       ),
     );
   }
-
-  Widget _buildOrderSuccess(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: Colors.green[50], shape: BoxShape.circle),
-            child: Icon(Icons.check_circle, size: 80, color: Colors.green[600]),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            'Đặt hàng thành công!',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đã được ghi nhận và đang được xử lý.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-          ),
-          const SizedBox(height: 8),
-          Text('Mã đơn hàng: #$_orderId', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 48),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const RootScreen()), (route) => false);
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              minimumSize: const Size(double.infinity, 56),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: const Text('TIẾP TỤC MUA SẮM', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: () {
-              // Navigate to Order History
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const RootScreen(initialIndex: 2)),
-                (route) => false,
-              );
-            },
-            child: const Text('XEM ĐƠN HÀNG CỦA TÔI'),
-          ),
-        ],
-      ),
-    );
-  }
+  // Order success is now handled by the OrderSuccessScreen
 
   Widget _buildOrderError(BuildContext context) {
     final theme = Theme.of(context);
@@ -414,25 +366,25 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
     try {
       // Prepare order request
       final customer = widget.checkoutData['customer'];
-      final orderRequest = OrderRequest(customerId: customer.customerId, totalPrice: widget.checkoutData['total']);
+      // Create order with initial pending status (0)
+      final orderRequest = OrderRequest(
+        customerId: customer.customerId,
+        totalPrice: widget.checkoutData['total'],
+        status: 0, // Pending status
+      );
 
       // Create order via bloc
-      context.read<OrderBloc>().add(AddOrderEvent(request: orderRequest));
-
-      // Listen for the result
+      context.read<OrderBloc>().add(OrderAddEvent(request: orderRequest)); // Listen for the result
       await for (final state in context.read<OrderBloc>().stream) {
         if (state is OrderAdded) {
           setState(() {
             _isPlacingOrder = false;
             _orderPlaced = true;
             _orderId = state.orderId;
-          });
-
-          // Clear the cart after successful order
-          // We simply reload the cart to avoid having to deal with each item
+          }); // Clear the cart after successful order
           final authState = context.read<AuthBloc>().state;
           if (authState is AuthLogin && authState.data.customerId != null) {
-            context.read<CartBloc>().add(CartLoadEvent(customerId: authState.data.customerId!));
+            context.read<CartBloc>().add(CartClearEvent(customerId: authState.data.customerId!));
           }
 
           break;

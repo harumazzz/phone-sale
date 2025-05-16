@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using backend.Models;
 
 namespace backend.DTO.Response
 {
@@ -12,6 +13,8 @@ namespace backend.DTO.Response
         public required decimal TotalPrice { get; set; }
         [Required]
         public required string CustomerId { get; set; }
+        [Required]
+        public OrderStatus Status { get; set; }
     }
 
 }

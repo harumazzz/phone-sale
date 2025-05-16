@@ -10,6 +10,7 @@ import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../cart/cart_screen.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({super.key, required this.product});
@@ -44,7 +45,7 @@ class ProductDetailScreen extends StatelessWidget {
                   label: 'XEM GIỎ HÀNG',
                   textColor: Colors.white,
                   onPressed: () {
-                    // Navigate to cart
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CartScreen()));
                   },
                 ),
               ),

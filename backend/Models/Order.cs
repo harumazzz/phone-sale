@@ -4,6 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
+    public enum OrderStatus
+    {
+        Pending = 0,
+        Processing = 1,
+        Shipped = 2,
+        Delivered = 3,
+        Cancelled = 4
+    }
+
     [Table("order")]
     public class Order
     {
@@ -20,6 +29,9 @@ namespace backend.Models
 
         [Required, ForeignKey("Customer"), Column("customer_id")]
         public required string CustomerId { get; set; }
+
+        [Column("status")]
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
         [JsonIgnore]
         public Customer? Customer { get; set; }

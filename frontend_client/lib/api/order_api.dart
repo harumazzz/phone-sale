@@ -37,9 +37,17 @@ class OrderApi extends Equatable {
     }
   }
 
-  Future<void> addOrder({required OrderRequest request}) async {
+  Future<int> addOrder({required OrderRequest request}) async {
     final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
+      // Return the order ID from the response
+      if (response.data is Map<String, dynamic>) {
+        return response.data['orderId'] ?? -1;
+      } else if (response.data is int) {
+        return response.data;
+      }
+      return -1;
+    } else {
       throw Exception(response.data);
     }
   }

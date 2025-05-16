@@ -10,6 +10,7 @@ import '../../widget/category_grid/category_grid.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../cart/cart_screen.dart';
 import '../category/category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -134,7 +135,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {},
                 icon: Icon(Icons.notifications_none_rounded, color: theme.colorScheme.onSurface),
               ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.onSurface)),
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CartScreen()));
+                },
+                icon: Icon(Icons.shopping_bag_outlined, color: theme.colorScheme.onSurface),
+              ),
             ],
           ),
           SliverPadding(

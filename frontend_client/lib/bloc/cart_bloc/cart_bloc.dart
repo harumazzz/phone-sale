@@ -12,12 +12,12 @@ part 'cart_event.dart';
 part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc({required this.cartRepository, required this.productRepository})
-    : super(const CartInitial()) {
+  CartBloc({required this.cartRepository, required this.productRepository}) : super(const CartInitial()) {
     on<CartLoadEvent>(_onLoad);
     on<CartAddEvent>(_onAdd);
     on<CartEditEvent>(_onEdit);
     on<CartDeleteEvent>(_onDelete);
+    on<CartClearEvent>(_onClear);
   }
 
   final CartRepository cartRepository;
@@ -27,9 +27,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   Future<void> _onLoad(CartLoadEvent event, Emitter<CartState> emit) async {
     emit(const CartLoading());
     try {
-      final result = await cartRepository.getAllCart(
-        customerId: event.customerId,
-      );
+      final result = await cartRepository.getAllCart(customerId: event.customerId);
       final products = <ProductResponse>[];
       for (final cart in result) {
         final product = await productRepository.getProduct(id: cart.productId);
@@ -49,11 +47,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     emit(const CartLoading());
     try {
       await cartRepository.addCart(
-        request: CartRequest(
-          customerId: event.customerId,
-          productId: event.productId,
-          quantity: event.quantity,
-        ),
+        request: CartRequest(customerId: event.customerId, productId: event.productId, quantity: event.quantity),
       );
       emit(const CartAdded());
     } catch (e) {
@@ -66,11 +60,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     try {
       await cartRepository.editCart(
         cartId: event.cartId,
-        request: CartRequest(
-          customerId: event.customerId,
-          productId: event.productId,
-          quantity: event.quantity,
-        ),
+        request: CartRequest(customerId: event.customerId, productId: event.productId, quantity: event.quantity),
       );
       emit(const CartEdited());
     } catch (e) {
@@ -83,6 +73,23 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     try {
       await cartRepository.deleteCart(cartId: event.cartId);
       emit(const CartDeleted());
+    } catch (e) {
+      emit(CartError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onClear(CartClearEvent event, Emitter<CartState> emit) async {
+    emit(const CartLoading());
+    try {
+      // Get all cart items for the customer
+      final carts = await cartRepository.getAllCart(customerId: event.customerId);
+
+      // Delete each cart item
+      for (final cart in carts) {
+        await cartRepository.deleteCart(cartId: cart.cartId);
+      }
+
+      emit(const CartCleared());
     } catch (e) {
       emit(CartError(message: e.toString()));
     }

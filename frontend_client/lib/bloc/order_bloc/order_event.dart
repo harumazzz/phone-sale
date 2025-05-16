@@ -8,8 +8,17 @@ sealed class OrderEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadOrderEvent extends OrderEvent {
-  const LoadOrderEvent({required this.customerId});
+class OrderFetchEvent extends OrderEvent {
+  const OrderFetchEvent({required this.id});
+
+  final int id;
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class OrderFetchByCustomerIdEvent extends OrderEvent {
+  const OrderFetchByCustomerIdEvent({required this.customerId});
 
   final String customerId;
 
@@ -17,11 +26,21 @@ class LoadOrderEvent extends OrderEvent {
   List<Object?> get props => [customerId];
 }
 
-class AddOrderEvent extends OrderEvent {
-  const AddOrderEvent({required this.request});
+class OrderAddEvent extends OrderEvent {
+  const OrderAddEvent({required this.request});
 
   final OrderRequest request;
 
   @override
   List<Object?> get props => [request];
+}
+
+class OrderUpdateStatusEvent extends OrderEvent {
+  const OrderUpdateStatusEvent({required this.orderId, required this.status});
+
+  final int orderId;
+  final int status;
+
+  @override
+  List<Object?> get props => [orderId, status];
 }

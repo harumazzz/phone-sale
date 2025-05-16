@@ -11,13 +11,25 @@ part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc({required this.orderRepository}) : super(const OrderInitial()) {
-    on<LoadOrderEvent>(_onLoad);
-    on<AddOrderEvent>(_onAddOrder);
+    on<OrderFetchEvent>(_onFetchOrder);
+    on<OrderFetchByCustomerIdEvent>(_onFetchOrdersByCustomerId);
+    on<OrderAddEvent>(_onAddOrder);
+    on<OrderUpdateStatusEvent>(_onUpdateOrderStatus);
   }
 
   final OrderRepository orderRepository;
 
-  Future<void> _onLoad(LoadOrderEvent event, Emitter<OrderState> emit) async {
+  Future<void> _onFetchOrder(OrderFetchEvent event, Emitter<OrderState> emit) async {
+    emit(const OrderLoading());
+    try {
+      final order = await orderRepository.getOrder(id: event.id);
+      emit(OrderDetailLoaded(order: order));
+    } catch (e) {
+      emit(OrderError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchOrdersByCustomerId(OrderFetchByCustomerIdEvent event, Emitter<OrderState> emit) async {
     emit(const OrderLoading());
     try {
       final orders = await orderRepository.getOrdersByCustomerId(customerId: event.customerId);
@@ -27,11 +39,31 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  Future<void> _onAddOrder(AddOrderEvent event, Emitter<OrderState> emit) async {
+  Future<void> _onAddOrder(OrderAddEvent event, Emitter<OrderState> emit) async {
     emit(const OrderLoading());
     try {
-      await orderRepository.addOrder(request: event.request);
-      emit(OrderAdded(orderId: 1)); // TODO: Get the actual order ID from the response
+      final orderId = await orderRepository.addOrder(request: event.request);
+      emit(OrderAdded(orderId: orderId));
+    } catch (e) {
+      emit(OrderError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateOrderStatus(OrderUpdateStatusEvent event, Emitter<OrderState> emit) async {
+    emit(const OrderLoading());
+    try {
+      // Get the current order
+      final order = await orderRepository.getOrder(id: event.orderId);
+
+      // Update order status
+      final updatedRequest = OrderRequest(
+        customerId: order.customerId,
+        totalPrice: order.totalPrice,
+        status: event.status,
+      );
+
+      await orderRepository.editOrder(id: event.orderId, request: updatedRequest);
+      emit(OrderStatusUpdated(orderId: event.orderId, newStatus: event.status));
     } catch (e) {
       emit(OrderError(message: e.toString()));
     }

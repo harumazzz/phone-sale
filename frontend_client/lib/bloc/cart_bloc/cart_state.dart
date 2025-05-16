@@ -39,6 +39,10 @@ final class CartError extends CartState {
   List<Object?> get props => [message];
 }
 
+final class CartCleared extends CartState {
+  const CartCleared();
+}
+
 final class CartDeleted extends CartState {
   const CartDeleted();
 }

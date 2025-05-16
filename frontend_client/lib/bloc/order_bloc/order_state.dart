@@ -24,12 +24,30 @@ final class OrderLoaded extends OrderState {
   List<Object?> get props => [orders];
 }
 
+final class OrderDetailLoaded extends OrderState {
+  const OrderDetailLoaded({required this.order});
+  final OrderResponse order;
+
+  @override
+  List<Object?> get props => [order];
+}
+
 final class OrderAdded extends OrderState {
   const OrderAdded({required this.orderId});
   final int orderId;
 
   @override
   List<Object?> get props => [orderId];
+}
+
+final class OrderStatusUpdated extends OrderState {
+  const OrderStatusUpdated({required this.orderId, required this.newStatus});
+
+  final int orderId;
+  final int newStatus;
+
+  @override
+  List<Object?> get props => [orderId, newStatus];
 }
 
 final class OrderError extends OrderState {
