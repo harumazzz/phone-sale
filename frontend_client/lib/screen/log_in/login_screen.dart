@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../model/request/login_request.dart';
 import '../../service/ui_helper.dart';
+import '../auth/forgot_password_screen.dart';
 import '../root_screen.dart';
 import '../sign_up/signup_screen.dart';
 
@@ -304,7 +305,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // Forgot password functionality
+                              Navigator.of(
+                                context,
+                              ).push(MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()));
                             },
                             child: Text(
                               'Quên mật khẩu?',
