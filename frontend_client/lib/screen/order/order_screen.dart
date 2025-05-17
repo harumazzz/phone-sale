@@ -156,7 +156,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Widget _buildOrderCard(BuildContext context, OrderResponse order) {
     final theme = Theme.of(context);
-    final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
+    final formatter = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
     final status = _getOrderStatus(order);
     final statusColor = _getStatusColor(status);
 

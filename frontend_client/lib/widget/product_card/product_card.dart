@@ -92,7 +92,11 @@ class ProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(double.parse(price) * 25000)}',
+                    NumberFormat.currency(
+                      locale: 'vi_VN',
+                      symbol: '₫',
+                      decimalDigits: 3,
+                    ).format(double.parse(price) * 25000),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                   ),
                 ],

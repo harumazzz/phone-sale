@@ -55,7 +55,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
 
   Widget _buildOrderReview(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.simpleCurrency(locale: 'vi_VN', decimalDigits: 0);
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
     final subtotal = widget.checkoutData['subtotal'] ?? 0.0;
     final shippingFee = widget.checkoutData['deliveryOption'] == 'express' ? 30000.0 : 0.0;
     final total = subtotal + shippingFee;
