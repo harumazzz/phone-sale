@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../screen/wishlist/wishlist_screen.dart';
+
 class CustomAppbar extends StatelessWidget {
   const CustomAppbar({super.key, this.title, this.actions, this.showBackButton = false, this.onBackPressed});
 
@@ -9,7 +11,6 @@ class CustomAppbar extends StatelessWidget {
   final List<Widget>? actions;
   final bool showBackButton;
   final void Function()? onBackPressed;
-
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -19,10 +20,17 @@ class CustomAppbar extends StatelessWidget {
           [
             IconButton(
               onPressed: () {
-                // Implement cart functionality
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const WishlistScreen()));
+              },
+              icon: const Icon(Symbols.favorite),
+              tooltip: 'Yêu thích',
+            ),
+            IconButton(
+              onPressed: () {
                 Navigator.pushNamed(context, '/cart');
               },
               icon: const Icon(Symbols.shopping_cart),
+              tooltip: 'Giỏ hàng',
             ),
             const SizedBox(width: 8),
           ],

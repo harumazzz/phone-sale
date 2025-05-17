@@ -23,6 +23,8 @@ import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
 import 'screen/log_in/login_screen.dart';
 import 'screen/main_navigation_screen.dart';
+import 'screen/wishlist/wishlist_screen.dart';
+import 'screen/cart/cart_screen.dart';
 import 'service/custom_observer.dart';
 import 'service/service_locator.dart';
 
@@ -165,7 +167,11 @@ class _ApplicationState extends State<Application> {
                 return const LoginScreen();
               },
             ),
-            routes: {'/login': (context) => const LoginScreen()},
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/wishlist': (context) => const WishlistScreen(),
+              '/cart': (context) => const CartScreen(),
+            },
           );
         },
       ),

@@ -10,6 +10,7 @@ import '../../model/response/product_response.dart';
 import '../../service/convert_helper.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
+import '../../widget/wishlist_button/wishlist_button.dart';
 import '../cart/cart_screen.dart' show CartScreen;
 
 class ProductDetailScreen extends StatelessWidget {
@@ -152,33 +153,19 @@ class ProductDetailScreen extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent],
+            colors: [Colors.black.withAlpha(102), Colors.transparent],
           ),
         ),
       ),
       leading: IconButton(
         icon: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.9), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Colors.white.withAlpha(230), shape: BoxShape.circle),
           child: Icon(Icons.arrow_back, color: theme.colorScheme.primary, size: 20),
         ),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          child: IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.9), shape: BoxShape.circle),
-              child: Icon(Symbols.favorite, color: theme.colorScheme.primary, size: 20, weight: 500),
-            ),
-            onPressed: () {
-              // Handle add to favorites
-            },
-          ),
-        ),
-      ],
+      actions: [Container(margin: const EdgeInsets.only(right: 16), child: WishlistButton(product: product))],
     );
   }
 
@@ -196,9 +183,7 @@ class ProductDetailScreen extends StatelessWidget {
                 bottomLeft: Radius.circular(30.0),
                 bottomRight: Radius.circular(30.0),
               ),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 5)),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), blurRadius: 10, offset: const Offset(0, 5))],
             ),
             child: Stack(
               children: [
@@ -255,7 +240,7 @@ class ProductDetailScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.9),
+                      color: theme.colorScheme.primary.withAlpha(230),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Row(
@@ -367,7 +352,7 @@ class ProductDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+        border: Border.all(color: Colors.grey.withAlpha(51)),
       ),
       child: Column(
         children: [

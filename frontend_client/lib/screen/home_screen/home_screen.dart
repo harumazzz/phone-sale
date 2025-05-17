@@ -12,6 +12,7 @@ import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
 import '../cart/cart_screen.dart';
 import '../category/category_screen.dart';
+import '../wishlist/wishlist_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -132,8 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             actions: [
               IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications_none_rounded, color: theme.colorScheme.onSurface),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const WishlistScreen()));
+                },
+                icon: Icon(Icons.favorite_outline, color: theme.colorScheme.onSurface),
               ),
               IconButton(
                 onPressed: () {

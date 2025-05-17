@@ -18,6 +18,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CartEditEvent>(_onEdit);
     on<CartDeleteEvent>(_onDelete);
     on<CartClearEvent>(_onClear);
+    on<CartClearLocalEvent>(_onClearLocal);
   }
 
   final CartRepository cartRepository;
@@ -93,5 +94,10 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     } catch (e) {
       emit(CartError(message: e.toString()));
     }
+  }
+
+  // Clear the cart locally without API calls
+  Future<void> _onClearLocal(CartClearLocalEvent event, Emitter<CartState> emit) async {
+    emit(const CartInitial());
   }
 }

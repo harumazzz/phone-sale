@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../model/response/product_response.dart';
 import '../../screen/product_detail/product_detail_screen.dart';
+import '../wishlist_button/wishlist_button.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -62,9 +63,10 @@ class ProductCard extends StatelessWidget {
                         ),
                   ),
                 ),
+                Positioned(top: 8, right: 8, child: WishlistButton(product: product)),
                 Positioned(
                   top: 8,
-                  right: 8,
+                  left: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(

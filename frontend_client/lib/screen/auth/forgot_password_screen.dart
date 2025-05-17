@@ -125,7 +125,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              disabledBackgroundColor: theme.colorScheme.primary.withOpacity(0.5),
+              disabledBackgroundColor: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             child:
                 _isLoading
@@ -146,7 +146,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildSuccessMessage() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 40),
         Icon(Symbols.check_circle, size: 80, color: Colors.green[600]),

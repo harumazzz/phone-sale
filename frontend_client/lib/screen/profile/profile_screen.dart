@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/auth_bloc/auth_bloc.dart';
+import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
+import '../../bloc/wishlist_bloc/wishlist_bloc.dart';
 import '../order/order_history_screen.dart';
+import '../wishlist/wishlist_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -22,6 +25,9 @@ class ProfileScreen extends StatelessWidget {
               _buildProfileSection(context),
               const SizedBox(height: 24),
               _buildMenuSection(context),
+              const SizedBox(height: 24),
+              _buildLogoutSection(context),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -36,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, 2), blurRadius: 6)],
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), offset: const Offset(0, 2), blurRadius: 6)],
       ),
       child: Row(
         children: [
@@ -61,15 +67,13 @@ class ProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, 2), blurRadius: 6),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), offset: const Offset(0, 2), blurRadius: 6)],
             ),
             child: Row(
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  backgroundColor: theme.colorScheme.primary.withAlpha(51),
                   child: Text(
                     '${user.firstName?.isNotEmpty == true ? user.firstName![0] : ''}${user.lastName?.isNotEmpty == true ? user.lastName![0] : ''}',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
@@ -113,9 +117,7 @@ class ProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, 2), blurRadius: 6),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), offset: const Offset(0, 2), blurRadius: 6)],
             ),
             child: Column(
               children: [
@@ -172,7 +174,7 @@ class ProfileScreen extends StatelessWidget {
         'icon': Icons.favorite_border_outlined,
         'title': 'Danh sách yêu thích',
         'onTap': () {
-          // Navigate to wishlist
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const WishlistScreen()));
         },
       },
       {
@@ -210,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), offset: const Offset(0, 2), blurRadius: 6)],
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), offset: const Offset(0, 2), blurRadius: 6)],
       ),
       child: ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
@@ -228,5 +230,53 @@ class ProfileScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildLogoutSection(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+
+    // Only show logout button when logged in
+    if (authState is! AuthLogin) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton.icon(
+        onPressed: () => _showLogoutConfirmation(context),
+        icon: const Icon(Icons.logout, color: Colors.white),
+        label: const Text('ĐĂNG XUẤT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.redAccent,
+          minimumSize: const Size(double.infinity, 54),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showLogoutConfirmation(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Đăng xuất'),
+            content: const Text('Bạn có chắc chắn muốn đăng xuất không?'),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('HỦY')),
+              FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('ĐĂNG XUẤT')),
+            ],
+          ),
+    );
+
+    if (shouldLogout == true && context.mounted) {
+      // Perform logout
+      context.read<AuthBloc>().add(const LogoutEvent());
+      // Clear other user-specific data
+      context.read<CartBloc>().add(const CartClearLocalEvent());
+      context.read<WishlistBloc>().add(const WishlistClear());
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã đăng xuất thành công')));
+    }
   }
 }

@@ -8,9 +8,8 @@ import '../service/service_locator.dart';
 class WishlistApi extends Equatable {
   const WishlistApi();
 
-  static const endpoint = '/wishlist';
-  Future<List<WishlistResponse>> getWishlists() async {
-    final response = await ServiceLocator.get<Dio>().get(endpoint);
+  static const endpoint = '/wishlist';  Future<List<WishlistResponse>> getWishlists({required String customerId}) async {
+    final response = await ServiceLocator.get<Dio>().get('$endpoint/$customerId');
     if (response.statusCode == 200) {
       if (response.data is Map && response.data.containsKey('success')) {
         // New API response format

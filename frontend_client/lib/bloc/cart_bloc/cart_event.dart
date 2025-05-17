@@ -34,6 +34,11 @@ final class CartClearEvent extends CartEvent {
   List<Object?> get props => [customerId];
 }
 
+// Clear cart locally without API call (for logout, etc.)
+final class CartClearLocalEvent extends CartEvent {
+  const CartClearLocalEvent();
+}
+
 final class CartEditEvent extends CartEvent {
   const CartEditEvent({
     required this.cartId,

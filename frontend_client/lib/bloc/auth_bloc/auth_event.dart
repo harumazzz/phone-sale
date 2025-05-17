@@ -23,3 +23,7 @@ final class RegisterEvent extends AuthEvent {
   @override
   List<Object?> get props => [data];
 }
+
+final class LogoutEvent extends AuthEvent {
+  const LogoutEvent();
+}
