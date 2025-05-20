@@ -6,13 +6,12 @@ import 'dio_interceptor.dart';
 
 /// A service for managing global UI-related error handling
 class ErrorHandlingService {
-  static final ErrorHandlingService _instance = ErrorHandlingService._();
+  /// Factory constructor to return the singleton instance
+  factory ErrorHandlingService() => _instance;
 
   /// Private constructor
   ErrorHandlingService._();
-
-  /// Factory constructor to return the singleton instance
-  factory ErrorHandlingService() => _instance;
+  static final ErrorHandlingService _instance = ErrorHandlingService._();
 
   /// Set the current context for showing error snackbars
   void setContext(BuildContext context) {

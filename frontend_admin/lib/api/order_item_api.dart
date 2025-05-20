@@ -13,7 +13,9 @@ class OrderItemApi extends Equatable {
   Future<List<OrderItemResponse>> getOrderItems() async {
     final response = await ServiceLocator.get<Dio>().get(endpoint);
     if (response.statusCode == 200) {
-      return (response.data as List<dynamic>).map((e) => OrderItemResponse.fromJson(e)).toList();
+      return (response.data as List<dynamic>)
+          .map((e) => OrderItemResponse.fromJson(e))
+          .toList();
     } else {
       throw Exception(response.data);
     }
@@ -29,22 +31,31 @@ class OrderItemApi extends Equatable {
   }
 
   Future<void> addOrderItem({required OrderItemRequest request}) async {
-    final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
-    if (response.statusCode != 201) {
+    final response = await ServiceLocator.get<Dio>().post(
+      endpoint,
+      data: request.toJson(),
+    );
+    if (response.statusCode != 200) {
       throw Exception(response.data);
     }
   }
 
-  Future<void> editOrderItem({required int id, required OrderItemRequest request}) async {
-    final response = await ServiceLocator.get<Dio>().put('$endpoint/$id', data: request.toJson());
-    if (response.statusCode != 204) {
+  Future<void> editOrderItem({
+    required int id,
+    required OrderItemRequest request,
+  }) async {
+    final response = await ServiceLocator.get<Dio>().put(
+      '$endpoint/$id',
+      data: request.toJson(),
+    );
+    if (response.statusCode != 200) {
       throw Exception(response.data);
     }
   }
 
   Future<void> deleteOrderItem({required int id}) async {
     final response = await ServiceLocator.get<Dio>().delete('$endpoint/$id');
-    if (response.statusCode != 204) {
+    if (response.statusCode != 200) {
       throw Exception(response.data);
     }
   }

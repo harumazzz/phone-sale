@@ -17,14 +17,11 @@ class OrderRepository extends Equatable {
     return await _api.getOrder(id: id);
   }
 
-  Future<void> addOrder({required OrderRequest request}) async {
+  Future<int> addOrder({required OrderRequest request}) async {
     return await _api.addOrder(request: request);
   }
 
-  Future<void> editOrder({
-    required int id,
-    required OrderRequest request,
-  }) async {
+  Future<void> editOrder({required int id, required OrderRequest request}) async {
     return await _api.editOrder(id: id, request: request);
   }
 

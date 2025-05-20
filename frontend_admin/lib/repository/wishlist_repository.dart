@@ -9,18 +9,15 @@ class WishlistRepository extends Equatable {
 
   final WishlistApi _api;
 
-  Future<List<WishlistResponse>> getWishlists() async {
-    return await _api.getWishlists();
+  Future<List<WishlistResponse>> getWishlists({required String customerId}) async {
+    return await _api.getWishlists(customerId: customerId);
   }
 
   Future<void> addWishlist({required WishlistRequest request}) async {
     return await _api.addWishlist(request: request);
   }
 
-  Future<void> editWishlist({
-    required int id,
-    required WishlistRequest request,
-  }) async {
+  Future<void> editWishlist({required int id, required WishlistRequest request}) async {
     return await _api.editWishlist(id: id, request: request);
   }
 

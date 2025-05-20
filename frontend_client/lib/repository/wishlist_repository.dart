@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../api/wishlist_api.dart';
 import '../model/request/wishlist_request.dart';
 import '../model/response/wishlist_response.dart';
-import '../model/response/product_response.dart';
 
 class WishlistRepository extends Equatable {
   const WishlistRepository(this._api);
