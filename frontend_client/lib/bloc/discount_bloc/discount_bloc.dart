@@ -10,16 +10,15 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     on<DiscountClearEvent>(_onClear);
   }
   final DiscountRepository discountRepository;
-
   Future<void> _onValidate(DiscountValidateEvent event, Emitter<DiscountState> emit) async {
     emit(DiscountLoading());
     try {
-      final validation = await discountRepository.validateDiscount(
+      final discount = await discountRepository.validateDiscount(
         code: event.code,
         cartTotal: event.cartTotal,
         customerId: event.customerId,
       );
-      emit(DiscountValidated(validation));
+      emit(DiscountValidated(discount));
     } catch (e) {
       emit(DiscountError(e.toString()));
     }

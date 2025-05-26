@@ -31,6 +31,5 @@ dev_dependencies:
   dart_format: ^1.4.0
 flutter:
   uses-material-design: true
-
-assets:
-  - assets/
+  assets:
+    - assets/

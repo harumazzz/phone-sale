@@ -43,7 +43,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     emit(const OrderLoading());
     try {
       final orderId = await orderRepository.addOrder(request: event.request);
-      emit(OrderAdded(orderId: orderId));
+
+      if (orderId > 0) {
+        emit(OrderAdded(orderId: orderId));
+      } else {
+        emit(const OrderError(message: 'Failed to create order: Invalid order ID returned'));
+      }
     } catch (e) {
       emit(OrderError(message: e.toString()));
     }

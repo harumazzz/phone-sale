@@ -38,8 +38,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       // Tạo repository và gọi API
-      final api = const ForgotPasswordApi();
-      final repository = ForgotPasswordRepository(api: api);
+      const api = ForgotPasswordApi();
+      const repository = ForgotPasswordRepository(api: api);
       await repository.forgotPassword(email: _emailController.text);
 
       setState(() {

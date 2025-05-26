@@ -1,54 +1,159 @@
 import 'package:dio/dio.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
-import '../model/discount_model.dart';
+import '../model/api_response.dart';
+import '../model/request/discount_request.dart';
+import '../model/response/discount_response.dart';
 import '../service/service_locator.dart';
 
-class DiscountApi {
+class DiscountApi extends Equatable {
   const DiscountApi();
 
-  Future<DiscountValidationModel> validateDiscount({
-    required String code,
-    required double cartTotal,
-    required String customerId,
-  }) async {
+  static const endpoint = '/discounts';
+
+  Future<List<DiscountResponse>> getDiscounts() async {
+    final response = await ServiceLocator.get<Dio>().get(endpoint);
+    if (response.statusCode == 200) {
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.listFromJson(response.data as Map<String, dynamic>, DiscountResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        return apiResponse.data ?? [];
+      } else {
+        // Legacy format (direct list)
+        final apiResponse = ApiResponse.fromDirectList(response.data as List<dynamic>, DiscountResponse.fromJson);
+
+        return apiResponse.data ?? [];
+      }
+    } else {
+      throw Exception('Failed to fetch discounts');
+    }
+  }
+
+  Future<DiscountResponse> getDiscountById(int id) async {
+    final response = await ServiceLocator.get<Dio>().get('$endpoint/$id');
+    if (response.statusCode == 200) {
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.fromJson(response.data as Map<String, dynamic>, DiscountResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        return apiResponse.data!;
+      } else {
+        // Legacy format (direct object)
+        return DiscountResponse.fromJson(response.data as Map<String, dynamic>);
+      }
+    } else {
+      throw Exception('Failed to fetch discount');
+    }
+  }
+
+  Future<DiscountResponse> addDiscount(DiscountRequest request) async {
+    final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.fromJson(response.data as Map<String, dynamic>, DiscountResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        return apiResponse.data!;
+      } else {
+        // Legacy format (direct object)
+        return DiscountResponse.fromJson(response.data as Map<String, dynamic>);
+      }
+    } else {
+      throw Exception('Failed to add discount');
+    }
+  }
+
+  Future<DiscountResponse> updateDiscount(int id, DiscountRequest request) async {
+    final response = await ServiceLocator.get<Dio>().put('$endpoint/$id', data: request.toJson());
+    if (response.statusCode == 200) {
+      if (response.data is Map && response.data.containsKey('success')) {
+        // New API response format with ApiResponse wrapper
+        final apiResponse = ApiResponse.fromJson(response.data as Map<String, dynamic>, DiscountResponse.fromJson);
+
+        if (!apiResponse.success) {
+          throw Exception(apiResponse.message);
+        }
+
+        return apiResponse.data!;
+      } else {
+        // Legacy format (direct object)
+        return DiscountResponse.fromJson(response.data as Map<String, dynamic>);
+      }
+    } else {
+      throw Exception('Failed to update discount');
+    }
+  }
+
+  Future<void> deleteDiscount(int id) async {
+    final response = await ServiceLocator.get<Dio>().delete('$endpoint/$id');
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Failed to delete discount');
+    }
+  }
+
+  Future<DiscountResponse> validateDiscount(String code, double cartTotal, String customerId) async {
     try {
       final response = await ServiceLocator.get<Dio>().post(
-        '/discounts/validate',
+        '$endpoint/validate',
         data: {'code': code, 'cartTotal': cartTotal, 'customerId': customerId},
       );
+      debugPrint('Discount validation response: ${response.data}');
 
-      if (response.data['isSuccess'] && response.data['data'] != null) {
-        return DiscountValidationModel.fromJson(response.data['data']);
-      }
+      if (response.statusCode == 200) {
+        if (response.data is Map && response.data.containsKey('success')) {
+          final responseData = response.data as Map<String, dynamic>;
+          final bool success = responseData['success'] as bool? ?? false;
 
-      throw Exception(response.data['message'] ?? 'Failed to validate discount code');
-    } on DioException catch (e) {
-      if (e.response != null && e.response!.data != null && e.response!.data['message'] != null) {
-        throw Exception(e.response!.data['message']);
+          if (!success) {
+            throw Exception(responseData['message'] ?? 'Validation failed');
+          }
+
+          // Handle the special validation response format
+          if (responseData['data'] is Map<String, dynamic>) {
+            final validationData = responseData['data'] as Map<String, dynamic>;
+            final bool isValid = validationData['isValid'] as bool? ?? false;
+
+            // Create a DiscountResponse from the validation data
+            return DiscountResponse(
+              discountId: validationData['discountId'] as int?,
+              discountValue: validationData['discountAmount'] as double?,
+              code: code, // Use the code that was sent in the request
+              description: validationData['message'] as String?,
+              isActive: isValid, // Use isValid as isActive
+            );
+          } else {
+            // Fallback to standard deserialization
+            return (responseData['data'] != null)
+                ? DiscountResponse.fromJson(responseData['data'] as Map<String, dynamic>)
+                : throw Exception('Invalid response data format');
+          }
+        } else {
+          // Legacy format (direct object)
+          return DiscountResponse.fromJson(response.data as Map<String, dynamic>);
+        }
+      } else {
+        throw Exception('Failed to validate discount code: ${response.statusCode}');
       }
-      throw Exception('Network error: ${e.message}');
     } catch (e) {
-      throw Exception('Error validating discount code: $e');
+      debugPrint('Error in validateDiscount: $e');
+      throw Exception('Failed to validate discount code: $e');
     }
   }
 
-  Future<List<DiscountModel>> getDiscounts() async {
-    try {
-      final response = await ServiceLocator.get<Dio>().get('/discounts');
-
-      if (response.data['isSuccess'] && response.data['data'] != null) {
-        final List<dynamic> discountsJson = response.data['data'];
-        return discountsJson.map((json) => DiscountModel.fromJson(json)).toList();
-      }
-
-      throw Exception(response.data['message'] ?? 'Failed to get discounts');
-    } on DioException catch (e) {
-      if (e.response != null && e.response!.data != null && e.response!.data['message'] != null) {
-        throw Exception(e.response!.data['message']);
-      }
-      throw Exception('Network error: ${e.message}');
-    } catch (e) {
-      throw Exception('Error getting discounts: $e');
-    }
-  }
+  @override
+  List<Object?> get props => [];
 }

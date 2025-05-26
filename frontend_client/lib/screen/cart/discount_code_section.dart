@@ -64,7 +64,10 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
             builder: (context, state) {
               Widget? messageWidget;
               if (state is DiscountValidated) {
-                if (state.validation.isValid == true) {
+                final discountValue = state.discount.discountValue ?? 0.0;
+                final isValid = state.discount.isActive == true;
+
+                if (isValid) {
                   messageWidget = Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -73,25 +76,19 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
                         style: TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '- ${formatCurrency.format(state.validation.discountAmount)}',
+                        '- ${formatCurrency.format(discountValue)} (${state.discount.code ?? ""})',
                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       ),
                     ],
-                  );
-
-                  // Callback to parent with discount information
-                  if (state.validation.discountAmount != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      widget.onDiscountApplied(state.validation.discountAmount!, state.validation.discountId);
-                    });
-                  }
+                  ); // Callback to parent with discount information
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    widget.onDiscountApplied(discountValue, state.discount.discountId);
+                  });
                 } else {
                   messageWidget = Text(
-                    state.validation.message ?? 'Mã giảm giá không hợp lệ',
+                    state.discount.description ?? 'Mã giảm giá không hợp lệ',
                     style: const TextStyle(color: Colors.red),
-                  );
-
-                  // Reset discount if invalid
+                  ); // Reset discount if invalid
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     widget.onDiscountApplied(0, null);
                   });

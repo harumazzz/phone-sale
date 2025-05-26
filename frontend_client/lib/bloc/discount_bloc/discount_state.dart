@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../model/discount_model.dart';
+import '../../model/response/discount_response.dart';
 
 abstract class DiscountState extends Equatable {
   const DiscountState();
@@ -14,11 +14,11 @@ class DiscountInitial extends DiscountState {}
 class DiscountLoading extends DiscountState {}
 
 class DiscountValidated extends DiscountState {
-  const DiscountValidated(this.validation);
-  final DiscountValidationModel validation;
+  const DiscountValidated(this.discount);
+  final DiscountResponse discount;
 
   @override
-  List<Object?> get props => [validation];
+  List<Object?> get props => [discount];
 }
 
 class DiscountError extends DiscountState {

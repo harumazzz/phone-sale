@@ -52,13 +52,14 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
       return _buildOrderReview(context);
     }
   }
-
   Widget _buildOrderReview(BuildContext context) {
     final theme = Theme.of(context);
     final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
+    final cartItems = widget.checkoutData['cartItems'] ?? [];
     final subtotal = widget.checkoutData['subtotal'] ?? 0.0;
+    final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
     final shippingFee = widget.checkoutData['deliveryOption'] == 'express' ? 30000.0 : 0.0;
-    final total = subtotal + shippingFee;
+    final total = subtotal - discountAmount + shippingFee;
 
     // Update the total in the checkout data
     if (widget.checkoutData['total'] != total) {
@@ -71,9 +72,19 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader(context, 'Xác nhận đơn hàng', Symbols.check_circle),
+          children: [            _buildSectionHeader(context, 'Xác nhận đơn hàng', Symbols.check_circle),
             const SizedBox(height: 16),
+
+            // Cart Items
+            if (cartItems.isNotEmpty) ...[
+              _buildSummaryCard(
+                context,
+                'Sản phẩm đặt hàng',
+                Column(
+                  children: cartItems.map<Widget>((item) => _buildCartItem(context, item, formatCurrency)).toList(),
+                ),
+              ),
+            ],
 
             // Order Summary
             _buildSummaryCard(
@@ -81,8 +92,14 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
               'Chi tiết đơn hàng',
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSummaryRow('Tạm tính', formatCurrency.format(subtotal)),
+                children: [                  _buildSummaryRow('Tạm tính', formatCurrency.format(subtotal)),
+                  if (discountAmount > 0) ...[
+                    _buildSummaryRow(
+                      'Giảm giá${widget.checkoutData['discountCode'] != null ? ' (${widget.checkoutData['discountCode']})' : ''}',
+                      '- ${formatCurrency.format(discountAmount)}',
+                      valueColor: Colors.green[700],
+                    ),
+                  ],
                   _buildSummaryRow(
                     'Phí vận chuyển',
                     shippingFee > 0 ? formatCurrency.format(shippingFee) : 'Miễn phí',
@@ -408,5 +425,73 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
         _errorMessage = e.toString();
       });
     }
+  }
+
+  Widget _buildCartItem(BuildContext context, dynamic item, NumberFormat formatter) {
+    final theme = Theme.of(context);
+    final product = item.product;
+    final quantity = item.quantity;
+    final price = product.price ?? 0;
+    final totalPrice = price * quantity;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              product.productLink ?? 'https://placeholder.pics/svg/60',
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: 60,
+                height: 60,
+                color: Colors.grey[200],
+                child: Icon(Icons.phone_android, color: Colors.grey[400]),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product.model ?? 'Unknown Product',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  formatter.format(price),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Số lượng: $quantity',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                formatter.format(totalPrice),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
