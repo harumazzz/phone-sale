@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../../repository/order_repository.dart';
 import '../../model/response/order_response.dart';
+import '../../model/response/order_with_items.dart';
 import '../../model/request/order_request.dart';
 
 part 'order_event.dart';
@@ -13,6 +14,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc({required this.orderRepository}) : super(const OrderInitial()) {
     on<OrderFetchEvent>(_onFetchOrder);
     on<OrderFetchByCustomerIdEvent>(_onFetchOrdersByCustomerId);
+    on<OrderFetchWithItemsByCustomerIdEvent>(_onFetchOrdersWithItemsByCustomerId);
     on<OrderAddEvent>(_onAddOrder);
     on<OrderUpdateStatusEvent>(_onUpdateOrderStatus);
   }
@@ -34,6 +36,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     try {
       final orders = await orderRepository.getOrdersByCustomerId(customerId: event.customerId);
       emit(OrderLoaded(orders: orders));
+    } catch (e) {
+      emit(OrderError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchOrdersWithItemsByCustomerId(
+    OrderFetchWithItemsByCustomerIdEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(const OrderLoading());
+    try {
+      final ordersWithItems = await orderRepository.getOrdersWithItemsByCustomerId(customerId: event.customerId);
+      emit(OrderWithItemsLoaded(ordersWithItems: ordersWithItems));
     } catch (e) {
       emit(OrderError(message: e.toString()));
     }

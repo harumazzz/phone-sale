@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../api/order_api.dart';
+import '../../api/order_item_api.dart';
+import '../../api/product_api.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/discount_bloc/discount_bloc_export.dart';
@@ -44,7 +46,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 3);
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -412,7 +414,10 @@ class _CartScreenState extends State<CartScreen> {
                         (context) => MultiBlocProvider(
                           providers: [
                             BlocProvider(
-                              create: (context) => OrderBloc(orderRepository: const OrderRepository(OrderApi())),
+                              create:
+                                  (context) => OrderBloc(
+                                    orderRepository: const OrderRepository(OrderApi(), OrderItemApi(), ProductApi()),
+                                  ),
                             ),
                             BlocProvider.value(value: context.read<CartBloc>()),
                             BlocProvider.value(value: context.read<DiscountBloc>()),

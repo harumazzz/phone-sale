@@ -36,7 +36,7 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
 
   @override
   Widget build(BuildContext context) {
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 3);
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
 
     return Column(
       children: [

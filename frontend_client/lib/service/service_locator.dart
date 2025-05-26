@@ -53,7 +53,7 @@ class ServiceLocator {
     register<DiscountRepository>(const DiscountRepository(DiscountApi()));
     register<CategoryRepository>(const CategoryRepository(CategoryApi()));
     register<CustomerRepository>(const CustomerRepository(CustomerApi()));
-    register<OrderRepository>(const OrderRepository(OrderApi()));
+    register<OrderRepository>(const OrderRepository(OrderApi(), OrderItemApi(), ProductApi()));
     register<OrderItemRepository>(const OrderItemRepository(OrderItemApi()));
     register<PaymentRepository>(const PaymentRepository(PaymentApi()));
     register<ShipmentRepository>(const ShipmentRepository(ShipmentApi()));

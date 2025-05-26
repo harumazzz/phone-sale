@@ -12,7 +12,7 @@ class OrderSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final cartItems = checkoutData['cartItems'] ?? [];
     final subtotal = checkoutData['subtotal'] ?? 0.0;
     final discountAmount = checkoutData['discountAmount'] ?? 0.0;

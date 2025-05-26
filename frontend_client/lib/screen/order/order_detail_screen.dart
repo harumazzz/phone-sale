@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../bloc/order_bloc/order_bloc.dart';
+import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../model/response/order_response.dart';
 
 class OrderDetailScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
+    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final formatDate = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
@@ -295,11 +296,31 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           children: [
             Text('Thông tin giao hàng', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            _buildInfoRow('Người nhận:', 'Nguyễn Văn A'),
-            const SizedBox(height: 8),
-            _buildInfoRow('Số điện thoại:', '0912345678'),
-            const SizedBox(height: 8),
-            _buildInfoRow('Địa chỉ:', 'Số 123 Đường ABC, Phường XYZ, Quận/Huyện DEF, Thành phố GHI'),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, authState) {
+                if (authState is AuthLogin) {
+                  final customer = authState.data;
+                  return Column(
+                    children: [
+                      _buildInfoRow('Người nhận:', customer.name.isNotEmpty ? customer.name : 'Chưa cập nhật'),
+                      const SizedBox(height: 8),
+                      _buildInfoRow('Số điện thoại:', customer.phoneNumber ?? 'Chưa cập nhật'),
+                      const SizedBox(height: 8),
+                      _buildInfoRow('Địa chỉ:', customer.address ?? 'Chưa cập nhật'),
+                    ],
+                  );
+                }
+                return Column(
+                  children: [
+                    _buildInfoRow('Người nhận:', 'Chưa đăng nhập'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow('Số điện thoại:', 'Chưa đăng nhập'),
+                    const SizedBox(height: 8),
+                    _buildInfoRow('Địa chỉ:', 'Chưa đăng nhập'),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

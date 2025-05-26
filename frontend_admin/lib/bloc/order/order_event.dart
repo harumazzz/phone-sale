@@ -38,3 +38,13 @@ class DeleteOrderEvent extends OrderEvent {
   @override
   List<Object?> get props => [id];
 }
+
+class UpdateOrderEvent extends OrderEvent {
+  const UpdateOrderEvent({required this.orderId, required this.orderRequest});
+
+  final int orderId;
+  final OrderRequest orderRequest;
+
+  @override
+  List<Object?> get props => [orderId, orderRequest];
+}

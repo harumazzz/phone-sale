@@ -52,9 +52,10 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
       return _buildOrderReview(context);
     }
   }
+
   Widget _buildOrderReview(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
+    final formatCurrency = NumberFormat.simpleCurrency(locale: 'vi_VN', decimalDigits: 0, name: '₫');
     final cartItems = widget.checkoutData['cartItems'] ?? [];
     final subtotal = widget.checkoutData['subtotal'] ?? 0.0;
     final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
@@ -72,7 +73,8 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [            _buildSectionHeader(context, 'Xác nhận đơn hàng', Symbols.check_circle),
+          children: [
+            _buildSectionHeader(context, 'Xác nhận đơn hàng', Symbols.check_circle),
             const SizedBox(height: 16),
 
             // Cart Items
@@ -92,7 +94,8 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
               'Chi tiết đơn hàng',
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [                  _buildSummaryRow('Tạm tính', formatCurrency.format(subtotal)),
+                children: [
+                  _buildSummaryRow('Tạm tính', formatCurrency.format(subtotal)),
                   if (discountAmount > 0) ...[
                     _buildSummaryRow(
                       'Giảm giá${widget.checkoutData['discountCode'] != null ? ' (${widget.checkoutData['discountCode']})' : ''}',
@@ -446,12 +449,13 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
               width: 60,
               height: 60,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 60,
-                height: 60,
-                color: Colors.grey[200],
-                child: Icon(Icons.phone_android, color: Colors.grey[400]),
-              ),
+              errorBuilder:
+                  (context, error, stackTrace) => Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey[200],
+                    child: Icon(Icons.phone_android, color: Colors.grey[400]),
+                  ),
             ),
           ),
           const SizedBox(width: 12),
@@ -466,15 +470,9 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  formatter.format(price),
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
+                Text(formatter.format(price), style: TextStyle(color: Colors.grey[600], fontSize: 14)),
                 const SizedBox(height: 4),
-                Text(
-                  'Số lượng: $quantity',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
+                Text('Số lượng: $quantity', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
               ],
             ),
           ),

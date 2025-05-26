@@ -26,6 +26,15 @@ class OrderFetchByCustomerIdEvent extends OrderEvent {
   List<Object?> get props => [customerId];
 }
 
+class OrderFetchWithItemsByCustomerIdEvent extends OrderEvent {
+  const OrderFetchWithItemsByCustomerIdEvent({required this.customerId});
+
+  final String customerId;
+
+  @override
+  List<Object?> get props => [customerId];
+}
+
 class OrderAddEvent extends OrderEvent {
   const OrderAddEvent({required this.request});
 

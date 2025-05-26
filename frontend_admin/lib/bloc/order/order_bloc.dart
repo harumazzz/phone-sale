@@ -14,6 +14,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<AddOrderEvent>(_onAddOrderEvent);
     on<EditOrderEvent>(_onEditOrderEvent);
     on<DeleteOrderEvent>(_onDeleteOrderEvent);
+    on<UpdateOrderEvent>(_onUpdateOrderEvent);
   }
 
   final OrderRepository orderRepository;
@@ -54,6 +55,18 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     emit(OrderLoading());
     try {
       await orderRepository.deleteOrder(id: event.id);
+      final orders = await orderRepository.getOrders();
+      emit(OrderLoaded(orders: orders));
+    } catch (e) {
+      emit(OrderError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateOrderEvent(UpdateOrderEvent event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      await orderRepository.editOrder(id: event.orderId, request: event.orderRequest);
+      emit(const OrderUpdated(message: 'Cập nhật đơn hàng thành công'));
       final orders = await orderRepository.getOrders();
       emit(OrderLoaded(orders: orders));
     } catch (e) {
