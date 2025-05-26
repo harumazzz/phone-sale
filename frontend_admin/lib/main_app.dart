@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_admin/bloc/customer/customer_bloc.dart';
+import 'package:frontend_admin/bloc/discount/discount_bloc.dart';
 import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/interceptors/error_handling_service.dart';
 import 'package:frontend_admin/repository/category_repository.dart';
 import 'package:frontend_admin/repository/customer_repository.dart';
+import 'package:frontend_admin/repository/discount_repository.dart';
 import 'package:frontend_admin/repository/order_repository.dart';
 import 'package:frontend_admin/repository/product_repository.dart';
 import 'package:frontend_admin/service/service_locator.dart';
@@ -64,6 +66,9 @@ class _MainAppState extends State<MainApp> {
           create: (context) => CustomerBloc(customerRepository: ServiceLocator.get<CustomerRepository>()),
         ),
         BlocProvider<OrderBloc>(create: (context) => OrderBloc(orderRepository: ServiceLocator.get<OrderRepository>())),
+        BlocProvider<DiscountBloc>(
+          create: (context) => DiscountBloc(discountRepository: ServiceLocator.get<DiscountRepository>()),
+        ),
       ],
       child: MaterialApp(
         title: 'PhoneSale Admin',

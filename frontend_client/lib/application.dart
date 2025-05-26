@@ -6,6 +6,7 @@ import 'bloc/auth_bloc/auth_bloc.dart';
 import 'bloc/cart_bloc/cart_bloc.dart';
 import 'bloc/category_bloc/category_bloc.dart';
 import 'bloc/category_search_bloc/category_search_bloc.dart';
+import 'bloc/discount_bloc/discount_bloc.dart';
 import 'bloc/order_bloc/order_bloc.dart';
 import 'bloc/payment_bloc/payment_bloc.dart';
 import 'bloc/product_bloc/product_bloc.dart';
@@ -16,6 +17,7 @@ import 'interceptors/error_handling_service.dart';
 import 'repository/auth_repository.dart';
 import 'repository/cart_repository.dart';
 import 'repository/category_repository.dart';
+import 'repository/discount_repository.dart';
 import 'repository/order_repository.dart';
 import 'repository/payment_repository.dart';
 import 'repository/product_repository.dart';
@@ -100,6 +102,11 @@ class _ApplicationState extends State<Application> {
             return CategorySearchBloc(productRepository: ServiceLocator.get<ProductRepository>());
           },
         ),
+        BlocProvider<DiscountBloc>(
+          create: (context) {
+            return DiscountBloc(discountRepository: ServiceLocator.get<DiscountRepository>());
+          },
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -121,7 +128,7 @@ class _ApplicationState extends State<Application> {
                 secondary: const Color(0xFF03DAC6),
               ),
               scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-              cardTheme: CardTheme(
+              cardTheme: CardThemeData(
                 elevation: 2,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 color: Colors.white,

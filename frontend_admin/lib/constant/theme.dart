@@ -17,7 +17,7 @@ class MaterialDesign {
         fontWeight: material.FontWeight.w600,
       ),
     ),
-    cardTheme: material.CardTheme(
+    cardTheme: material.CardThemeData(
       elevation: 2,
       shape: material.RoundedRectangleBorder(borderRadius: material.BorderRadius.circular(12)),
       shadowColor: material.Colors.black.withValues(alpha: 0.1),

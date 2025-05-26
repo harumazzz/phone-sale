@@ -154,6 +154,20 @@ class CustomSidebar extends StatelessWidget {
             );
           },
         ),
+        SidebarXItem(
+          icon: Symbols.local_offer,
+          label: 'Mã giảm giá',
+          iconBuilder: (selected, hovered) {
+            return Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.teal.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Symbols.local_offer, color: Colors.teal, size: 20),
+            );
+          },
+        ),
       ],
     );
   }

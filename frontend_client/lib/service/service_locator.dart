@@ -5,6 +5,7 @@ import '../api/auth_api.dart';
 import '../api/cart_api.dart';
 import '../api/category_api.dart';
 import '../api/customer_api.dart';
+import '../api/discount_api.dart';
 import '../api/order_api.dart';
 import '../api/order_item_api.dart';
 import '../api/payment_api.dart';
@@ -16,6 +17,7 @@ import '../repository/auth_repository.dart';
 import '../repository/cart_repository.dart';
 import '../repository/category_repository.dart';
 import '../repository/customer_repository.dart';
+import '../repository/discount_repository.dart';
 import '../repository/order_item_repository.dart';
 import '../repository/order_repository.dart';
 import '../repository/payment_repository.dart';
@@ -45,10 +47,10 @@ class ServiceLocator {
 
     // Add global error interceptor
     dio.interceptors.add(DioErrorInterceptor());
-
     register<Dio>(dio);
     register<AuthRepository>(const AuthRepository(AuthApi()));
     register<CartRepository>(const CartRepository(CartApi()));
+    register<DiscountRepository>(const DiscountRepository(DiscountApi()));
     register<CategoryRepository>(const CategoryRepository(CategoryApi()));
     register<CustomerRepository>(const CustomerRepository(CustomerApi()));
     register<OrderRepository>(const OrderRepository(OrderApi()));

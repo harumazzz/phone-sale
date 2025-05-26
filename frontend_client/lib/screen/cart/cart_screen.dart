@@ -5,10 +5,12 @@ import 'package:intl/intl.dart';
 import '../../api/order_api.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
+import '../../bloc/discount_bloc/discount_bloc_export.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
 import '../../repository/order_repository.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_item_card.dart';
+import 'discount_code_section.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -18,6 +20,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  double _discountAmount = 0;
+  int? _discountId;
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +31,13 @@ class _CartScreenState extends State<CartScreen> {
       if (authState is AuthLogin && authState.data.customerId != null && mounted) {
         context.read<CartBloc>().add(CartLoadEvent(customerId: authState.data.customerId!));
       }
+    });
+  }
+
+  void _handleDiscountApplied(double discountAmount, int? discountId) {
+    setState(() {
+      _discountAmount = discountAmount;
+      _discountId = discountId;
     });
   }
 
@@ -325,6 +337,7 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildCheckoutSection(BuildContext context, double totalPrice, NumberFormat formatter) {
     final theme = Theme.of(context);
+    final finalPrice = totalPrice - _discountAmount;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -347,6 +360,22 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
           const SizedBox(height: 8),
+          // Discount code section
+          DiscountCodeSection(cartTotal: totalPrice, onDiscountApplied: _handleDiscountApplied),
+          // Show discount amount if applied
+          if (_discountAmount > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Giảm giá:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
+                Text(
+                  '- ${formatter.format(_discountAmount)}',
+                  style: theme.textTheme.bodyLarge?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -363,7 +392,7 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text('Tổng tiền:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               Text(
-                formatter.format(totalPrice),
+                formatter.format(finalPrice),
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
@@ -386,8 +415,9 @@ class _CartScreenState extends State<CartScreen> {
                               create: (context) => OrderBloc(orderRepository: const OrderRepository(OrderApi())),
                             ),
                             BlocProvider.value(value: context.read<CartBloc>()),
+                            BlocProvider.value(value: context.read<DiscountBloc>()),
                           ],
-                          child: const CheckoutScreen(),
+                          child: CheckoutScreen(discountAmount: _discountAmount, discountId: _discountId),
                         ),
                   ),
                 );

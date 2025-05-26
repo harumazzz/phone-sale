@@ -15,14 +15,18 @@ namespace backend.Controllers
         public async Task<ActionResult<ApiResponse<List<OrderResponse>>>> GetOrders()
         {
             try
-            {
-                var orders = await _context.Orders
+            {                var orders = await _context.Orders
                     .Include(o => o.Customer)
+                    .Include(o => o.Discount)
                     .Select(o => new OrderResponse
                     {
                         OrderId = o.OrderId,
                         OrderDate = o.OrderDate,
                         TotalPrice = o.TotalPrice,
+                        OriginalPrice = o.OriginalPrice,
+                        DiscountAmount = o.DiscountAmount,
+                        DiscountId = o.DiscountId,
+                        DiscountCode = o.Discount != null ? o.Discount.Code : null,
                         CustomerId = o.CustomerId,
                         Status = o.Status
                     })
@@ -45,15 +49,19 @@ namespace backend.Controllers
                 {
                     return HandleNotFound<List<OrderResponse>>("Customer", id);
                 }
-                
-                var orders = await _context.Orders
+                  var orders = await _context.Orders
                     .Where(e => e.CustomerId == id)
                     .Include(o => o.Customer)
+                    .Include(o => o.Discount)
                     .Select(o => new OrderResponse
                     {
                         OrderId = o.OrderId,
                         OrderDate = o.OrderDate,
                         TotalPrice = o.TotalPrice,
+                        OriginalPrice = o.OriginalPrice,
+                        DiscountAmount = o.DiscountAmount,
+                        DiscountId = o.DiscountId,
+                        DiscountCode = o.Discount != null ? o.Discount.Code : null,
                         CustomerId = o.CustomerId,
                         Status = o.Status
                     })
@@ -73,9 +81,9 @@ namespace backend.Controllers
         public async Task<ActionResult<ApiResponse<OrderResponse>>> GetOrder(int id)
         {
             try
-            {
-                var order = await _context.Orders
+            {                var order = await _context.Orders
                     .Include(o => o.Customer)
+                    .Include(o => o.Discount)
                     .FirstOrDefaultAsync(o => o.OrderId == id);
 
                 if (order == null)
@@ -88,6 +96,10 @@ namespace backend.Controllers
                     OrderId = order.OrderId,
                     OrderDate = order.OrderDate,
                     TotalPrice = order.TotalPrice,
+                    OriginalPrice = order.OriginalPrice,
+                    DiscountAmount = order.DiscountAmount,
+                    DiscountId = order.DiscountId,
+                    DiscountCode = order.Discount?.Code,
                     CustomerId = order.CustomerId,
                     Status = order.Status
                 };
@@ -122,25 +134,48 @@ namespace backend.Controllers
                 if (customer == null)
                 {
                     return HandleBadRequest<OrderResponse>($"Invalid Customer ID: {request.CustomerId}");
-                }
-
-                var order = new Order
+                }                var order = new Order
                 {
                     OrderDate = DateTime.Now,
                     TotalPrice = request.TotalPrice,
+                    OriginalPrice = request.OriginalPrice > 0 ? request.OriginalPrice : request.TotalPrice,
+                    DiscountAmount = request.DiscountAmount,
+                    DiscountId = request.DiscountId,
                     CustomerId = request.CustomerId,
                     Customer = customer,
                     Status = request.Status ?? OrderStatus.Pending
                 };
                 
+                // If a discount is used, increment its usage count
+                if (request.DiscountId.HasValue)
+                {
+                    var discount = await _context.Discounts.FindAsync(request.DiscountId.Value);
+                    if (discount != null)
+                    {
+                        discount.CurrentUses++;
+                        _context.Discounts.Update(discount);
+                    }
+                }
+                
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
+
+                string? discountCode = null;
+                if (order.DiscountId.HasValue)
+                {
+                    var discount = await _context.Discounts.FindAsync(order.DiscountId.Value);
+                    discountCode = discount?.Code;
+                }
 
                 var response = new OrderResponse
                 {
                     OrderId = order.OrderId,
                     OrderDate = order.OrderDate,
                     TotalPrice = order.TotalPrice,
+                    OriginalPrice = order.OriginalPrice,
+                    DiscountAmount = order.DiscountAmount,
+                    DiscountId = order.DiscountId,
+                    DiscountCode = discountCode,
                     CustomerId = order.CustomerId,
                     Status = order.Status
                 };

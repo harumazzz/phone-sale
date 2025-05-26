@@ -41,20 +41,13 @@ class MaterialDesign {
       ),
       iconTheme: material.IconThemeData(color: material.Colors.white),
     ),
-    cardTheme: material.CardTheme(
+    cardTheme: material.CardThemeData(
       elevation: 3,
-      shape: material.RoundedRectangleBorder(
-        borderRadius: material.BorderRadius.circular(12),
-      ),
+      shape: material.RoundedRectangleBorder(borderRadius: material.BorderRadius.circular(12)),
     ),
-    dialogTheme: material.DialogTheme(
-      backgroundColor: material.Colors.grey.shade900,
-    ),
+    dialogTheme: material.DialogThemeData(backgroundColor: material.Colors.grey.shade900),
     pageTransitionsTheme: material.PageTransitionsTheme(
-      builders: Map<
-        material.TargetPlatform,
-        material.PageTransitionsBuilder
-      >.fromIterable(
+      builders: Map<material.TargetPlatform, material.PageTransitionsBuilder>.fromIterable(
         material.TargetPlatform.values,
         value: (_) => const material.FadeForwardsPageTransitionsBuilder(),
       ),
@@ -64,9 +57,7 @@ class MaterialDesign {
   static final material.ThemeData lightTheme = material.ThemeData(
     brightness: material.Brightness.light,
     useMaterial3: true,
-    colorScheme: material.ColorScheme.fromSeed(
-      seedColor: material.Colors.pinkAccent,
-    ),
+    colorScheme: material.ColorScheme.fromSeed(seedColor: material.Colors.pinkAccent),
     progressIndicatorTheme: material.ProgressIndicatorThemeData(
       color: material.Colors.pinkAccent,
       linearTrackColor: material.Colors.grey.shade300,
@@ -100,17 +91,12 @@ class MaterialDesign {
       ),
       iconTheme: material.IconThemeData(color: material.Colors.black),
     ),
-    cardTheme: material.CardTheme(
+    cardTheme: material.CardThemeData(
       elevation: 3,
-      shape: material.RoundedRectangleBorder(
-        borderRadius: material.BorderRadius.circular(12),
-      ),
+      shape: material.RoundedRectangleBorder(borderRadius: material.BorderRadius.circular(12)),
     ),
     pageTransitionsTheme: material.PageTransitionsTheme(
-      builders: Map<
-        material.TargetPlatform,
-        material.PageTransitionsBuilder
-      >.fromIterable(
+      builders: Map<material.TargetPlatform, material.PageTransitionsBuilder>.fromIterable(
         material.TargetPlatform.values,
         value: (_) => const material.FadeForwardsPageTransitionsBuilder(),
       ),

@@ -11,9 +11,7 @@ namespace backend.Models
         Shipped = 2,
         Delivered = 3,
         Cancelled = 4
-    }
-
-    [Table("order")]
+    }    [Table("order")]
     public class Order
     {
         [Key]
@@ -27,6 +25,15 @@ namespace backend.Models
         [Required, Column("total_price", TypeName = "decimal(10,2)")]
         public required decimal TotalPrice { get; set; }
 
+        [Column("discount_id")]
+        public int? DiscountId { get; set; }
+
+        [Column("discount_amount", TypeName = "decimal(10,2)")]
+        public decimal DiscountAmount { get; set; } = 0;
+
+        [Column("original_price", TypeName = "decimal(10,2)")]
+        public decimal OriginalPrice { get; set; }
+
         [Required, ForeignKey("Customer"), Column("customer_id")]
         public required string CustomerId { get; set; }
 
@@ -35,5 +42,9 @@ namespace backend.Models
 
         [JsonIgnore]
         public Customer? Customer { get; set; }
+        
+        [ForeignKey("DiscountId")]
+        [JsonIgnore]
+        public Discount? Discount { get; set; }
     }
 }

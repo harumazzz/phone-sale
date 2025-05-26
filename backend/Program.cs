@@ -2,6 +2,7 @@
 using backend.Data;
 using Microsoft.Extensions.FileProviders;
 using backend.Middleware;
+using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddResponseCaching();
 builder.Services.AddDbContext<PhoneShopContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var uploadedImagesPath = Path.Combine(builder.Environment.ContentRootPath, "UploadedImages");
 

@@ -2,8 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Data
-{
-    public class PhoneShopContext : DbContext
+{    public class PhoneShopContext : DbContext
     {
         public PhoneShopContext(DbContextOptions<PhoneShopContext> options) : base(options) { }
 
@@ -18,6 +17,7 @@ namespace backend.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderPayment> OrderPayments { get; set; }
         public DbSet<OrderShipment> OrderShipments { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

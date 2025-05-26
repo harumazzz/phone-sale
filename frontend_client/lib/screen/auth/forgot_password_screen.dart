@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
+import '../../api/forgot_password_api.dart';
+import '../../repository/forgot_password_repository.dart';
+
 /// Màn hình quên mật khẩu cho phép người dùng yêu cầu đặt lại mật khẩu
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -22,7 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  // TODO: Tích hợp API đặt lại mật khẩu tại đây
+  // Phương thức gửi yêu cầu đặt lại mật khẩu
   Future<void> _requestPasswordReset() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -34,12 +37,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     });
 
     try {
-      // TODO: Gọi API đặt lại mật khẩu
-      // Ví dụ:
-      // final response = await apiService.resetPassword(_emailController.text);
-
-      // Mô phỏng độ trễ của mạng
-      await Future.delayed(const Duration(seconds: 2));
+      // Tạo repository và gọi API
+      final api = const ForgotPasswordApi();
+      final repository = ForgotPasswordRepository(api: api);
+      await repository.forgotPassword(email: _emailController.text);
 
       setState(() {
         _isLoading = false;
@@ -49,7 +50,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() {
         _isLoading = false;
         _errorMessage = 'Không thể gửi yêu cầu. Vui lòng thử lại sau.';
-        // TODO: Xử lý các loại lỗi cụ thể từ API
       });
     }
   }
@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Nhập email đăng ký của bạn. Chúng tôi sẽ gửi một liên kết để đặt lại mật khẩu.',
+            'Nhập email đăng ký của bạn. Chúng tôi sẽ gửi một mật khẩu mới vào email của bạn.',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -159,8 +159,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 24),
           child: Text(
-            'Chúng tôi đã gửi email mật khẩu đến địa chỉ email của bạn. '
-            'Vui lòng kiểm tra hộp thư đến.',
+            'Chúng tôi đã gửi mật khẩu mới đến địa chỉ email của bạn. '
+            'Vui lòng kiểm tra hộp thư đến và sử dụng mật khẩu mới để đăng nhập.',
             textAlign: TextAlign.center,
           ),
         ),

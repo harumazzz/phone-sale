@@ -225,7 +225,7 @@ class SettingScreen extends StatelessWidget {
                   centerSpaceRadius: 50, // Adjusted center space
                   pieTouchData: PieTouchData(
                     touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      // TODO: Implement touch interaction if needed
+                      // TODO(self): Implement touch interaction if needed
                     },
                   ),
                 ),

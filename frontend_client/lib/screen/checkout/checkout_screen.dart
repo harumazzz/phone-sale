@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
@@ -9,16 +10,26 @@ import 'order_confirmation.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  const CheckoutScreen({super.key, this.discountAmount = 0, this.discountId});
+  final double discountAmount;
+  final int? discountId;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty('discountAmount', discountAmount));
+    properties.add(IntProperty('discountId', discountId));
+  }
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   int _currentStep = 0;
   final PageController _pageController = PageController();
   final Map<String, dynamic> _checkoutData = {};
+
   @override
   void initState() {
     super.initState();
@@ -40,19 +51,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         'city': '',
         'zipCode': '',
       };
-    }
-
-    // Initialize with cart items
+    } // Initialize with cart items
     final cartState = BlocProvider.of<CartBloc>(context).state;
     if (cartState is CartLoaded) {
       _checkoutData['cartItems'] = cartState.carts;
 
       // Calculate total
-      final double subtotal = cartState.carts.fold(0.0, (sum, item) => sum + (item.product.price ?? 0) * item.quantity);
+      final double subtotal = cartState.carts.fold(
+        0.0,
+        (sum, item) => sum + (item.product.price ?? 0) * item.quantity,
+      ); // Apply discount if available
+      _checkoutData['discountAmount'] = widget.discountAmount;
+      _checkoutData['discountId'] = widget.discountId;
+      _checkoutData['originalPrice'] = subtotal;
+      _checkoutData['finalPrice'] = subtotal - widget.discountAmount;
 
       _checkoutData['subtotal'] = subtotal;
       _checkoutData['shippingFee'] = 0.0; // Default: Free shipping
-      _checkoutData['total'] = subtotal;
+      _checkoutData['total'] = subtotal - widget.discountAmount; // Use discounted total
 
       // Default to COD payment method
       _checkoutData['paymentMethod'] = 'cod';

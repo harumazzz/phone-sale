@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_admin/screen/category/category_screen.dart';
 import 'package:frontend_admin/screen/customer/customer_screen.dart';
+import 'package:frontend_admin/screen/discount/discount_screen.dart';
 import 'package:frontend_admin/screen/home/home_screen.dart';
 import 'package:frontend_admin/screen/order/order_screen.dart';
 import 'package:frontend_admin/screen/product/product_screen.dart';
@@ -31,6 +32,8 @@ class CustomScreen extends StatelessWidget {
             return const CustomerScreen();
           case 5:
             return const OrderScreen();
+          case 6:
+            return const DiscountScreen();
           default:
             return Text('Coming Soon', style: theme.textTheme.headlineSmall);
         }

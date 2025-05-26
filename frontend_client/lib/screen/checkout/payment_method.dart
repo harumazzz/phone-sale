@@ -201,11 +201,12 @@ class _PaymentMethodState extends State<PaymentMethod> {
             const SizedBox(height: 16),
             _buildBankDetail('Ngân hàng', 'Vietcombank'),
             _buildBankDetail('Số tài khoản', '1234567890'),
-            _buildBankDetail('Chủ tài khoản', 'CÔNG TY TNHH PHONE SALE'),
+            _buildBankDetail('Chủ tài khoản', 'Trần Văn Khang'),
             _buildBankDetail(
               'Nội dung chuyển khoản',
               'Thanh toan don hang #${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}',
             ),
+            Image.asset('assets/qr.png', height: 150, fit: BoxFit.cover),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),

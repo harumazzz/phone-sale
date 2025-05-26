@@ -365,12 +365,18 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
 
     try {
       // Prepare order request
-      final customer = widget.checkoutData['customer'];
-      // Create order with initial pending status (0)
+      final customer = widget.checkoutData['customer']; // Create order with initial pending status (0)
+      final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
+      final originalPrice = widget.checkoutData['originalPrice'] ?? widget.checkoutData['total'];
+      final discountId = widget.checkoutData['discountId'];
+
       final orderRequest = OrderRequest(
         customerId: customer.customerId,
         totalPrice: widget.checkoutData['total'],
         status: 0, // Pending status
+        discountId: discountId,
+        discountAmount: discountAmount,
+        originalPrice: originalPrice,
       );
 
       // Create order via bloc
