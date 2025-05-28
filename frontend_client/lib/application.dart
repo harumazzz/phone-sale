@@ -8,10 +8,8 @@ import 'bloc/category_bloc/category_bloc.dart';
 import 'bloc/category_search_bloc/category_search_bloc.dart';
 import 'bloc/discount_bloc/discount_bloc.dart';
 import 'bloc/order_bloc/order_bloc.dart';
-import 'bloc/payment_bloc/payment_bloc.dart';
 import 'bloc/product_bloc/product_bloc.dart';
 import 'bloc/product_search_bloc/product_search_bloc.dart';
-import 'bloc/shipment_bloc/shipment_bloc.dart';
 import 'bloc/wishlist_bloc/wishlist_bloc.dart';
 import 'interceptors/error_handling_service.dart';
 import 'repository/auth_repository.dart';
@@ -19,9 +17,7 @@ import 'repository/cart_repository.dart';
 import 'repository/category_repository.dart';
 import 'repository/discount_repository.dart';
 import 'repository/order_repository.dart';
-import 'repository/payment_repository.dart';
 import 'repository/product_repository.dart';
-import 'repository/shipment_repository.dart';
 import 'repository/wishlist_repository.dart';
 import 'screen/log_in/login_screen.dart';
 import 'screen/main_navigation_screen.dart';
@@ -77,19 +73,9 @@ class _ApplicationState extends State<Application> {
             return ProductSearchBloc(productRepository: ServiceLocator.get<ProductRepository>());
           },
         ),
-        BlocProvider<PaymentBloc>(
-          create: (context) {
-            return PaymentBloc(paymentRepository: ServiceLocator.get<PaymentRepository>());
-          },
-        ),
         BlocProvider<OrderBloc>(
           create: (context) {
             return OrderBloc(orderRepository: ServiceLocator.get<OrderRepository>());
-          },
-        ),
-        BlocProvider<ShipmentBloc>(
-          create: (context) {
-            return ShipmentBloc(shipmentRepository: ServiceLocator.get<ShipmentRepository>());
           },
         ),
         BlocProvider<WishlistBloc>(

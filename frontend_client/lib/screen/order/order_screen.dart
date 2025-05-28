@@ -18,7 +18,9 @@ class _OrderScreenState extends State<OrderScreen> {
   OrderStatus? _selectedStatus;
 
   List<OrderWithItems> _filterOrders(List<OrderWithItems> orders) {
-    if (_selectedStatus == null) return orders;
+    if (_selectedStatus == null) {
+      return orders;
+    }
     return orders.where((orderWithItems) => orderWithItems.order.status == _selectedStatus).toList();
   }
 

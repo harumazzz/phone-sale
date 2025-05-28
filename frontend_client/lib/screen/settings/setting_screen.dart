@@ -5,8 +5,15 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../widget/custom_appbar/custom_appbar.dart';
 
-class SettingScreen extends StatelessWidget {
+class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
+
+  @override
+  State<SettingScreen> createState() => _SettingScreenState();
+}
+
+class _SettingScreenState extends State<SettingScreen> {
+  int _touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -152,55 +159,57 @@ class SettingScreen extends StatelessWidget {
   }
 
   Widget _buildPurchasedProductsStoreChart(BuildContext context) {
-    final List<PieChartSectionData> sections = [
-      PieChartSectionData(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        value: 40,
-        title: 'Điện thoại',
-        radius: 60, // Increased radius
-        titleStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
-        ),
-      ),
-      PieChartSectionData(
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        value: 30,
-        title: 'Máy tính bảng',
-        radius: 60, // Increased radius
-        titleStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onSecondaryContainer,
-        ),
-      ),
-      PieChartSectionData(
-        color: Theme.of(context).colorScheme.tertiaryContainer,
-        value: 15,
-        title: 'Phụ kiện',
-        radius: 60, // Increased radius
-        titleStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onTertiaryContainer,
-        ),
-      ),
-      PieChartSectionData(
-        color: Theme.of(context).colorScheme.errorContainer, // Using error container for variety
-        value: 15,
-        title: 'Khác',
-        radius: 60, // Increased radius
-        titleStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onErrorContainer,
-        ),
-      ),
+    final List<Map<String, dynamic>> chartData = [
+      {'label': 'Điện thoại', 'value': 40.0, 'count': 12},
+      {'label': 'Máy tính bảng', 'value': 30.0, 'count': 8},
+      {'label': 'Phụ kiện', 'value': 15.0, 'count': 6},
+      {'label': 'Khác', 'value': 15.0, 'count': 4},
     ];
 
+    final List<PieChartSectionData> sections =
+        chartData.asMap().entries.map((entry) {
+          final index = entry.key;
+          final data = entry.value;
+          final isTouched = index == _touchedIndex;
+          final fontSize = isTouched ? 16.0 : 14.0;
+          final radius = isTouched ? 70.0 : 60.0;
+          final shadows = isTouched ? [const Shadow(blurRadius: 2)] : <Shadow>[];
+
+          Color sectionColor;
+          Color textColor;
+
+          switch (index) {
+            case 0:
+              sectionColor = Theme.of(context).colorScheme.primaryContainer;
+              textColor = Theme.of(context).colorScheme.onPrimaryContainer;
+              break;
+            case 1:
+              sectionColor = Theme.of(context).colorScheme.secondaryContainer;
+              textColor = Theme.of(context).colorScheme.onSecondaryContainer;
+              break;
+            case 2:
+              sectionColor = Theme.of(context).colorScheme.tertiaryContainer;
+              textColor = Theme.of(context).colorScheme.onTertiaryContainer;
+              break;
+            case 3:
+              sectionColor = Theme.of(context).colorScheme.errorContainer;
+              textColor = Theme.of(context).colorScheme.onErrorContainer;
+              break;
+            default:
+              sectionColor = Colors.grey;
+              textColor = Colors.black;
+          }
+
+          return PieChartSectionData(
+            color: sectionColor,
+            value: data['value'],
+            title: isTouched ? '${data['label']}\n${data['count']} sản phẩm' : '${data['value']}%',
+            radius: radius,
+            titleStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: textColor, shadows: shadows),
+          );
+        }).toList();
+
     return Card(
-      // Wrap with a Card
       elevation: 2,
       margin: const EdgeInsets.all(16.0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -210,27 +219,99 @@ class SettingScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              // Changed to Text widget for consistency with _buildSectionTitle
               'Thống kê sản phẩm đã mua',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24), // Increased spacing
+            const SizedBox(height: 16),
+            // Legend
+            Wrap(
+              spacing: 16,
+              runSpacing: 8,
+              children:
+                  chartData.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final data = entry.value;
+                    Color legendColor;
+
+                    switch (index) {
+                      case 0:
+                        legendColor = Theme.of(context).colorScheme.primaryContainer;
+                        break;
+                      case 1:
+                        legendColor = Theme.of(context).colorScheme.secondaryContainer;
+                        break;
+                      case 2:
+                        legendColor = Theme.of(context).colorScheme.tertiaryContainer;
+                        break;
+                      case 3:
+                        legendColor = Theme.of(context).colorScheme.errorContainer;
+                        break;
+                      default:
+                        legendColor = Colors.grey;
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(color: legendColor, shape: BoxShape.circle),
+                        ),
+                        const SizedBox(width: 8),
+                        Text('${data['label']} (${data['count']})', style: const TextStyle(fontSize: 12)),
+                      ],
+                    );
+                  }).toList(),
+            ),
+            const SizedBox(height: 24),
             SizedBox(
-              height: 220, // Adjusted height
+              height: 220,
               child: PieChart(
                 PieChartData(
                   sections: sections,
                   borderData: FlBorderData(show: false),
-                  sectionsSpace: 2, // Added space between sections
-                  centerSpaceRadius: 50, // Adjusted center space
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 50,
                   pieTouchData: PieTouchData(
                     touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      // TODO(self): Implement touch interaction if needed
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            pieTouchResponse == null ||
+                            pieTouchResponse.touchedSection == null) {
+                          _touchedIndex = -1;
+                          return;
+                        }
+                        _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                      });
                     },
+                    enabled: true,
                   ),
                 ),
               ),
             ),
+            if (_touchedIndex >= 0 && _touchedIndex < chartData.length)
+              Container(
+                margin: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Theme.of(context).colorScheme.primary, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Bạn đã mua ${chartData[_touchedIndex]['count']} sản phẩm ${chartData[_touchedIndex]['label'].toLowerCase()}, '
+                        'chiếm ${chartData[_touchedIndex]['value']}% tổng số sản phẩm đã mua.',
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

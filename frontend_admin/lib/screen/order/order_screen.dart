@@ -261,35 +261,61 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (currentStatus == 0) // Chờ xử lý
-          IconButton(
-            icon: const Icon(Icons.check_circle, color: Colors.green),
-            tooltip: 'Duyệt đơn hàng',
+        if (currentStatus == 0) // Chờ xử lý -> Đang chuẩn bị
+          ElevatedButton.icon(
+            icon: const Icon(Icons.check_circle, size: 16),
+            label: const Text('Duyệt'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
             onPressed: () => _updateOrderStatus(order.orderId, 1),
           ),
-        if (currentStatus == 1) // Đang chuẩn bị
-          IconButton(
-            icon: const Icon(Icons.local_shipping, color: Colors.blue),
-            tooltip: 'Chuyển sang đang giao',
+        if (currentStatus == 1) // Đang chuẩn bị -> Đang giao
+          ElevatedButton.icon(
+            icon: const Icon(Icons.local_shipping, size: 16),
+            label: const Text('Giao hàng'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
             onPressed: () => _updateOrderStatus(order.orderId, 2),
           ),
-        if (currentStatus == 2) // Đang giao
-          IconButton(
-            icon: const Icon(Icons.done_all, color: Colors.green),
-            tooltip: 'Đã giao hàng',
+        if (currentStatus == 2) // Đang giao -> Đã giao
+          ElevatedButton.icon(
+            icon: const Icon(Icons.done_all, size: 16),
+            label: const Text('Hoàn thành'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
             onPressed: () => _updateOrderStatus(order.orderId, 3),
           ),
+        if (currentStatus < 3) // Chưa hoàn thành thì cho phép hủy
+          const SizedBox(width: 8),
         if (currentStatus < 3) // Chưa hoàn thành
-          IconButton(
-            icon: const Icon(Icons.cancel, color: Colors.red),
-            tooltip: 'Hủy đơn hàng',
+          ElevatedButton.icon(
+            icon: const Icon(Icons.cancel, size: 16),
+            label: const Text('Hủy'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
             onPressed: () => _showCancelDialog(order.orderId),
           ),
-        IconButton(
-          icon: const Icon(Icons.visibility, color: Colors.blue),
-          tooltip: 'Xem chi tiết',
-          onPressed: () => _showOrderDetails(order),
-        ),
+        if (currentStatus >= 3) // Đã hoàn thành hoặc đã hủy
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(4)),
+            child: Text(
+              currentStatus == 3 ? 'Đã hoàn thành' : 'Đã hủy',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+            ),
+          ),
       ],
     );
   }
@@ -313,63 +339,21 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
       builder:
           (context) => AlertDialog(
             title: const Text('Xác nhận hủy đơn hàng'),
-            content: const Text('Bạn có chắc chắn muốn hủy đơn hàng này không?'),
+            content: const Text(
+              'Bạn có chắc chắn muốn hủy đơn hàng này không?\nĐơn hàng đã hủy sẽ không thể khôi phục.',
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy bỏ')),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  _updateOrderStatus(orderId, 4);
+                  _updateOrderStatus(orderId, 4); // Status 4 = Đã hủy
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text('Xác nhận hủy', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
-    );
-  }
-
-  void _showOrderDetails(dynamic order) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Chi tiết đơn hàng #${order.orderId}'),
-            content: SizedBox(
-              width: 400,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDetailRow('Mã đơn hàng:', '#${order.orderId}'),
-                  _buildDetailRow('Khách hàng:', order.customerId?.toString() ?? 'N/A'),
-                  _buildDetailRow('Ngày đặt:', DateFormat('dd/MM/yyyy HH:mm').format(order.orderDate)),
-                  _buildDetailRow(
-                    'Tổng tiền:',
-                    NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(order.totalPrice ?? 0),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('Trạng thái:', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  _buildStatusChip(order.status),
-                ],
-              ),
-            ),
-            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Đóng'))],
-          ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(width: 120, child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold))),
-          Expanded(child: Text(value)),
-        ],
-      ),
     );
   }
 }
