@@ -107,7 +107,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
                   const Divider(height: 24),
                   _buildSummaryRow(
                     'Tổng cộng',
-                    CurrencyUtils.formatVnd(total),
+                    CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(total) ?? 0),
                     isBold: true,
                     valueColor: theme.colorScheme.primary,
                   ),

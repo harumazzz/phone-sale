@@ -486,7 +486,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               children: [
                 Text('Tổng cộng:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 Text(
-                  CurrencyUtils.formatVnd(subtotal),
+                  CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(subtotal) ?? 0),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
