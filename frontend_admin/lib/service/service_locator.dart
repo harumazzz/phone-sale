@@ -41,7 +41,7 @@ class ServiceLocator {
     // Create Dio with base URL and interceptors
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://localhost:7283/api',
+        baseUrl: 'http://localhost:5133/api',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),
@@ -58,7 +58,8 @@ class ServiceLocator {
     register<DiscountRepository>(const DiscountRepository(api: DiscountApi()));
     register<OrderRepository>(const OrderRepository(OrderApi()));
     register<OrderItemRepository>(const OrderItemRepository(OrderItemApi()));
-    register<PaymentRepository>(const PaymentRepository(PaymentApi()));    register<ShipmentRepository>(const ShipmentRepository(ShipmentApi()));
+    register<PaymentRepository>(const PaymentRepository(PaymentApi()));
+    register<ShipmentRepository>(const ShipmentRepository(ShipmentApi()));
     register<WishlistRepository>(const WishlistRepository(WishlistApi()));
     register<ProductRepository>(const ProductRepository(ProductApi()));
     register<UploadRepository>(const UploadRepository(UploadApi()));

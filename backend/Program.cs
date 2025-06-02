@@ -19,7 +19,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5000",    // Alternative port HTTPS
                 "http://127.0.0.1:3000",     // Alternative localhost
                 "http://127.0.0.1:8080",     // Alternative localhost
-                "http://127.0.0.1:5000"      // Alternative localhost
+                "http://127.0.0.1:5000",      // Alternative localhost
+                "http://localhost:5000"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

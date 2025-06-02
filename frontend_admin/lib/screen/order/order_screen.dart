@@ -208,9 +208,10 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
     return DataRow(
       cells: [
         DataCell(Text('#${order.orderId}')),
-        DataCell(Text(order.customerId?.toString() ?? 'N/A')),
-        DataCell(Text(DateFormat('dd/MM/yyyy').format(order.orderDate))),
-        DataCell(Text(CurrencyUtils.formatVnd(order.totalPrice ?? 0))),
+        DataCell(Text(order.customerId?.toString() ?? 'N/A')),        DataCell(Text(DateFormat('dd/MM/yyyy').format(order.orderDate))),
+        DataCell(
+          Text(CurrencyUtils.formatVnd(order.totalPrice ?? 0)),
+        ),
         DataCell(_buildStatusChip(order.status?.index)),
         DataCell(_buildActionButtons(order)),
       ],
@@ -318,18 +319,23 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
       ],
     );
   }
-
   void _updateOrderStatus(int orderId, int newStatus) {
-    context.read<OrderBloc>().add(
-      UpdateOrderEvent(
-        orderId: orderId,
-        orderRequest: OrderRequest(
-          totalPrice: 0, // This will be ignored by the backend
-          customerId: '', // This will be ignored by the backend
-          status: newStatus,
+    // Tìm đơn hàng hiện tại để lấy thông tin
+    final currentState = context.read<OrderBloc>().state;
+    if (currentState is OrderLoaded) {
+      final order = currentState.orders.firstWhere((o) => o.orderId == orderId);
+      
+      context.read<OrderBloc>().add(
+        UpdateOrderEvent(
+          orderId: orderId,
+          orderRequest: OrderRequest(
+            totalPrice: order.totalPrice ?? 0.0,
+            customerId: order.customerId ?? '',
+            status: newStatus,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void _showCancelDialog(int orderId) {
