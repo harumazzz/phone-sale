@@ -299,11 +299,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${(_currentPriceRange.start / 1000000).toStringAsFixed(0)}tr VNĐ',
+                          '${(_currentPriceRange.start / 1000000).toStringAsFixed(0)}tr ₫',
                           style: const TextStyle(fontSize: 12),
                         ),
                         Text(
-                          '${(_currentPriceRange.end / 1000000).toStringAsFixed(0)}tr VNĐ',
+                          '${(_currentPriceRange.end / 1000000).toStringAsFixed(0)}tr ₫',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],

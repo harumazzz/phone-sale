@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/model/request/order_request.dart';
 import 'package:frontend_admin/service/ui_helper.dart';
+import 'package:frontend_admin/utils/currency_utils.dart';
 import 'package:intl/intl.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -155,7 +156,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
               child: Column(
                 children: [
                   Text(
-                    NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(totalRevenue),
+                    CurrencyUtils.formatVnd(totalRevenue),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Text('Tổng doanh thu'),
@@ -209,9 +210,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
         DataCell(Text('#${order.orderId}')),
         DataCell(Text(order.customerId?.toString() ?? 'N/A')),
         DataCell(Text(DateFormat('dd/MM/yyyy').format(order.orderDate))),
-        DataCell(
-          Text(NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(order.totalPrice ?? 0)),
-        ),
+        DataCell(Text(CurrencyUtils.formatVnd(order.totalPrice ?? 0))),
         DataCell(_buildStatusChip(order.status?.index)),
         DataCell(_buildActionButtons(order)),
       ],

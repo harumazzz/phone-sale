@@ -4,6 +4,7 @@ import 'package:frontend_admin/bloc/customer/customer_bloc.dart';
 import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/bloc/product/product_bloc.dart';
 import 'package:frontend_admin/custom_screen.dart';
+import 'package:frontend_admin/utils/currency_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -18,7 +19,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
   final random = math.Random();
   List<Color> gradientColors = [const Color(0xff23b6e6), const Color(0xff02d39a)];
 
@@ -149,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (state is OrderLoaded) {
                   final totalRevenue = state.orders.fold(0.0, (sum, order) => sum + (order.totalPrice ?? 0));
                   return Text(
-                    currencyFormat.format(totalRevenue),
+                    CurrencyUtils.formatVnd(totalRevenue),
                     style: Theme.of(
                       context,
                     ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
@@ -507,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                                 child: Text(
-                                  currencyFormat.format(order.totalPrice ?? 0),
+                                  CurrencyUtils.formatVnd(order.totalPrice ?? 0),
                                   style: TextStyle(color: Colors.grey[300]),
                                 ),
                               ),

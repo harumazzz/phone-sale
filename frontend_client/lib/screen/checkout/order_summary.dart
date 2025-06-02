@@ -1,18 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+import '../../utils/currency_utils.dart';
 
 class OrderSummary extends StatelessWidget {
   const OrderSummary({super.key, required this.checkoutData, required this.onUpdateData, required this.onNext});
   final Map<String, dynamic> checkoutData;
   final Function(Map<String, dynamic>) onUpdateData;
   final void Function() onNext;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final cartItems = checkoutData['cartItems'] ?? [];
     final subtotal = checkoutData['subtotal'] ?? 0.0;
     final discountAmount = checkoutData['discountAmount'] ?? 0.0;
@@ -34,13 +33,13 @@ class OrderSummary extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    ...cartItems.map<Widget>((item) => _buildOrderItem(context, item, formatCurrency)).toList(),
+                    ...cartItems.map<Widget>((item) => _buildOrderItem(context, item)).toList(),
                     const Divider(height: 32),
-                    _buildPriceRow('Tạm tính', formatCurrency.format(subtotal), false),
+                    _buildPriceRow('Tạm tính', CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(subtotal) ?? 0), false),
                     if (discountAmount > 0)
                       _buildPriceRow(
                         'Giảm giá',
-                        '- ${formatCurrency.format(discountAmount)}',
+                        '- ${CurrencyUtils.formatVnd(discountAmount)}',
                         false,
                         valueColor: Colors.green[700],
                       ),
@@ -48,7 +47,7 @@ class OrderSummary extends StatelessWidget {
                     const Divider(height: 24),
                     _buildPriceRow(
                       'Tổng tiền',
-                      formatCurrency.format(finalPrice),
+                      CurrencyUtils.formatVnd(finalPrice),
                       true,
                       valueColor: theme.colorScheme.primary,
                     ),
@@ -100,7 +99,7 @@ class OrderSummary extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderItem(BuildContext context, dynamic item, NumberFormat formatter) {
+  Widget _buildOrderItem(BuildContext context, dynamic item) {
     final theme = Theme.of(context);
     final product = item.product;
     final quantity = item.quantity;
@@ -138,7 +137,7 @@ class OrderSummary extends StatelessWidget {
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Text(formatter.format(price), style: TextStyle(color: Colors.grey[600])),
+                Text(CurrencyUtils.formatVnd(price), style: TextStyle(color: Colors.grey[600])),
                 const SizedBox(height: 4),
                 Text('Số lượng: $quantity', style: TextStyle(color: Colors.grey[600])),
               ],
@@ -148,7 +147,7 @@ class OrderSummary extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                formatter.format(totalPrice),
+                CurrencyUtils.formatVnd(totalPrice),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,

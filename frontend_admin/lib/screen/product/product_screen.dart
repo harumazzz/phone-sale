@@ -1,10 +1,15 @@
+import 'dart:typed_data';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_admin/bloc/category/category_bloc.dart';
 import 'package:frontend_admin/bloc/product/product_bloc.dart';
 import 'package:frontend_admin/model/request/product_request.dart';
+import 'package:frontend_admin/repository/upload_repository.dart';
+import 'package:frontend_admin/service/service_locator.dart';
 import 'package:frontend_admin/service/ui_helper.dart';
+import 'package:frontend_admin/utils/currency_utils.dart';
+import 'package:frontend_admin/widget/image_picker_widget.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -19,9 +24,11 @@ class _ProductScreenState extends State<ProductScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  final TextEditingController _imageUrlController = TextEditingController();
 
   int _selectedCategoryId = 1;
+  String? _imageUrl;
+  Uint8List? _selectedImageBytes;
+  String? _selectedImageFileName;
 
   @override
   void initState() {
@@ -38,7 +45,6 @@ class _ProductScreenState extends State<ProductScreen> {
     _descriptionController.dispose();
     _priceController.dispose();
     _stockController.dispose();
-    _imageUrlController.dispose();
     super.dispose();
   }
 
@@ -76,10 +82,11 @@ class _ProductScreenState extends State<ProductScreen> {
               ElevatedButton(
                 onPressed: () async {
                   if (_validateForm()) {
-                    final request = _buildProductRequest();
-                    context.read<ProductBloc>().add(AddProductEvent(request: request));
-                    Navigator.pop(context);
-                    await UIHelper.showInfoSnackbar(context: context, message: 'Thêm sản phẩm thành công!');
+                    await _handleProductSubmission(isEditing: false);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      await UIHelper.showInfoSnackbar(context: context, message: 'Thêm sản phẩm thành công!');
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
@@ -105,7 +112,7 @@ class _ProductScreenState extends State<ProductScreen> {
     _priceController.text = price.toString();
     _stockController.text = stock.toString();
     _selectedCategoryId = categoryId;
-    _imageUrlController.text = imageUrl ?? '';
+    _imageUrl = imageUrl;
 
     return showDialog(
       context: context,
@@ -139,10 +146,11 @@ class _ProductScreenState extends State<ProductScreen> {
               ElevatedButton(
                 onPressed: () async {
                   if (_validateForm()) {
-                    final request = _buildProductRequest();
-                    context.read<ProductBloc>().add(EditProductEvent(id: id, request: request));
-                    Navigator.pop(context);
-                    await UIHelper.showSuccessSnackbar(context: context, message: 'Cập nhật sản phẩm thành công!');
+                    await _handleProductSubmission(isEditing: true, productId: id);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      await UIHelper.showSuccessSnackbar(context: context, message: 'Cập nhật sản phẩm thành công!');
+                    }
                   }
                 },
                 child: const Text('Lưu'),
@@ -215,8 +223,10 @@ class _ProductScreenState extends State<ProductScreen> {
     _descriptionController.clear();
     _priceController.clear();
     _stockController.clear();
-    _imageUrlController.clear();
     _selectedCategoryId = 1;
+    _imageUrl = null;
+    _selectedImageBytes = null;
+    _selectedImageFileName = null;
   }
 
   bool _validateForm() {
@@ -224,17 +234,6 @@ class _ProductScreenState extends State<ProductScreen> {
         _descriptionController.text.isNotEmpty &&
         _priceController.text.isNotEmpty &&
         _stockController.text.isNotEmpty;
-  }
-
-  ProductRequest _buildProductRequest() {
-    return ProductRequest(
-      model: _modelController.text,
-      description: _descriptionController.text,
-      price: double.tryParse(_priceController.text) ?? 0,
-      stock: int.tryParse(_stockController.text) ?? 0,
-      categoryId: _selectedCategoryId,
-      productLink: _imageUrlController.text.isEmpty ? null : _imageUrlController.text,
-    );
   }
 
   Widget _buildProductForm(BuildContext context) {
@@ -267,11 +266,6 @@ class _ProductScreenState extends State<ProductScreen> {
               decoration: const InputDecoration(labelText: 'Tồn kho', hintText: 'Nhập số lượng tồn kho'),
               keyboardType: TextInputType.number,
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _imageUrlController,
-              decoration: const InputDecoration(labelText: 'URL hình ảnh', hintText: 'Nhập URL hình ảnh sản phẩm'),
-            ),
             const SizedBox(height: 16),
             BlocBuilder<CategoryBloc, CategoryState>(
               builder: (context, state) {
@@ -293,10 +287,68 @@ class _ProductScreenState extends State<ProductScreen> {
                 return const CircularProgressIndicator();
               },
             ),
+            const SizedBox(height: 16),
+            ImagePickerWidget(
+              initialImageUrl: _imageUrl,
+              onImageSelected: _onImageSelected,
+              onImageCleared: _onImageCleared,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _handleProductSubmission({required bool isEditing, int? productId}) async {
+    try {
+      String? imageUrl = _imageUrl;
+
+      // Upload image if a new one is selected
+      if (_selectedImageBytes != null && _selectedImageFileName != null) {
+        final uploadRepository = ServiceLocator.get<UploadRepository>();
+        imageUrl = await uploadRepository.uploadImage(
+          fileBytes: _selectedImageBytes!,
+          fileName: _selectedImageFileName!,
+        );
+      }
+
+      final request = ProductRequest(
+        model: _modelController.text,
+        description: _descriptionController.text,
+        price: double.tryParse(_priceController.text) ?? 0,
+        stock: int.tryParse(_stockController.text) ?? 0,
+        categoryId: _selectedCategoryId,
+        productLink: imageUrl,
+      );
+
+      if (isEditing && productId != null && context.mounted) {
+        context.read<ProductBloc>().add(EditProductEvent(id: productId, request: request));
+      } else {
+        if (context.mounted) {
+          context.read<ProductBloc>().add(AddProductEvent(request: request));
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red));
+      }
+    }
+  }
+
+  void _onImageSelected(Uint8List imageBytes, String fileName) {
+    setState(() {
+      _selectedImageBytes = imageBytes;
+      _selectedImageFileName = fileName;
+      _imageUrl = null; // Clear existing URL when new image is selected
+    });
+  }
+
+  void _onImageCleared() {
+    setState(() {
+      _selectedImageBytes = null;
+      _selectedImageFileName = null;
+      _imageUrl = null;
+    });
   }
 
   @override
@@ -385,7 +437,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                 cells: [
                                   DataCell(Text(product.productId.toString())),
                                   DataCell(Text(product.model ?? '')),
-                                  DataCell(Text('${product.price ?? 0} VND')),
+                                  DataCell(Text(CurrencyUtils.formatVnd(product.price ?? 0))),
                                   DataCell(Text(product.stock.toString())),
                                   DataCell(Text(product.categoryId.toString())),
                                   DataCell(

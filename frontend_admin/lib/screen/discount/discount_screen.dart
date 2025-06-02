@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_admin/bloc/discount/discount_bloc.dart';
 import 'package:frontend_admin/model/request/discount_request.dart';
 import 'package:frontend_admin/service/ui_helper.dart';
+import 'package:frontend_admin/utils/currency_utils.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:intl/intl.dart';
 
@@ -169,7 +170,7 @@ class _DiscountScreenState extends State<DiscountScreen> {
       ),
       items: const [
         DropdownMenuItem(value: 0, child: Text('Phần trăm (%)')),
-        DropdownMenuItem(value: 1, child: Text('Số tiền cố định (VND)')),
+        DropdownMenuItem(value: 1, child: Text('Số tiền cố định (₫)')),
       ],
       onChanged: (value) {
         setState(() {
@@ -450,20 +451,10 @@ class _DiscountScreenState extends State<DiscountScreen> {
                                     Text(
                                       discount.discountType == 0
                                           ? '${discount.discountValue?.toStringAsFixed(0)}%'
-                                          : NumberFormat.currency(
-                                            locale: 'vi_VN',
-                                            symbol: '₫',
-                                          ).format(discount.discountValue),
+                                          : CurrencyUtils.formatVnd(discount.discountValue ?? 0),
                                     ),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      NumberFormat.currency(
-                                        locale: 'vi_VN',
-                                        symbol: '₫',
-                                      ).format(discount.minOrderValue),
-                                    ),
-                                  ),
+                                  DataCell(Text(CurrencyUtils.formatVnd(discount.minOrderValue ?? 0))),
                                   DataCell(
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

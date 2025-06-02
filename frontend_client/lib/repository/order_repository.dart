@@ -28,6 +28,43 @@ class OrderRepository extends Equatable {
     return await _api.getOrder(id: id);
   }
 
+  Future<OrderWithItems> getOrderWithItems({required int id}) async {
+    final order = await _api.getOrder(id: id);
+
+    if (order.orderId == null) {
+      debugPrint('DEBUG: Order ID is null for order $id');
+      return OrderWithItems(order: order, orderItems: const []);
+    }
+
+    try {
+      debugPrint('DEBUG: Fetching order items for order ID: ${order.orderId}');
+      final orderItems = await _orderItemApi.getOrderItemsByOrderId(orderId: order.orderId!);
+      debugPrint('DEBUG: Fetched ${orderItems.length} order items');
+      final List<OrderItemWithProduct> itemsWithProducts = [];
+
+      for (final orderItem in orderItems) {
+        debugPrint('DEBUG: Processing order item: ${orderItem.orderItemId}, Product ID: ${orderItem.productId}');
+        if (orderItem.productId != null) {
+          try {
+            final product = await _productApi.getProduct(id: orderItem.productId!);
+            debugPrint('DEBUG: Found product: ${product.model}');
+            itemsWithProducts.add(OrderItemWithProduct(orderItem: orderItem, product: product));
+          } catch (e) {
+            // If product fetch fails, skip this item
+            debugPrint('Failed to fetch product ${orderItem.productId}: $e');
+          }
+        }
+      }
+
+      debugPrint('DEBUG: Final items count: ${itemsWithProducts.length}');
+      return OrderWithItems(order: order, orderItems: itemsWithProducts);
+    } catch (e) {
+      // If order items fetch fails, return order without items
+      debugPrint('Failed to fetch order items for order ${order.orderId}: $e');
+      return OrderWithItems(order: order, orderItems: const []);
+    }
+  }
+
   Future<int> addOrder({required OrderRequest request}) async {
     return await _api.addOrder(request: request);
   }

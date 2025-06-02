@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/discount_bloc/discount_bloc_export.dart';
+import '../../utils/currency_utils.dart';
 
 class DiscountCodeSection extends StatefulWidget {
   const DiscountCodeSection({super.key, required this.cartTotal, required this.onDiscountApplied});
@@ -36,8 +36,6 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
 
   @override
   Widget build(BuildContext context) {
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
-
     return Column(
       children: [
         InkWell(
@@ -76,7 +74,7 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
                         style: TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '- ${formatCurrency.format(discountValue)} (${state.discount.code ?? ""})',
+                        '- ${CurrencyUtils.formatVnd(discountValue)} (${state.discount.code ?? ""})',
                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       ),
                     ],

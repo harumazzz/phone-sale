@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../utils/currency_utils.dart';
 
 enum OrderStatus { pending, processing, shipped, delivered, cancelled }
 
@@ -18,6 +19,11 @@ class OrderResponse extends Equatable {
   final double? totalPrice;
   final String? customerId;
   final OrderStatus? status;
+  // Getter để chuyển đổi từ USD sang VND
+  double? get totalPriceVnd => CurrencyUtils.usdToVnd(totalPrice);
+
+  // Format tổng giá VND với dấu phẩy
+  String get formattedTotalPriceVnd => CurrencyUtils.formatUsdToVnd(totalPrice);
 
   Map<String, dynamic> toJson() {
     return {

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../utils/currency_utils.dart';
 
 class ProductResponse extends Equatable {
   const ProductResponse({
@@ -29,6 +30,11 @@ class ProductResponse extends Equatable {
   final int? stock;
   final int? categoryId;
   final String? productLink;
+  // Getter để chuyển đổi từ USD sang VND
+  double? get priceVnd => CurrencyUtils.usdToVnd(price);
+
+  // Format giá VND với dấu phẩy
+  String get formattedPriceVnd => CurrencyUtils.formatUsdToVnd(price);
 
   Map<String, dynamic> toJson() {
     return {
@@ -43,13 +49,5 @@ class ProductResponse extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    productId,
-    model,
-    description,
-    price,
-    stock,
-    categoryId,
-    productLink,
-  ];
+  List<Object?> get props => [productId, model, description, price, stock, categoryId, productLink];
 }

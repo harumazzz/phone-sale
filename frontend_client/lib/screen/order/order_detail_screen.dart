@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../model/response/order_response.dart';
+import '../../model/response/order_item_with_product.dart';
+import '../../utils/currency_utils.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({super.key, required this.orderId});
@@ -29,13 +31,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   void _loadOrderDetails() {
-    context.read<OrderBloc>().add(OrderFetchEvent(id: widget.orderId));
+    context.read<OrderBloc>().add(OrderFetchWithItemsEvent(id: widget.orderId));
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final formatDate = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
@@ -49,6 +50,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       ),
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
+          debugPrint('Order detail screen state: ${state.runtimeType}');
           if (state is OrderLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is OrderDetailLoaded) {
@@ -60,11 +62,50 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 children: [
                   _buildOrderStatusCard(context, order),
                   const SizedBox(height: 16),
-                  _buildOrderInfoCard(context, order, formatDate, formatCurrency),
+                  _buildOrderInfoCard(context, order, formatDate),
                   const SizedBox(height: 16),
                   _buildShippingInfoCard(context),
                   const SizedBox(height: 16),
-                  _buildOrderItemsCard(context, formatCurrency),
+                  _buildOrderItemsCard(context, null), // No items for basic order
+                  const SizedBox(height: 24),
+                  if (order.status == OrderStatus.pending)
+                    Center(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            _showCancelOrderDialog(context, order.orderId!);
+                          },
+                          icon: const Icon(Icons.cancel_outlined, color: Colors.white),
+                          label: const Text('HỦY ĐƠN HÀNG', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          } else if (state is OrderDetailWithItemsLoaded) {
+            final orderWithItems = state.orderWithItems;
+            final order = orderWithItems.order;
+            debugPrint('OrderDetailWithItemsLoaded - Order items count: ${orderWithItems.orderItems.length}');
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildOrderStatusCard(context, order),
+                  const SizedBox(height: 16),
+                  _buildOrderInfoCard(context, order, formatDate),
+                  const SizedBox(height: 16),
+                  _buildShippingInfoCard(context),
+                  const SizedBox(height: 16),
+                  _buildOrderItemsCard(context, orderWithItems.orderItems),
                   const SizedBox(height: 24),
                   if (order.status == OrderStatus.pending)
                     Center(
@@ -252,12 +293,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _buildOrderInfoCard(
-    BuildContext context,
-    OrderResponse order,
-    DateFormat dateFormatter,
-    NumberFormat currencyFormatter,
-  ) {
+  Widget _buildOrderInfoCard(BuildContext context, OrderResponse order, DateFormat dateFormatter) {
     final theme = Theme.of(context);
 
     return Card(
@@ -274,7 +310,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 8),
             _buildInfoRow('Ngày đặt:', dateFormatter.format(order.orderDate!)),
             const SizedBox(height: 8),
-            _buildInfoRow('Tổng tiền:', currencyFormatter.format(order.totalPrice)),
+            _buildInfoRow('Tổng tiền:', order.formattedTotalPriceVnd),
             const SizedBox(height: 8),
             _buildInfoRow('Phương thức thanh toán:', 'Thanh toán khi nhận hàng (COD)'),
           ],
@@ -327,14 +363,54 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _buildOrderItemsCard(BuildContext context, NumberFormat formatter) {
+  Widget _buildOrderItemsCard(BuildContext context, List<OrderItemWithProduct>? orderItems) {
     final theme = Theme.of(context);
 
-    // Placeholder data - this should come from order items API
-    final items = [
-      {'name': 'iPhone 13', 'price': 20000000, 'quantity': 1},
-      {'name': 'Ốp lưng iPhone', 'price': 300000, 'quantity': 2},
-    ];
+    // Use real data if available, otherwise show empty state
+    final items = orderItems ?? [];
+
+    // Debug logging
+    if (kDebugMode) {
+      print('DEBUG: OrderItems count: ${items.length}');
+      if (items.isNotEmpty) {
+        for (int i = 0; i < items.length; i++) {
+          print(
+            'DEBUG: Item $i: ${items[i].product.model} - ${items[i].orderItem.quantity} x ${items[i].orderItem.price}',
+          );
+        }
+      }
+    }
+
+    if (items.isEmpty) {
+      return Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Sản phẩm đã mua', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.shopping_cart_outlined, size: 48, color: Colors.grey[400]),
+                    const SizedBox(height: 8),
+                    Text('Không có sản phẩm nào', style: TextStyle(color: Colors.grey[600])),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } // Calculate totals from real data
+    double subtotal = items.fold(0.0, (sum, item) {
+      double price = item.orderItem.price?.toDouble() ?? 0.0;
+      int quantity = item.orderItem.quantity ?? 0;
+      return sum + (price * quantity);
+    });
 
     return Card(
       elevation: 0,
@@ -355,8 +431,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     Container(
                       width: 60,
                       height: 60,
-                      decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-                      child: Center(child: Icon(Icons.phone_iphone, color: Colors.grey[400])),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                        image:
+                            item.product.productLink != null && item.product.productLink!.isNotEmpty
+                                ? DecorationImage(image: NetworkImage(item.product.productLink!), fit: BoxFit.cover)
+                                : null,
+                      ),
+                      child:
+                          item.product.productLink == null || item.product.productLink!.isEmpty
+                              ? Center(child: Icon(Icons.phone_iphone, color: Colors.grey[400]))
+                              : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -364,15 +450,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item['name'] as String,
+                            item.product.model ?? 'Sản phẩm không xác định',
                             style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
-                          Text('SL: ${item['quantity']}', style: TextStyle(color: Colors.grey[600])),
+                          Text('SL: ${item.orderItem.quantity ?? 0}', style: TextStyle(color: Colors.grey[600])),
                         ],
                       ),
                     ),
-                    Text(formatter.format(item['price']), style: theme.textTheme.bodyMedium),
+                    Text(item.orderItem.formattedPriceVnd, style: theme.textTheme.bodyMedium),
                   ],
                 ),
               ),
@@ -383,7 +469,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Tạm tính:', style: theme.textTheme.bodyLarge),
-                Text(formatter.format(20600000), style: theme.textTheme.bodyLarge),
+                Text(CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(subtotal) ?? 0), style: theme.textTheme.bodyLarge),
               ],
             ),
             const SizedBox(height: 8),
@@ -400,7 +486,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               children: [
                 Text('Tổng cộng:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 Text(
-                  formatter.format(20600000),
+                  CurrencyUtils.formatVnd(subtotal),
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,

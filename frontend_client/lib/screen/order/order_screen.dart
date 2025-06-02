@@ -218,7 +218,6 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Widget _buildOrderCard(BuildContext context, OrderResponse order) {
     final theme = Theme.of(context);
-    final formatter = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final status = _getOrderStatus(order);
     final statusColor = _getStatusColor(status);
 
@@ -295,7 +294,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   children: [
                     Text('Tổng thanh toán', style: theme.textTheme.titleMedium),
                     Text(
-                      formatter.format(order.totalPrice ?? 0),
+                      order.formattedTotalPriceVnd,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -338,7 +337,6 @@ class _OrderScreenState extends State<OrderScreen> {
 
   Widget _buildOrderWithItemsCard(BuildContext context, OrderWithItems orderWithItems) {
     final theme = Theme.of(context);
-    final formatter = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 0, symbol: '₫');
     final order = orderWithItems.order;
     final status = _getOrderStatus(order);
     final statusColor = _getStatusColor(status);
@@ -497,7 +495,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   children: [
                     Text('Tổng thanh toán', style: theme.textTheme.titleMedium),
                     Text(
-                      formatter.format(order.totalPrice ?? 0),
+                      order.formattedTotalPriceVnd,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,

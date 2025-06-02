@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../model/cart_item_data.dart';
@@ -20,7 +19,6 @@ class CartItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
     final product = item.product;
     final quantity = item.quantity;
 
@@ -80,7 +78,7 @@ class CartItemCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    formatCurrency.format(product.price ?? 0),
+                    item.formattedPriceVnd,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -122,7 +120,7 @@ class CartItemCard extends StatelessWidget {
                         children: [
                           Text('Tổng: ', style: TextStyle(fontWeight: FontWeight.w500, color: Colors.grey[700])),
                           Text(
-                            formatCurrency.format((product.price ?? 0) * quantity),
+                            item.formattedTotalPriceVnd,
                             style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                           ),
                         ],

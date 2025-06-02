@@ -107,7 +107,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', decimalDigits: 3, symbol: '₫');
     final formatDate = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
@@ -140,7 +139,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
                         final order = orders[index];
-                        return _buildOrderCard(context, order, formatCurrency, formatDate);
+                        return _buildOrderCard(context, order, formatDate);
                       },
                     );
                   } else if (state is OrderError) {
@@ -207,12 +206,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     );
   }
 
-  Widget _buildOrderCard(
-    BuildContext context,
-    OrderResponse order,
-    NumberFormat currencyFormatter,
-    DateFormat dateFormatter,
-  ) {
+  Widget _buildOrderCard(BuildContext context, OrderResponse order, DateFormat dateFormatter) {
     final theme = Theme.of(context);
 
     return Card(
@@ -253,7 +247,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   const Icon(Icons.monetization_on_outlined, size: 16, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    'Tổng tiền: ${currencyFormatter.format(order.totalPrice)}',
+                    'Tổng tiền: ${order.formattedTotalPriceVnd}',
                     style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

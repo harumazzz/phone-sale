@@ -11,6 +11,7 @@ import '../api/order_item_api.dart';
 import '../api/payment_api.dart';
 import '../api/product_api.dart';
 import '../api/shipment_api.dart';
+import '../api/upload_api.dart';
 import '../api/wishlist_api.dart';
 import '../interceptors/dio_interceptor.dart';
 import '../repository/auth_repository.dart';
@@ -23,6 +24,7 @@ import '../repository/order_repository.dart';
 import '../repository/payment_repository.dart';
 import '../repository/product_repository.dart';
 import '../repository/shipment_repository.dart';
+import '../repository/upload_repository.dart';
 import '../repository/wishlist_repository.dart';
 
 class ServiceLocator {
@@ -56,10 +58,10 @@ class ServiceLocator {
     register<DiscountRepository>(const DiscountRepository(api: DiscountApi()));
     register<OrderRepository>(const OrderRepository(OrderApi()));
     register<OrderItemRepository>(const OrderItemRepository(OrderItemApi()));
-    register<PaymentRepository>(const PaymentRepository(PaymentApi()));
-    register<ShipmentRepository>(const ShipmentRepository(ShipmentApi()));
+    register<PaymentRepository>(const PaymentRepository(PaymentApi()));    register<ShipmentRepository>(const ShipmentRepository(ShipmentApi()));
     register<WishlistRepository>(const WishlistRepository(WishlistApi()));
     register<ProductRepository>(const ProductRepository(ProductApi()));
+    register<UploadRepository>(const UploadRepository(UploadApi()));
   }
 
   static T get<T extends Object>() {

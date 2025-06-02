@@ -44,6 +44,25 @@ class OrderAddEvent extends OrderEvent {
   List<Object?> get props => [request];
 }
 
+class OrderAddWithItemsEvent extends OrderEvent {
+  const OrderAddWithItemsEvent({required this.request, required this.cartItems});
+
+  final OrderRequest request;
+  final List<dynamic> cartItems; // CartItemData list
+
+  @override
+  List<Object?> get props => [request, cartItems];
+}
+
+class OrderFetchWithItemsEvent extends OrderEvent {
+  const OrderFetchWithItemsEvent({required this.id});
+
+  final int id;
+
+  @override
+  List<Object?> get props => [id];
+}
+
 class OrderUpdateStatusEvent extends OrderEvent {
   const OrderUpdateStatusEvent({required this.orderId, required this.status});
 

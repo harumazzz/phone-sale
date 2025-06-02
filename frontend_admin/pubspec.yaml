@@ -47,6 +47,8 @@ dependencies:
   elegant_notification: ^2.4.5
   fl_chart: ^0.66.2
   google_fonts: ^6.2.1
+  file_picker: ^8.1.7
+  http_parser: ^4.1.2
 
 dev_dependencies:
   flutter_test:

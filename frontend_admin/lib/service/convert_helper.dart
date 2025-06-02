@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import '../utils/currency_utils.dart';
 
 class ConvertHelper {
   const ConvertHelper._();
 
   static double convertUsdToVnd(double usdAmount, double exchangeRate) {
-    return usdAmount * exchangeRate;
+    return CurrencyUtils.convertUsdToVnd(usdAmount);
   }
 
   static String inVND(double priceInUsd, [double exchangeRate = 25000]) {
-    final priceInVnd = convertUsdToVnd(priceInUsd, exchangeRate);
-    return NumberFormat('#,##0', 'vi_VN').format(priceInVnd);
+    return CurrencyUtils.formatVnd(priceInUsd);
   }
 
   static Widget exchangeSymbols(String value) {

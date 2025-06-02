@@ -39,7 +39,7 @@ class ServiceLocator {
     // Create Dio with base URL and interceptors
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://localhost:7283/api',
+        baseUrl: 'http://localhost:5133/api',
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
       ),

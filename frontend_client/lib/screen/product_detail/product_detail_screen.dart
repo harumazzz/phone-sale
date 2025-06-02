@@ -7,7 +7,6 @@ import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/product_bloc/product_bloc.dart';
 import '../../model/response/product_response.dart';
-import '../../service/convert_helper.dart';
 import '../../widget/product_card/product_card.dart';
 import '../../widget/product_list/product_list.dart';
 import '../../widget/wishlist_button/wishlist_button.dart';
@@ -314,7 +313,7 @@ class ProductDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${ConvertHelper.inVND(product.price!)} đ',
+                      product.formattedPriceVnd,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,

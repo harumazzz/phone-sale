@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../api/order_api.dart';
 import '../../api/order_item_api.dart';
@@ -10,6 +9,7 @@ import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/discount_bloc/discount_bloc_export.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
 import '../../repository/order_repository.dart';
+import '../../utils/currency_utils.dart';
 import '../checkout/checkout_screen.dart';
 import 'cart_item_card.dart';
 import 'discount_code_section.dart';
@@ -46,7 +46,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -216,14 +215,8 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               );
                             },
-                          ),
-                          // Position the checkout section at the bottom of the screen
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: _buildCheckoutSection(context, totalPrice, formatCurrency),
-                          ),
+                          ), // Position the checkout section at the bottom of the screen
+                          Positioned(left: 0, right: 0, bottom: 0, child: _buildCheckoutSection(context, totalPrice)),
                         ],
                       );
                     }
@@ -337,7 +330,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCheckoutSection(BuildContext context, double totalPrice, NumberFormat formatter) {
+  Widget _buildCheckoutSection(BuildContext context, double totalPrice) {
     final theme = Theme.of(context);
     final finalPrice = totalPrice - _discountAmount;
 
@@ -356,7 +349,7 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text('Tạm tính:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
               Text(
-                formatter.format(totalPrice),
+                CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(totalPrice) ?? 0),
                 style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
@@ -372,7 +365,7 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 Text('Giảm giá:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
                 Text(
-                  '- ${formatter.format(_discountAmount)}',
+                  '- ${CurrencyUtils.formatVnd(_discountAmount)}',
                   style: theme.textTheme.bodyLarge?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -394,7 +387,7 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text('Tổng tiền:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               Text(
-                formatter.format(finalPrice),
+                CurrencyUtils.formatVnd(finalPrice),
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,

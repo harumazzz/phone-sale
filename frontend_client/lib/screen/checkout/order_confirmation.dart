@@ -6,8 +6,9 @@ import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/order_bloc/order_bloc.dart';
 import '../../model/request/order_request.dart';
 import '../order/order_success_screen.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+import '../../utils/currency_utils.dart';
 
 class OrderConfirmation extends StatefulWidget {
   const OrderConfirmation({super.key, required this.checkoutData, required this.onBack});
@@ -55,7 +56,6 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
 
   Widget _buildOrderReview(BuildContext context) {
     final theme = Theme.of(context);
-    final formatCurrency = NumberFormat.simpleCurrency(locale: 'vi_VN', decimalDigits: 0, name: '₫');
     final cartItems = widget.checkoutData['cartItems'] ?? [];
     final subtotal = widget.checkoutData['subtotal'] ?? 0.0;
     final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
@@ -75,16 +75,12 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionHeader(context, 'Xác nhận đơn hàng', Symbols.check_circle),
-            const SizedBox(height: 16),
-
-            // Cart Items
+            const SizedBox(height: 16), // Cart Items
             if (cartItems.isNotEmpty) ...[
               _buildSummaryCard(
                 context,
                 'Sản phẩm đặt hàng',
-                Column(
-                  children: cartItems.map<Widget>((item) => _buildCartItem(context, item, formatCurrency)).toList(),
-                ),
+                Column(children: cartItems.map<Widget>((item) => _buildCartItem(context, item)).toList()),
               ),
             ],
 
@@ -95,23 +91,23 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSummaryRow('Tạm tính', formatCurrency.format(subtotal)),
+                  _buildSummaryRow('Tạm tính', CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(subtotal) ?? 0)),
                   if (discountAmount > 0) ...[
                     _buildSummaryRow(
                       'Giảm giá${widget.checkoutData['discountCode'] != null ? ' (${widget.checkoutData['discountCode']})' : ''}',
-                      '- ${formatCurrency.format(discountAmount)}',
+                      '- ${CurrencyUtils.formatVnd(discountAmount)}',
                       valueColor: Colors.green[700],
                     ),
                   ],
                   _buildSummaryRow(
                     'Phí vận chuyển',
-                    shippingFee > 0 ? formatCurrency.format(shippingFee) : 'Miễn phí',
+                    shippingFee > 0 ? CurrencyUtils.formatVnd(shippingFee) : 'Miễn phí',
                     valueColor: shippingFee == 0 ? Colors.green[700] : null,
                   ),
                   const Divider(height: 24),
                   _buildSummaryRow(
                     'Tổng cộng',
-                    formatCurrency.format(total),
+                    CurrencyUtils.formatVnd(total),
                     isBold: true,
                     valueColor: theme.colorScheme.primary,
                   ),
@@ -389,7 +385,6 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
       final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
       final originalPrice = widget.checkoutData['originalPrice'] ?? widget.checkoutData['total'];
       final discountId = widget.checkoutData['discountId'];
-
       final orderRequest = OrderRequest(
         customerId: customer.customerId,
         totalPrice: widget.checkoutData['total'],
@@ -399,8 +394,13 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
         originalPrice: originalPrice,
       );
 
-      // Create order via bloc
-      context.read<OrderBloc>().add(OrderAddEvent(request: orderRequest)); // Listen for the result
+      // Get cart items for creating order items
+      final cartItems = widget.checkoutData['cartItems'] ?? [];
+
+      // Create order with items via bloc
+      context.read<OrderBloc>().add(
+        OrderAddWithItemsEvent(request: orderRequest, cartItems: cartItems),
+      ); // Listen for the result
       await for (final state in context.read<OrderBloc>().stream) {
         if (state is OrderAdded) {
           setState(() {
@@ -430,7 +430,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
     }
   }
 
-  Widget _buildCartItem(BuildContext context, dynamic item, NumberFormat formatter) {
+  Widget _buildCartItem(BuildContext context, dynamic item) {
     final theme = Theme.of(context);
     final product = item.product;
     final quantity = item.quantity;
@@ -470,7 +470,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(formatter.format(price), style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+                Text(CurrencyUtils.formatVnd(price), style: TextStyle(color: Colors.grey[600], fontSize: 14)),
                 const SizedBox(height: 4),
                 Text('Số lượng: $quantity', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
               ],
@@ -480,7 +480,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                formatter.format(totalPrice),
+                CurrencyUtils.formatVnd(totalPrice),
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,

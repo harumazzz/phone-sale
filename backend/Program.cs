@@ -8,11 +8,30 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowWebApp", builder =>
+    options.AddPolicy("AllowWebApp", policy =>
     {
-        builder.AllowAnyOrigin() 
-               .AllowAnyHeader()
-               .AllowAnyMethod();
+        policy.WithOrigins(
+                "http://localhost:3000",     // React dev server
+                "https://localhost:3000",    // React dev server HTTPS
+                "http://localhost:8080",     // Flutter web dev server
+                "https://localhost:8080",    // Flutter web dev server HTTPS
+                "http://localhost:5000",     // Alternative port
+                "https://localhost:5000",    // Alternative port HTTPS
+                "http://127.0.0.1:3000",     // Alternative localhost
+                "http://127.0.0.1:8080",     // Alternative localhost
+                "http://127.0.0.1:5000"      // Alternative localhost
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // Allow credentials for authentication
+    });
+
+    // Development policy for easier testing
+    options.AddPolicy("Development", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
@@ -52,8 +71,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Use CORS middleware
-app.UseCors("AllowWebApp");
+// Use CORS middleware - use Development policy in development environment
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("Development");
+}
+else
+{
+    app.UseCors("AllowWebApp");
+}
 
 app.UseRouting();
 app.UseAuthorization();

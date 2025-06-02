@@ -30,7 +30,7 @@ class OrderItemApi extends Equatable {
 
   Future<void> addOrderItem({required OrderItemRequest request}) async {
     final response = await ServiceLocator.get<Dio>().post(endpoint, data: request.toJson());
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201 && response.statusCode != 200) {
       throw Exception(response.data);
     }
   }

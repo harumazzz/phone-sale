@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend_admin/bloc/customer/customer_bloc.dart';
 import 'package:frontend_admin/bloc/order/order_bloc.dart';
 import 'package:frontend_admin/bloc/product/product_bloc.dart';
+import 'package:frontend_admin/utils/currency_utils.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'dart:math' as math;
 
@@ -17,7 +17,6 @@ class StatisticsScreen extends StatefulWidget {
 }
 
 class _StatisticsScreenState extends State<StatisticsScreen> {
-  final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
   final random = math.Random();
   final List<Color> gradientColors = [const Color(0xff23b6e6), const Color(0xff02d39a)];
 
@@ -148,7 +147,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 if (state is OrderLoaded) {
                   final totalRevenue = state.orders.fold(0.0, (sum, order) => sum + (order.totalPrice ?? 0));
                   return Text(
-                    currencyFormat.format(totalRevenue),
+                    CurrencyUtils.formatVnd(totalRevenue),
                     style: Theme.of(
                       context,
                     ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.black),
