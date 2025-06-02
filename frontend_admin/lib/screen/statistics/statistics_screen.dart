@@ -404,42 +404,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLegendItem('iPhone', '40%', brandColors[0]),
-                      const SizedBox(height: 12),
-                      _buildLegendItem('Samsung', '30%', brandColors[1]),
-                      const SizedBox(height: 12),
-                      _buildLegendItem('Oppo', '15%', brandColors[2]),
-                      const SizedBox(height: 12),
-                      _buildLegendItem('Xiaomi', '10%', brandColors[3]),
-                      const SizedBox(height: 12),
-                      _buildLegendItem('Khác', '5%', brandColors[4]),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildLegendItem(String label, String percentage, Color color) {
-    return Row(
-      children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 8),
-        Text(label, style: GoogleFonts.inter(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w500)),
-        const Spacer(),
-        Text(percentage, style: GoogleFonts.inter(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.w500)),
-      ],
     );
   }
 

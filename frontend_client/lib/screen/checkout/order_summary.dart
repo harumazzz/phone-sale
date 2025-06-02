@@ -105,7 +105,6 @@ class OrderSummary extends StatelessWidget {
     final product = item.product;
     final quantity = item.quantity;
     final price = product.price ?? 0;
-    final totalPrice = price * quantity;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
