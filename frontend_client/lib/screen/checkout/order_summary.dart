@@ -15,7 +15,8 @@ class OrderSummary extends StatelessWidget {
     final cartItems = checkoutData['cartItems'] ?? [];
     final subtotal = checkoutData['subtotal'] ?? 0.0;
     final discountAmount = checkoutData['discountAmount'] ?? 0.0;
-    final finalPrice = checkoutData['finalPrice'] ?? subtotal;
+    final discountAmountUsd = checkoutData['discountAmountUsd'] ?? 0.0;
+    final finalPrice = subtotal - discountAmountUsd; // Calculate in USD, display will convert to VND
 
     return SingleChildScrollView(
       child: Padding(
@@ -47,7 +48,7 @@ class OrderSummary extends StatelessWidget {
                     const Divider(height: 24),
                     _buildPriceRow(
                       'Tổng tiền',
-                      CurrencyUtils.formatVnd(finalPrice),
+                      CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(finalPrice) ?? 0),
                       true,
                       valueColor: theme.colorScheme.primary,
                     ),

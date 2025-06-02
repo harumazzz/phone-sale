@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/auth_bloc/auth_bloc.dart';
 import '../../bloc/cart_bloc/cart_bloc.dart';
+import '../../utils/currency_utils.dart';
 import 'shipping_information.dart';
 import 'order_summary.dart';
 import 'payment_method.dart';
@@ -54,21 +55,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } // Initialize with cart items
     final cartState = BlocProvider.of<CartBloc>(context).state;
     if (cartState is CartLoaded) {
-      _checkoutData['cartItems'] = cartState.carts;
-
-      // Calculate total
+      _checkoutData['cartItems'] = cartState.carts; // Calculate total
       final double subtotal = cartState.carts.fold(
         0.0,
         (sum, item) => sum + (item.product.price ?? 0) * item.quantity,
-      ); // Apply discount if available
-      _checkoutData['discountAmount'] = widget.discountAmount;
+      ); // Apply discount if available - convert VND discount back to USD for calculations
+      final double discountAmountUsd = CurrencyUtils.vndToUsd(widget.discountAmount) ?? 0.0;
+
+      _checkoutData['discountAmount'] = widget.discountAmount; // Keep VND for display
+      _checkoutData['discountAmountUsd'] = discountAmountUsd; // USD for calculations
       _checkoutData['discountId'] = widget.discountId;
       _checkoutData['originalPrice'] = subtotal;
-      _checkoutData['finalPrice'] = subtotal - widget.discountAmount;
+      _checkoutData['finalPrice'] = subtotal - discountAmountUsd; // USD calculation
 
       _checkoutData['subtotal'] = subtotal;
       _checkoutData['shippingFee'] = 0.0; // Default: Free shipping
-      _checkoutData['total'] = subtotal - widget.discountAmount; // Use discounted total
+      _checkoutData['total'] = subtotal - discountAmountUsd; // Use discounted total in USD
 
       // Default to COD payment method
       _checkoutData['paymentMethod'] = 'cod';

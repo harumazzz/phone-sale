@@ -182,7 +182,7 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
             Text('Danh sách đơn hàng', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             SizedBox(
-              height: 400,
+              height: 800,
               child: DataTable2(
                 columnSpacing: 12,
                 horizontalMargin: 12,
@@ -208,10 +208,9 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
     return DataRow(
       cells: [
         DataCell(Text('#${order.orderId}')),
-        DataCell(Text(order.customerId?.toString() ?? 'N/A')),        DataCell(Text(DateFormat('dd/MM/yyyy').format(order.orderDate))),
-        DataCell(
-          Text(CurrencyUtils.formatVnd(order.totalPrice ?? 0)),
-        ),
+        DataCell(Text(order.customerId?.toString() ?? 'N/A')),
+        DataCell(Text(DateFormat('dd/MM/yyyy').format(order.orderDate))),
+        DataCell(Text(CurrencyUtils.formatVnd(order.totalPrice ?? 0))),
         DataCell(_buildStatusChip(order.status?.index)),
         DataCell(_buildActionButtons(order)),
       ],
@@ -319,17 +318,24 @@ class _OrderScreenState extends State<OrderScreen> with SingleTickerProviderStat
       ],
     );
   }
+
   void _updateOrderStatus(int orderId, int newStatus) {
     // Tìm đơn hàng hiện tại để lấy thông tin
     final currentState = context.read<OrderBloc>().state;
     if (currentState is OrderLoaded) {
       final order = currentState.orders.firstWhere((o) => o.orderId == orderId);
-      
+
+      // Debug log để kiểm tra giá trị
+      debugPrint('Order ID: $orderId');
+      debugPrint('Original totalPrice (USD): ${order.totalPrice}');
+      debugPrint('New Status: $newStatus');
+      debugPrint('Customer ID: ${order.customerId}');
+
       context.read<OrderBloc>().add(
         UpdateOrderEvent(
           orderId: orderId,
           orderRequest: OrderRequest(
-            totalPrice: order.totalPrice ?? 0.0,
+            totalPrice: order.totalPrice ?? 0.0, // Gửi giá trị USD gốc
             customerId: order.customerId ?? '',
             status: newStatus,
           ),

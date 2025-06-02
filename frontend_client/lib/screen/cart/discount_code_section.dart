@@ -64,8 +64,10 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
               if (state is DiscountValidated) {
                 final discountValue = state.discount.discountValue ?? 0.0;
                 final isValid = state.discount.isActive == true;
-
                 if (isValid) {
+                  // Convert USD discount amount to VND for display
+                  final discountValueVnd = CurrencyUtils.usdToVnd(discountValue) ?? 0.0;
+
                   messageWidget = Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -74,13 +76,13 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
                         style: TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '- ${CurrencyUtils.formatVnd(discountValue)} (${state.discount.code ?? ""})',
+                        '- ${CurrencyUtils.formatVnd(discountValueVnd)} (${state.discount.code ?? ""})',
                         style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                       ),
                     ],
-                  ); // Callback to parent with discount information
+                  ); // Callback to parent with discount information - send VND amount for display consistency
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onDiscountApplied(discountValue, state.discount.discountId);
+                    widget.onDiscountApplied(discountValueVnd, state.discount.discountId);
                   });
                 } else {
                   messageWidget = Text(

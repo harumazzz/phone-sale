@@ -59,10 +59,11 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
     final cartItems = widget.checkoutData['cartItems'] ?? [];
     final subtotal = widget.checkoutData['subtotal'] ?? 0.0;
     final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
+    final discountAmountUsd = widget.checkoutData['discountAmountUsd'] ?? 0.0;
     final shippingFee = widget.checkoutData['deliveryOption'] == 'express' ? 30000.0 : 0.0;
-    final total = subtotal - discountAmount + shippingFee;
+    final total = subtotal - discountAmountUsd + (CurrencyUtils.vndToUsd(shippingFee) ?? 0.0);
 
-    // Update the total in the checkout data
+    // Update the total in the checkout data with USD values for backend
     if (widget.checkoutData['total'] != total) {
       widget.checkoutData['total'] = total;
       widget.checkoutData['shippingFee'] = shippingFee;
@@ -382,15 +383,15 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
     try {
       // Prepare order request
       final customer = widget.checkoutData['customer']; // Create order with initial pending status (0)
-      final discountAmount = widget.checkoutData['discountAmount'] ?? 0.0;
+      final discountAmountUsd = widget.checkoutData['discountAmountUsd'] ?? 0.0; // USD for backend
       final originalPrice = widget.checkoutData['originalPrice'] ?? widget.checkoutData['total'];
       final discountId = widget.checkoutData['discountId'];
       final orderRequest = OrderRequest(
         customerId: customer.customerId,
-        totalPrice: widget.checkoutData['total'],
+        totalPrice: widget.checkoutData['total'], // This is already in USD
         status: 0, // Pending status
         discountId: discountId,
-        discountAmount: discountAmount,
+        discountAmount: discountAmountUsd, // Send USD amount to backend
         originalPrice: originalPrice,
       );
 

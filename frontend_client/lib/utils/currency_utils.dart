@@ -7,6 +7,11 @@ class CurrencyUtils {
     return usdAmount != null ? usdAmount * exchangeRate : null;
   }
 
+  /// Chuyển đổi từ VND sang USD
+  static double? vndToUsd(double? vndAmount) {
+    return vndAmount != null ? vndAmount / exchangeRate : null;
+  }
+
   /// Format số tiền VND với dấu phẩy và ký hiệu ₫
   static String formatVnd(double? amount) {
     if (amount == null) {
