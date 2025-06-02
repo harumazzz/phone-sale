@@ -82,7 +82,7 @@ class _DiscountCodeSectionState extends State<DiscountCodeSection> {
                     ],
                   ); // Callback to parent with discount information - send VND amount for display consistency
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    widget.onDiscountApplied(discountValueVnd, state.discount.discountId);
+                    widget.onDiscountApplied(discountValue, state.discount.discountId);
                   });
                 } else {
                   messageWidget = Text(

@@ -59,7 +59,7 @@ class _PaymentMethodState extends State<PaymentMethod> {
                   children: [
                     _buildPaymentOption(
                       'cod',
-                      'Thanh toán khi nhận hàng (COD)',
+                      'Thanh toán khi nhận hàng',
                       'Thanh toán bằng tiền mặt khi nhận hàng',
                       Icons.money,
                     ),

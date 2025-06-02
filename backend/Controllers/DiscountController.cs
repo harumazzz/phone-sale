@@ -247,17 +247,15 @@ namespace backend.Controllers
                     response.IsValid = false;
                     response.Message = "Discount code has reached its maximum usage limit";
                     return HandleSuccess(response, "Discount validation completed");
-                }
-
-                // Check if cart total meets minimum order value
-                if (request.CartTotal < discount.MinOrderValue)
+                }                // Check if cart total meets minimum order value
+                // Convert discount minOrderValue from VND to USD for comparison
+                decimal minOrderValueUsd = discount.MinOrderValue / 25000m; // VND to USD conversion
+                if (request.CartTotal < minOrderValueUsd)
                 {
                     response.IsValid = false;
-                    response.Message = $"Minimum order value of {discount.MinOrderValue} not met";
+                    response.Message = $"Minimum order value of {discount.MinOrderValue:N0} VND not met";
                     return HandleSuccess(response, "Discount validation completed");
-                }
-
-                // Calculate discount amount
+                }                // Calculate discount amount
                 decimal discountAmount = 0;
                 if (discount.DiscountType == DiscountType.Percentage)
                 {
@@ -265,7 +263,8 @@ namespace backend.Controllers
                 }
                 else
                 {
-                    discountAmount = discount.DiscountValue;
+                    // FixedAmount discount: Convert VND discount value to USD
+                    discountAmount = discount.DiscountValue / 25000m; // VND to USD conversion
                 }
 
                 // Ensure discount doesn't exceed total

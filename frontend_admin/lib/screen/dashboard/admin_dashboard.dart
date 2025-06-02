@@ -170,10 +170,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 // Navigate back to login screen
                 Navigator.of(context).pushReplacementNamed('/login');
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
               child: const Text('Logout'),
             ),
           ],

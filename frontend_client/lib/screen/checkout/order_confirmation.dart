@@ -96,7 +96,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
                   if (discountAmount > 0) ...[
                     _buildSummaryRow(
                       'Giảm giá${widget.checkoutData['discountCode'] != null ? ' (${widget.checkoutData['discountCode']})' : ''}',
-                      '- ${CurrencyUtils.formatVnd(discountAmount)}',
+                      '- ${CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(discountAmount) ?? 0)}',
                       valueColor: Colors.green[700],
                     ),
                   ],
@@ -344,7 +344,7 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
       case 'cod':
       default:
         icon = Icons.money;
-        title = 'Thanh toán khi nhận hàng (COD)';
+        title = 'Thanh toán khi nhận hàng';
         description = 'Thanh toán bằng tiền mặt khi nhận hàng';
         break;
     }
@@ -436,7 +436,6 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
     final product = item.product;
     final quantity = item.quantity;
     final price = product.price ?? 0;
-    final totalPrice = price * quantity;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -471,23 +470,14 @@ class _OrderConfirmationState extends State<OrderConfirmation> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                Text(CurrencyUtils.formatVnd(price), style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+                Text(
+                  CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(price) ?? 0),
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
                 const SizedBox(height: 4),
                 Text('Số lượng: $quantity', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                CurrencyUtils.formatVnd(totalPrice),
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ],
           ),
         ],
       ),

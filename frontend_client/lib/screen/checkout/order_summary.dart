@@ -40,7 +40,7 @@ class OrderSummary extends StatelessWidget {
                     if (discountAmount > 0)
                       _buildPriceRow(
                         'Giảm giá',
-                        '- ${CurrencyUtils.formatVnd(discountAmount)}',
+                        '- ${CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(discountAmount) ?? 0)}',
                         false,
                         valueColor: Colors.green[700],
                       ),
@@ -138,23 +138,14 @@ class OrderSummary extends StatelessWidget {
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Text(CurrencyUtils.formatVnd(price), style: TextStyle(color: Colors.grey[600])),
+                Text(
+                  CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(price) ?? 0),
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
                 const SizedBox(height: 4),
                 Text('Số lượng: $quantity', style: TextStyle(color: Colors.grey[600])),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                CurrencyUtils.formatVnd(totalPrice),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ],
           ),
         ],
       ),

@@ -31,7 +31,7 @@ class ProductCard extends StatelessWidget {
         }
       },
       child: Container(
-        height: 200,
+        height: 300,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -49,12 +49,12 @@ class ProductCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.network(
                     imageUrl,
-                    height: 180,
+                    height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder:
                         (context, error, stackTrace) => Container(
-                          height: 180,
+                          height: 150,
                           decoration: BoxDecoration(
                             color: Colors.grey[100],
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),

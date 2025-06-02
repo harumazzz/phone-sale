@@ -333,6 +333,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildCheckoutSection(BuildContext context, double totalPrice) {
     final theme = Theme.of(context);
     final finalPrice = totalPrice - _discountAmount;
+    debugPrint('Final price after discount: $finalPrice, Discount amount: $_discountAmount');
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -365,7 +366,7 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 Text('Giảm giá:', style: theme.textTheme.bodyLarge?.copyWith(color: Colors.grey[600])),
                 Text(
-                  '- ${CurrencyUtils.formatVnd(_discountAmount)}',
+                  '- ${CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(_discountAmount) ?? 0)}',
                   style: theme.textTheme.bodyLarge?.copyWith(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -387,7 +388,7 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text('Tổng tiền:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
               Text(
-                CurrencyUtils.formatVnd(finalPrice),
+                CurrencyUtils.formatVnd(CurrencyUtils.usdToVnd(finalPrice) ?? 0),
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,

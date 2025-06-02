@@ -13,10 +13,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: MaterialDesign.lightTheme,
       initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/dashboard': (context) => const AdminDashboard(),
-      },
+      routes: {'/login': (context) => const LoginScreen(), '/dashboard': (context) => const AdminDashboard()},
     );
   }
 }
